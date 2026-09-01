@@ -1,0 +1,624 @@
+@import "tailwindcss";
+
+/*
+ * Tokens follow Akvega Brand Guidelines v1.0 (2026).
+ * Named colours, the type scale, the radius and the spacing steps are taken
+ * from that document — do not substitute values here without updating it.
+ */
+@theme {
+  /* 07 / Typography. Inter is the workhorse; the serif is a hero-only accent. */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+
+  /* 05 / Color system — the six named brand colours, verbatim. */
+  --color-navy: #051127;
+  --color-signal: #1487f1;
+  --color-energy: #08c8ee;
+  --color-vega: #3039e8;
+  --color-ice: #eff8ff;
+  --color-slate: #536078;
+
+  /*
+   * Working ramp around Signal Blue, so filled controls can carry small text
+   * at WCAG AA. Signal Blue itself only clears 3.7:1 on white, which is large
+   * text only — blue-600 is the fill for anything with a label on it.
+   */
+  --color-blue-50: #eff8ff;
+  --color-blue-100: #d9edfe;
+  --color-blue-200: #b5dbfd;
+  --color-blue-300: #80c2fa;
+  --color-blue-400: #42a3f6;
+  --color-blue-500: #1487f1;
+  --color-blue-600: #0f6acc;
+  --color-blue-700: #0d54a3;
+  --color-blue-800: #0a3e78;
+  --color-blue-900: #051127;
+
+  /* Semantic aliases */
+  --color-paper: #ffffff;
+  --color-surface: #eff8ff;
+  --color-ink: #051127;
+  --color-ink-muted: #536078;
+  --color-hairline: rgb(5 17 39 / 0.08);
+
+  /*
+   * Page container. Every panel, section and the header cap at this width, so
+   * the whole site shares one measure. Viewport-relative by client direction —
+   * the layout tracks the screen rather than stopping at a fixed rail.
+   */
+  --container-site: 95vw;
+
+  /* 09 / Spacing & tokens — 12px default radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 28px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  body {
+    @apply bg-paper text-ink antialiased;
+    font-family: var(--font-sans);
+    font-size: clamp(1rem, 0.18vw + 0.965rem, 1.125rem);
+    line-height: 1.45;
+    font-optical-sizing: auto;
+    font-kerning: normal;
+    font-synthesis: none;
+    font-variant-ligatures: common-ligatures contextual;
+    font-feature-settings: "kern" 1, "liga" 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+    letter-spacing: normal;
+    text-wrap: balance;
+    hyphens: none;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  /* Browser surfaces belong to the palette too. */
+  ::selection {
+    background: var(--color-blue-100);
+    color: var(--color-navy);
+  }
+
+  /* 09 — visible focus states, never colour alone. */
+  :focus-visible {
+    outline: 2px solid var(--color-blue-600);
+    outline-offset: 3px;
+    border-radius: var(--radius-xs);
+  }
+
+  html {
+    caret-color: var(--color-blue-600);
+    accent-color: var(--color-blue-600);
+  }
+
+  a {
+    text-underline-offset: 0.22em;
+    text-decoration-thickness: 1px;
+  }
+}
+
+@layer components {
+  .type-display {
+    max-width: 18ch;
+    font-size: clamp(2.5rem, min(8vw, 10vh), 5.25rem);
+    font-weight: 600;
+    line-height: 1.03;
+    letter-spacing: normal;
+  }
+
+  .type-section-title {
+    max-width: 16ch;
+    font-size: clamp(2.125rem, 5.4vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: normal;
+  }
+
+  .type-page-title {
+    max-width: 18ch;
+    font-size: clamp(2.125rem, 5vw, 3.25rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: normal;
+  }
+
+  .type-track-title {
+    font-size: clamp(2.5rem, 6.5vw, 4.5rem);
+    font-weight: 600;
+    line-height: 1.06;
+    letter-spacing: normal;
+  }
+
+  .type-card-title {
+    font-size: clamp(1.35rem, 2.6vw, 2rem);
+    font-weight: 600;
+    line-height: 1.18;
+    letter-spacing: normal;
+  }
+
+  .type-lede {
+    max-width: 55ch;
+    font-size: clamp(1.0625rem, 0.45vw + 0.98rem, 1.25rem);
+    line-height: 1.42;
+  }
+
+  .type-body {
+    max-width: 65ch;
+    font-size: clamp(1rem, 0.2vw + 0.965rem, 1.125rem);
+    line-height: 1.45;
+  }
+
+  .type-overline {
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .type-ui {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+
+  .has-custom-cursor,
+  .has-custom-cursor * {
+    cursor: none !important;
+  }
+
+  .has-custom-cursor input,
+  .has-custom-cursor textarea,
+  .has-custom-cursor [contenteditable="true"] {
+    cursor: text !important;
+  }
+
+  .custom-cursor {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 180ms ease;
+  }
+
+  .custom-cursor[data-visible="true"] {
+    opacity: 1;
+  }
+
+  .custom-cursor__ring,
+  .custom-cursor__dot {
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: block;
+    will-change: transform;
+  }
+
+  .custom-cursor__ring::after,
+  .custom-cursor__dot::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 999px;
+    transform: translate(-50%, -50%);
+    transition:
+      width 320ms var(--ease-out-expo),
+      height 320ms var(--ease-out-expo),
+      border-radius 320ms var(--ease-out-expo),
+      transform 120ms var(--ease-out-expo),
+      background-color 320ms var(--ease-out-expo),
+      border-color 320ms var(--ease-out-expo),
+      opacity 200ms ease;
+  }
+
+  .custom-cursor__ring::after {
+    width: var(--cursor-ring-width, 34px);
+    height: var(--cursor-ring-height, 34px);
+    border-radius: var(--cursor-ring-radius, 999px);
+    border: 1px solid rgb(5 17 39 / 0.42);
+    background: transparent;
+    box-shadow: 0 8px 24px -12px rgb(5 17 39 / 0.4);
+  }
+
+  .custom-cursor__dot::after {
+    width: 5px;
+    height: 5px;
+    background: var(--color-signal);
+    box-shadow: 0 0 0 2px rgb(255 255 255 / 0.55);
+  }
+
+  .custom-cursor[data-active="true"] .custom-cursor__ring::after {
+    border-color: rgb(20 135 241 / 0.55);
+    background: transparent;
+    box-shadow: 0 12px 32px -18px rgb(20 135 241 / 0.7);
+  }
+
+  .custom-cursor[data-active="true"] .custom-cursor__dot::after {
+    width: 7px;
+    height: 7px;
+    background: var(--color-navy);
+  }
+
+  .custom-cursor[data-pressed="true"] .custom-cursor__ring::after {
+    background: transparent;
+    transform: translate(-50%, -50%) scale(0.97);
+    transition-duration: 90ms;
+  }
+
+  /*
+   * Hero backdrop. Supplied bitmap — do not regenerate the dot pattern in CSS.
+   * Drop the file at public/hero-bg.png; until then the surface tint shows
+   * through on its own.
+   */
+  /*
+   * 06 — restrained gradient bands, three brand hues. This gives the stage
+   * material on its own; hero-bg.png layers over it when supplied.
+   */
+  .hero-field {
+    background-image:
+      radial-gradient(
+        42% 38% at 50% 44%,
+        rgb(255 255 255 / 0.82),
+        transparent 72%
+      ),
+      radial-gradient(
+        58% 52% at 50% 44%,
+        color-mix(in oklab, var(--color-energy) 26%, transparent),
+        transparent 72%
+      ),
+      radial-gradient(
+        46% 42% at 18% 14%,
+        color-mix(in oklab, var(--color-vega) 16%, transparent),
+        transparent 74%
+      ),
+      radial-gradient(
+        50% 46% at 84% 84%,
+        color-mix(in oklab, var(--color-signal) 20%, transparent),
+        transparent 74%
+      );
+  }
+
+  /*
+   * The footer surface: a single top-to-bottom ramp through the brand hues, in
+   * the order of the primary gradient — ice, then energy, then signal, then
+   * vega at the bottom edge behind the lockup.
+   *
+   * Each stop is mixed back into ice rather than used neat. That is a contrast
+   * requirement, not a taste one: ink-muted needs a background luminance of
+   * 0.694 to clear 4.5:1, so the saturated end of the ramp has to sit below the
+   * last line of text. The percentages are tuned around the bottom bar — check
+   * them again if anything moves down there.
+   */
+  .footer-field {
+    background-image: linear-gradient(
+      to bottom,
+      var(--color-ice) 0%,
+      color-mix(in oklab, var(--color-energy) 12%, var(--color-ice)) 50%,
+      color-mix(in oklab, var(--color-signal) 15%, var(--color-ice)) 86%,
+      color-mix(in oklab, var(--color-vega) 24%, var(--color-ice)) 100%
+    );
+  }
+
+  /* Crisp top edge — reads as material rather than a flat fill. */
+  .edge-light {
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.7);
+  }
+
+  .edge-light-dark {
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.12);
+  }
+
+  .hero-backdrop {
+    background-image: url("/hero-bg.png");
+    background-size: cover;
+    background-position: center 44%;
+    background-repeat: no-repeat;
+  }
+}
+
+/*
+ * 06 — one dominant directional cue per composition. The backdrop blooms
+ * outward from the mark; everything else settles along that same curve.
+ */
+@keyframes bloom {
+  from {
+    opacity: 0;
+    transform: scale(1.14);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(var(--settle-from, 20px)) scale(0.95);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes marquee-up {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes marquee-down {
+  from {
+    transform: translateY(-50%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/*
+ * Micro-interactions.
+ *
+ * One curve (--ease-out-expo) and one vocabulary, so a button, a card and a
+ * link all answer the pointer the same way. These are transitions, not loops:
+ * the only thing running on its own is the hero moment. Amplitudes are small
+ * on purpose — 01 asks for confident, not loud.
+ *
+ * All of it collapses under prefers-reduced-motion, via the global rule below.
+ */
+@layer components {
+  /*
+   * Every pressable surface: pill buttons, chips, tiles. Lift to acknowledge
+   * the pointer, sink on press — the press is faster than the lift, because a
+   * click should feel answered immediately.
+   */
+  .press {
+    transition-property: transform, box-shadow, background-color, border-color,
+      color;
+    transition-duration: 280ms;
+    transition-timing-function: var(--ease-out-expo);
+  }
+
+  .press:hover {
+    transform: translateY(-2px);
+  }
+
+  .press:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 80ms;
+  }
+
+  /*
+   * Card surfaces travel further than a button and gain real elevation, per
+   * the shadow rule — neutral navy, real offset and blur.
+   */
+  .card-lift {
+    transition-property: transform, box-shadow, border-color;
+    transition-duration: 420ms;
+    transition-timing-function: var(--ease-out-expo);
+  }
+
+  .card-lift:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 1px 2px rgb(5 17 39 / 0.06),
+      0 22px 44px -20px rgb(5 17 39 / 0.28);
+  }
+
+  /*
+   * Rolling label. The word is rendered twice in a clipped box; hovering the
+   * link slides the pair up by exactly one line, so the second copy lands where
+   * the first was. Both copies are identical, which is what makes it safe under
+   * prefers-reduced-motion: the global collapse makes the slide instant and the
+   * reader sees no change at all.
+   *
+   * Height and line-height are locked together — the clip is the effect, and a
+   * line-height under about 1.3 starts eating descenders.
+   */
+  .roll {
+    display: inline-block;
+    overflow: hidden;
+    height: 1.4em;
+    line-height: 1.4;
+    vertical-align: bottom;
+  }
+
+  .roll-inner {
+    display: block;
+    transition: transform 420ms var(--ease-out-expo);
+  }
+
+  .roll-inner > span {
+    display: block;
+  }
+
+  /* Keyboard gets it too — 09, an interaction should never be pointer-only. */
+  :where(a, button):hover .roll-inner,
+  :where(a, button):focus-visible .roll-inner {
+    transform: translateY(-50%);
+  }
+
+  /*
+   * Underline that sweeps in from the left — the same idiom the header nav
+   * uses for its active state, reused for text links. Focus gets it too: 09,
+   * never colour alone.
+   */
+  .link-sweep {
+    position: relative;
+  }
+
+  .link-sweep::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -2px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 380ms var(--ease-out-expo);
+  }
+
+  .link-sweep:hover::after,
+  .link-sweep:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  /*
+   * Line art draws itself in when its section arrives. Every path carries
+   * pathLength="1", so one dash length works for any geometry.
+   */
+  .draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  [data-shown="true"] .draw {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1.2s var(--ease-out-expo)
+      var(--reveal-delay, 0ms);
+  }
+
+  /*
+   * Entrance. Type and rows rise once, the first time they come into view.
+   * useInView flips data-shown on the section; children stagger off
+   * --reveal-delay. Never applied to anything above the fold — the hero has
+   * its own authored moment and two entrances would fight.
+   */
+  .reveal {
+    opacity: 0;
+  }
+
+  [data-shown="true"] .reveal {
+    opacity: 1;
+    animation: reveal-rise 760ms var(--ease-out-expo) var(--reveal-delay, 0ms)
+      backwards;
+  }
+
+  /*
+   * Vertical logo-wall marquee: a track holding the column's marks twice
+   * back to back, animated exactly half its own height so the loop seam is
+   * invisible. Alternating columns run `-reverse` so the wall reads as a
+   * crisscross rather than one direction sliding past. Starts only once the
+   * section is in view, like `.reveal`; under prefers-reduced-motion the
+   * global rule freezes it after one (imperceptibly fast) pass, which lands
+   * back on the same visual frame since the two halves are identical.
+   */
+  .marquee {
+    will-change: transform;
+  }
+
+  [data-shown="true"] .marquee {
+    animation: marquee-up var(--marquee-duration, 26s) linear infinite;
+  }
+
+  [data-shown="true"] .marquee-reverse {
+    animation-name: marquee-down;
+  }
+}
+
+/*
+ * The FAQ accordion opens by height instead of snapping. Progressive: without
+ * interpolate-size support the details element keeps today's instant toggle,
+ * which is why the open state is not styled outside this block.
+ */
+@supports (interpolate-size: allow-keywords) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+
+  details::details-content {
+    block-size: 0;
+    overflow: clip;
+    opacity: 0;
+    transition:
+      block-size 440ms var(--ease-out-expo),
+      opacity 300ms var(--ease-out-expo),
+      content-visibility 440ms allow-discrete;
+  }
+
+  details[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+}
+
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}

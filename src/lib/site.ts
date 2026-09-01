@@ -1,0 +1,56 @@
+/**
+ * Copy and metadata, single source of truth.
+ *
+ * Voice follows Akvega Brand Guidelines v1.0 / 01: modern not futuristic,
+ * confident not loud, technical not complicated, direct not abrupt.
+ *
+ * All copy here is placeholder: accurate in shape, not in fact. The guidelines
+ * suggest the line "Engineered momentum." if the final positioning fits it.
+ */
+export const site = {
+  name: 'Akvega',
+
+  headline: { lead: 'We make brands', accent: 'impossible to ignore.' },
+  subhead:
+    'Akvega is an independent design studio working across brand identity, digital product, and motion.',
+
+  primaryCta: { label: 'Start a project', to: '/contact' },
+  secondaryCta: { label: 'See the work', to: '/work' },
+
+  email: 'hello@akvega.com',
+
+  // Placeholder — no real number yet. Obviously-fake shape on purpose (see
+  // `clients` above): replace before launch, never with a guessed real one.
+  phone: '+1 (000) 000-0000',
+
+  // Placeholder — Akvega has not confirmed a physical base. "Remote-first" is
+  // the least specific true-shaped claim available; replace with a real
+  // office/timezone line if one gets confirmed.
+  availability: 'Remote-first · async across time zones',
+
+  nav: [
+    { label: 'Work', to: '/work' },
+    { label: 'Studio', to: '/about' },
+    { label: 'Services', to: '/services' },
+    { label: 'Contact', to: '/contact' },
+  ],
+
+  // Placeholder wordmarks. Swap for real client logos in public/.
+  clients: ['CLIENT 01', 'CLIENT 02', 'CLIENT 03', 'CLIENT 04', 'CLIENT 05'],
+
+  // `icon` must name an entry in components/Icons.tsx.
+  social: [
+    { label: 'LinkedIn', href: '#', icon: 'linkedin' },
+    { label: 'Instagram', href: '#', icon: 'instagram' },
+    { label: 'Dribbble', href: '#', icon: 'dribbble' },
+  ],
+
+  /**
+   * Footer. The directory columns are generated from lib/services.ts and
+   * `nav` above, so only the tagline and the pill label live here.
+   */
+  footer: {
+    tagline: { lead: 'One partner for', accent: 'growth and build.' },
+    cta: { label: 'Contact', to: '/contact' },
+  },
+} as const
