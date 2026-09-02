@@ -21,11 +21,31 @@ type FormState = {
   name: string
   email: string
   company: string
+  interest: '' | 'technology' | 'digital'
   message: string
 }
 
-const initialState: FormState = { name: '', email: '', company: '', message: '' }
+const initialState: FormState = {
+  name: '',
+  email: '',
+  company: '',
+  interest: '',
+  message: '',
+}
 const emailPattern = /^\S+@\S+\.\S+$/
+
+const interestOptions = [
+  {
+    value: 'technology',
+    label: 'Technology',
+    description: 'Web, apps & systems',
+  },
+  {
+    value: 'digital',
+    label: 'Digital',
+    description: 'Search, ads & social',
+  },
+] as const
 
 function buildMailto(data: FormState) {
   const subject = `New project inquiry — ${data.company || data.name}`
@@ -33,6 +53,7 @@ function buildMailto(data: FormState) {
     `Name: ${data.name}`,
     `Email: ${data.email}`,
     data.company ? `Company: ${data.company}` : null,
+    `Area: ${data.interest === 'technology' ? 'Technology' : 'Digital'}`,
     '',
     data.message,
   ]
@@ -85,6 +106,7 @@ export default function ContactForm() {
   const canSend =
     data.name.trim().length > 0 &&
     emailValid &&
+    data.interest.length > 0 &&
     data.message.trim().length > 0
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -138,6 +160,47 @@ export default function ContactForm() {
               autoComplete="organization"
             />
           </Field>
+          <fieldset>
+            <legend className="type-ui text-ink-muted">
+              What do you need help with?
+            </legend>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              {interestOptions.map((option) => {
+                const selected = data.interest === option.value
+
+                return (
+                  <label
+                    key={option.value}
+                    className={`press cursor-pointer rounded-xl border px-4 py-3.5 transition-colors focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 ${
+                      selected
+                        ? 'border-navy bg-navy text-white'
+                        : 'border-hairline bg-surface/60 text-ink hover:border-blue-300 hover:bg-paper'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="interest"
+                      value={option.value}
+                      checked={selected}
+                      onChange={() => update({ interest: option.value })}
+                      className="sr-only"
+                      required
+                    />
+                    <span className="block text-[15px] font-semibold leading-tight">
+                      {option.label}
+                    </span>
+                    <span
+                      className={`mt-1 block text-[13px] leading-snug ${
+                        selected ? 'text-white/70' : 'text-ink-muted'
+                      }`}
+                    >
+                      {option.description}
+                    </span>
+                  </label>
+                )
+              })}
+            </div>
+          </fieldset>
           <Field label="Message">
             <textarea
               value={data.message}

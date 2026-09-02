@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { LogoFull } from '@/components/Logo'
 import TextRoll from '@/components/TextRoll'
 import { site } from '@/lib/site'
 
 export default function Header() {
+  const location = useLocation()
   const [open, setOpen] = useState(false)
+  const [elevated, setElevated] = useState(location.pathname !== '/')
+  const [visible, setVisible] = useState(true)
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
@@ -14,8 +17,68 @@ export default function Header() {
     }
   }, [open])
 
+  useEffect(() => {
+    const updateElevation = () => {
+      const hero = document.querySelector<HTMLElement>('[data-hero-stage]')
+      const isOverHero =
+        location.pathname === '/' &&
+        hero !== null &&
+        hero.getBoundingClientRect().bottom > 80
+
+      setElevated(!isOverHero)
+    }
+
+    updateElevation()
+    window.addEventListener('scroll', updateElevation, { passive: true })
+    window.addEventListener('resize', updateElevation)
+
+    return () => {
+      window.removeEventListener('scroll', updateElevation)
+      window.removeEventListener('resize', updateElevation)
+    }
+  }, [location.pathname])
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY
+    let frame: number | null = null
+
+    const updateVisibility = () => {
+      const currentScrollY = window.scrollY
+      const delta = currentScrollY - lastScrollY
+
+      if (open || currentScrollY <= 8) {
+        setVisible(true)
+        lastScrollY = currentScrollY
+      } else if (delta > 6) {
+        setVisible(false)
+        lastScrollY = currentScrollY
+      } else if (delta < -6) {
+        setVisible(true)
+        lastScrollY = currentScrollY
+      }
+
+      frame = null
+    }
+
+    const handleScroll = () => {
+      if (frame === null) {
+        frame = window.requestAnimationFrame(updateVisibility)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (frame !== null) window.cancelAnimationFrame(frame)
+    }
+  }, [location.pathname, open])
+
   return (
-    <header className="sticky top-0 z-50 bg-paper/80 backdrop-blur-xl">
+    <header
+      onFocusCapture={() => setVisible(true)}
+      className={`nav-glass sticky top-0 z-50 ${elevated ? 'nav-glass-elevated' : ''} ${visible ? '' : 'nav-scroll-hidden'}`}
+    >
       <div className="mx-auto flex h-20 max-w-site items-center justify-between px-5 sm:px-8">
         <Link
           to="/"
@@ -72,7 +135,7 @@ export default function Header() {
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? 'Close navigation' : 'Open navigation'}
-          className="-mr-2 grid size-11 place-items-center rounded-full text-ink lg:hidden"
+          className="press -mr-1 grid size-11 place-items-center rounded-full text-ink hover:bg-paper/55 lg:hidden"
         >
           <span className="relative block h-3 w-5">
             <span
@@ -92,7 +155,7 @@ export default function Header() {
       <div
         id="mobile-nav"
         hidden={!open}
-        className="border-t border-hairline bg-paper px-5 pb-8 pt-4 lg:hidden"
+        className="nav-glass nav-glass-elevated absolute inset-x-0 top-20 px-5 pb-6 pt-3 sm:px-8 lg:hidden"
       >
         <nav className="flex flex-col">
           {site.nav.map((item) => (

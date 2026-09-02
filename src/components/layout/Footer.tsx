@@ -47,11 +47,11 @@ export default function Footer() {
   const { ref, inView } = useInView<HTMLDivElement>()
 
   return (
-    <footer className="px-3 pb-3 sm:px-5 sm:pb-5">
+    <footer className="px-3 py-3 sm:px-5 sm:py-5">
       <div
         ref={ref}
         data-shown={inView}
-        className="relative isolate mx-auto max-w-site overflow-hidden rounded-xl border border-hairline bg-surface sm:rounded-2xl"
+        className="relative isolate overflow-hidden rounded-xl border border-hairline bg-surface sm:rounded-2xl"
       >
         {/* The gradient bloom, rising from the bottom edge to carry the
             lockup. Purely a surface — it sits under everything and takes no

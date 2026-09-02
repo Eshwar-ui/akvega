@@ -57,6 +57,41 @@ export default function CallToAction() {
           />
         </svg>
 
+        {/*
+          06 calls for "one dominant diagonal" — the top-right aperture makes
+          it, but leaves the panel resting on a single corner. A second,
+          smaller pass of the same motif at the opposite corner completes the
+          diagonal as a line running through the whole panel, rather than one
+          shape floating in isolation. Same gradient, same draw mechanism,
+          just scaled down and mirrored — not a new device.
+        */}
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 400 400"
+          className="pointer-events-none absolute -bottom-28 -left-28 -z-10 w-[320px] opacity-[0.14] sm:-left-20"
+        >
+          <circle
+            cx="200"
+            cy="200"
+            r="150"
+            pathLength="1"
+            style={revealDelay(1, 140)}
+            className="draw"
+            fill="none"
+            stroke="url(#akv-cta)"
+            strokeWidth="2"
+          />
+          <path
+            d="M110 290 290 110"
+            pathLength="1"
+            style={revealDelay(3, 140)}
+            className="draw"
+            stroke="url(#akv-cta)"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+
         <div className="mx-auto flex max-w-2xl flex-col items-center">
           <span className="reveal grid size-14 place-items-center rounded-md bg-white">
             <LogoMark className="w-7" />

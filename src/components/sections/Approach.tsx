@@ -10,7 +10,7 @@ export default function Approach() {
         data-shown={inView}
         className="edge-light-dark mx-auto max-w-site overflow-hidden rounded-xl bg-navy px-5 py-24 sm:rounded-2xl sm:px-12 sm:py-32 lg:px-16"
       >
-        <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-24">
+        <div className="grid items-center gap-16 lg:grid-cols-[1fr_1.2fr] lg:gap-20 xl:gap-24">
           <div>
             <h2 className="reveal type-section-title text-balance text-white">
               Most companies buy these from two different suppliers.
@@ -34,7 +34,15 @@ export default function Approach() {
 
           {/*
             06 / Graphic language: circular aperture, one dominant diagonal,
-            gradient limited to the three brand hues.
+            gradient limited to the three brand hues. The column now runs
+            wider than the text column (1.2fr vs 1fr) rather than an even
+            split, so the diagram reads as the section's visual weight instead
+            of an evenly-balanced illustration. A bleed-past-the-edge crop
+            (CallToAction's move) was tried here first and rejected: the
+            GROWTH/BUILD labels sit close enough to the viewBox edge that any
+            meaningful crop clipped one of them outright — the diagram is
+            labelled content, not a pure decorative motif, so it doesn't get
+            to bleed the way CallToAction's aperture can.
           */}
           <div className="relative">
             <svg

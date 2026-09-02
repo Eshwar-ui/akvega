@@ -32,7 +32,7 @@ export const tracks: Track[] = [
       {
         slug: 'search',
         short: 'Search and AEO',
-        name: 'Search and answer visibility',
+        name: 'Search and AI answers',
         blurb:
           'Rank on Google and get quoted by the AI that now answers for it. Technical SEO, answer-engine and generative-engine optimisation run as one programme rather than three disconnected retainers.',
         deliverables: [
@@ -71,7 +71,7 @@ export const tracks: Track[] = [
       {
         slug: 'social',
         short: 'Social',
-        name: 'Social presence',
+        name: 'Social media',
         blurb:
           'Always-on content, calendar and community management that compounds instead of resetting every quarter. One voice across every channel, held to a standard.',
         deliverables: [
@@ -93,7 +93,7 @@ export const tracks: Track[] = [
       {
         slug: 'websites',
         short: 'Websites',
-        name: 'Brand websites',
+        name: 'Websites',
         blurb:
           'Fast, considered marketing sites built to your identity rather than bent out of a template. Designed to load quickly, rank well and still look like you in two years.',
         deliverables: [
@@ -106,7 +106,7 @@ export const tracks: Track[] = [
       {
         slug: 'commerce',
         short: 'Commerce',
-        name: 'Commerce platforms',
+        name: 'Online stores',
         blurb:
           'Storefronts on web and mobile, wired properly into catalogue, payments and fulfilment. Built so the checkout survives your biggest day of the year.',
         deliverables: [
@@ -119,7 +119,7 @@ export const tracks: Track[] = [
       {
         slug: 'mobile',
         short: 'Mobile apps',
-        name: 'Mobile applications',
+        name: 'Mobile apps',
         blurb:
           'iOS and Android products that feel native, from first build through store release and the releases after it. Cross-platform where it saves you money, native where it does not.',
         deliverables: [
@@ -145,7 +145,7 @@ export const tracks: Track[] = [
       {
         slug: 'custom',
         short: 'Bespoke systems',
-        name: 'Bespoke systems',
+        name: 'Custom tools',
         blurb:
           'Internal tools, integrations and automation for the problems off-the-shelf software refuses to solve. The unglamorous work that quietly removes a department of manual effort.',
         deliverables: [

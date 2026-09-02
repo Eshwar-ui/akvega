@@ -138,6 +138,36 @@
 }
 
 @layer components {
+  /*
+   * Header glass. The blur has a job here: it keeps the sticky navigation
+   * legible as the page's light, gradient, and navy surfaces move beneath it.
+   * A cool white tint preserves the brand palette without becoming another
+   * decorative gradient field.
+   */
+  .nav-glass {
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--color-paper) 82%, transparent),
+      color-mix(in oklab, var(--color-ice) 66%, transparent)
+    );
+    box-shadow: none;
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
+    transition:
+      transform 420ms var(--ease-out-expo),
+      box-shadow 320ms var(--ease-out-expo);
+  }
+
+  .nav-glass-elevated {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.88),
+      0 14px 36px -24px rgb(5 17 39 / 0.42);
+  }
+
+  .nav-scroll-hidden {
+    transform: translate3d(0, calc(-100% - 1rem), 0);
+  }
+
   .type-display {
     max-width: 18ch;
     font-size: clamp(2.5rem, min(8vw, 10vh), 5.25rem);
@@ -358,6 +388,12 @@
   }
 }
 
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav-glass {
+    background: color-mix(in oklab, var(--color-paper) 94%, var(--color-ice));
+  }
+}
+
 /*
  * 06 — one dominant directional cue per composition. The backdrop blooms
  * outward from the mark; everything else settles along that same curve.
@@ -412,6 +448,23 @@
   }
   to {
     transform: translateY(0);
+  }
+}
+
+/* The kinetic rail is decorative; the stationary selector owns interaction. */
+@keyframes capability-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes capability-detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
 }
 
@@ -573,6 +626,22 @@
 
   [data-shown="true"] .marquee-reverse {
     animation-name: marquee-down;
+  }
+
+  .capability-ticker-track {
+    will-change: transform;
+  }
+
+  [data-shown="true"] .capability-ticker-track {
+    animation: capability-ticker 34s linear infinite;
+  }
+
+  .capability-ticker:hover .capability-ticker-track {
+    animation-play-state: paused;
+  }
+
+  .capability-detail {
+    animation: capability-detail-in 420ms var(--ease-out-expo) both;
   }
 }
 

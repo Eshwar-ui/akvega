@@ -148,8 +148,14 @@ direction — the top edge is the plain hairline. Do not put it back.
 ### Page rhythm
 
 The page alternates light and dark so it has peaks rather than one even tone:
-hero (light, gradient field) → services (white) → **approach (navy)** →
-process (white) → FAQ (white) → **CTA (navy)**.
+hero (light, gradient field) → capability rail (navy) → services (white) →
+tech stack (white) → **approach (navy)** → assurance (white) → process
+(white) → FAQ (white) → **CTA (navy)**.
+
+The assurance strip (`Assurance.tsx`) is deliberately not a third dark panel:
+it follows navy Approach immediately, so staying light both keeps the
+alternation and keeps its own weight down — three short reused facts, not a
+new argument competing with the one Approach just made.
 
 Navy is a structural surface, not just the closing panel — guidelines 05 give it
 "most text and large surfaces". Two dark panels is the floor; do not flatten the
@@ -159,6 +165,43 @@ Display scale carries the same idea. Section headings run to 3.5rem, track
 labels to 4.5rem, and body to 17–20px. Small, evenly-sized headings across every
 section is what made this read flat the first time.
 
+### Amplification pass — Approach, Process, FAQ, CTA
+
+Capabilities and Assurance shipped with real structural devices (the kinetic
+rail, the reused-facts strip); Approach, Process, FAQ and CTA were still
+carrying whatever the first pass left them — a text block, a plain numbered
+grid, a bare accordion, a single corner motif. One decisive, reused-vocabulary
+move per section, not a restyle:
+
+- **Approach** (`Approach.tsx`) — the diagram's column now runs `1.2fr` against
+  the text column's `1fr`, instead of an even split, so the converging-circles
+  motif reads as the section's visual weight rather than an evenly-balanced
+  illustration. A bleed-past-the-panel-edge crop (CallToAction's own move) was
+  tried first and reverted: the GROWTH/BUILD labels sit close enough to the
+  viewBox edge that any crop worth doing clipped one of them outright. That
+  diagram is labelled content, not a pure decorative motif — it doesn't get to
+  bleed the way an unlabelled aperture can. Don't reintroduce the bleed without
+  first pulling the labels out of the scaled/cropped layer.
+- **Process** (`Process.tsx`) — a single drawn line threads the four stage
+  numbers together above the grid, `lg:` only, reusing the exact `.draw` +
+  three-hue gradient mechanism Approach and CallToAction already carry. Node
+  positions (12.5/37.5/62.5/87.5% → x = 50/150/250/350 in a 400-wide viewBox)
+  land on the four equal columns' centres, which only holds at `lg:grid-cols-4`
+  — hence the breakpoint gate. A grid says "four things"; the path says "in
+  order," which is the whole point of numbering them.
+- **FAQ** (`Faq.tsx`) — each question now carries a small tabular-numeral index
+  (01, 02, …), the same numeral language Process uses, so the accordion reads
+  as a continuation of the page's numbered-sequence vocabulary rather than an
+  unrelated list bolted on at the end. The answer paragraph carries a matching
+  left offset (`pl-9`/`sm:pl-11`, hand-tuned to approximate the numeral-plus-gap
+  width) so it reads as continuing under the question, not the index.
+- **CallToAction** (`CallToAction.tsx`) — a second, smaller pass of the same
+  aperture motif (same gradient, same `.draw` mechanism) sits mirrored at the
+  bottom-left, `opacity-[0.14]`. Guideline 06 asks for "one dominant diagonal";
+  the original single corner motif left the panel resting on one shape in one
+  corner. The second one completes the diagonal as a line running through the
+  whole panel rather than a shape floating in isolation.
+
 ### Service architecture
 
 `src/lib/services.ts` is the single source. Two tracks — **Growth** (search,
@@ -166,10 +209,19 @@ paid search, paid social, social presence) and **Build** (websites, commerce,
 mobile, product design, bespoke systems) — because that split *is* the pitch:
 most companies buy these from two suppliers.
 
-Services render as a two-column editorial row — large name and icon on the left,
-blurb and a tracked uppercase deliverables line on the right — separated by
-hairlines. Not a card grid, and not bordered chips: both were tried and both
-read cheap at this scale. Track accents: Growth = `signal`, Build = `vega`.
+Track accents: Growth = `signal`, Build = `vega`.
+
+**Build** renders as the bento grid in `Services.tsx` — image-backed cards,
+hover-reflow via GSAP Flip. **Growth** renders as an accordion index: a big
+tabular-numbered, icon-led name per row (`<details name="growth-services">`,
+its own group so it doesn't fight the FAQ's own accordion below it), blurb
+and deliverable pills revealed on open. The two tracks are deliberately
+un-alike — Build has media to show, Growth is compared/scanned — rather than
+forcing one grid language onto both. Growth's row skeleton is the same
+hairline list an earlier pass tried as an always-open two-column editorial
+row; a card grid and bordered chips were tried before that and both read
+cheap at this scale. Keep the row, not the always-open state, if this
+changes again.
 
 Process steps are numbered because the sequence is the content. Do not number
 anything where the order carries no information.
@@ -211,36 +263,29 @@ monochrome-until-hover, since a colourful accent row is the point here.
 Guidelines 06 asks for large negative space over decorative density — if the
 stage ever feels busy, remove tiles rather than shrinking them.
 
-## Capability cards
+## Capability rail
 
 `src/components/sections/Capabilities.tsx`, between the hero and Services on
-`Home.tsx`. Six cards for the six things clients ask for by name — Google Ads,
-Meta Ads, SEO & AEO, Web design, Branding, Analytics — as a lead-in to the
-two-track argument below them.
+`Home.tsx`. The homepage now leads with six technology capabilities — Web
+Engineering, Mobile Applications, Systems & Automation, Product Design,
+Commerce Platforms, Cloud & DevOps — before the fuller service architecture.
+This is the intentional priority: technology is the primary story; growth is
+still available in Services, but no longer owns the first post-hero feature.
 
-They were first built into the hero and moved out: the hero keeps its platform
-tiles, and eleven objects under the CTAs is exactly the density 06 warns
-against. On white they are level and evenly spaced — no tilt, no drop shadow, no
-hero entrance. They rise on scroll with the same `.reveal` ladder as every other
-section.
+The old two-row tile marquee repeated the same three cards until the panel read
+as inventory and left an awkward empty lower half. It was replaced by one navy
+kinetic typography rail and one focused detail. The moving rail is deliberately
+decorative and `aria-hidden`; it repeats one full six-name sequence once to make
+the loop seamless. All real interaction stays stationary beneath it, where six
+44px-minimum buttons select the detail and the one CTA links to the active
+service. Hover, focus and tap all produce the same selection state.
 
-Each card is mark → accent rule → track eyebrow → name, and links to its
-service. The accent rule is the only place the track colour reads (Growth =
-`signal`, Build = `vega`). Nothing on a card claims a number — no invented
-metrics.
-
-Two mark systems meet on these cards, deliberately: **Google Ads and Meta are
-third-party marks** from `BrandMarks.tsx`, in their own colour and never
-restroked to the house style; everything we do ourselves uses the `Icon` set
-tinted with its track accent. Both new house icons — `brand` (a circle and a
-square in composition) and `trend` — follow 08.
-
-**The Google Ads and Meta marks are drawn approximations,** same caveat as the
-rest of `BrandMarks.tsx`: each requires its official asset under that platform's
-brand guidelines. Swap the real SVGs in before launch.
-
-Branding has no entry in `lib/services.ts`, so its card links to the page rather
-than an anchor. Add the service there and point it at the slug.
+The rail pauses on hover and freezes under `prefers-reduced-motion`. Detail
+changes use a short rise on the shared exponential curve. Every capability is
+Build, so `blue-300` carries the selector and rail accents on navy while the
+house icons use `vega` on white tiles. The navy panel is an intentional new
+structural beat between the light hero and white Services section, not a glass
+or card surface.
 
 ## Contact page
 
@@ -466,10 +511,6 @@ supplied, use it there instead.
 Shape-accurate, fact-free. Replace before launch.
 
 - `public/hero-bg.png` — **not yet supplied.**
-- `public/platforms/*` — official Google Ads and Meta SVGs for the capability
-  cards. None supplied yet; both are drawn approximations. (The hero's
-  `PlatformTiles` no longer needs this: it moved to tech-stack marks, which
-  are real Simple Icons assets already.)
 - `src/lib/site.ts` — headline, subhead, CTA labels, availability note, email,
   nav, and socials. The `clients` array is no longer rendered. The footer tagline
   ("One partner for growth and build.") is placeholder in the same way. The guidelines suggest

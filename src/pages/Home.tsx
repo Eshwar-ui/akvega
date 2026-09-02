@@ -1,5 +1,6 @@
 import Hero from '@/components/hero/Hero'
 import Approach from '@/components/sections/Approach'
+import Assurance from '@/components/sections/Assurance'
 import Capabilities from '@/components/sections/Capabilities'
 import CallToAction from '@/components/sections/CallToAction'
 import Faq from '@/components/sections/Faq'
@@ -15,6 +16,7 @@ export default function Home() {
       <Services />
       <TechStackShowcase />
       <Approach />
+      <Assurance />
       <Process />
       <Faq />
       <CallToAction />

@@ -81,9 +81,11 @@ export default function CustomCursor() {
     const updateMode = (target: EventTarget | null) => {
       const element = target instanceof Element ? target : null
       const isText = Boolean(element?.closest(textSelector))
-      activeTarget = isText
-        ? null
-        : (element?.closest<HTMLElement>(interactiveSelector) ?? null)
+      const isExcluded = Boolean(element?.closest('[data-cursor-none]'))
+      activeTarget =
+        isText || isExcluded
+          ? null
+          : (element?.closest<HTMLElement>(interactiveSelector) ?? null)
       root.dataset.visible = isText ? 'false' : 'true'
       root.dataset.active = activeTarget ? 'true' : 'false'
     }
