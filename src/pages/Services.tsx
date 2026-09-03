@@ -24,6 +24,7 @@ const serviceIcons: Record<string, IconName> = {
   'paid-search': 'target',
   'paid-social': 'spark',
   social: 'chat',
+  branding: 'brand',
   websites: 'browser',
   commerce: 'bag',
   mobile: 'mobile',

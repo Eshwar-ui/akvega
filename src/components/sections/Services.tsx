@@ -143,11 +143,38 @@ function CardMedia({ media }: { media: ServiceMedia }) {
 
 const growthTrack = tracks.find((track) => track.id === 'growth') as Track
 
+// Bento rows are conceptually 3-wide (2-wide at the sm breakpoint); a
+// partial last row would otherwise leave a gap (5 services = 3 full-width
+// cards, then 2 stranded at a third width each on lg, or 1 stranded at half
+// width on sm). Grid runs on 6 columns at lg instead of 3, so the last row's
+// cards can stretch to fill it evenly, however many are left over — 3
+// columns each for 2 leftover cards, 6 for a single one, unchanged 2-of-6 (a
+// plain third) when the count divides evenly. sm gets the same treatment at
+// 2-wide: a lone odd-one-out spans both columns instead of sitting stranded
+// at half width with a gap beside it.
+function bentoColSpan(index: number, total: number) {
+  const classes: string[] = []
+
+  if (total % 2 === 1 && index === total - 1) {
+    classes.push('sm:col-span-2')
+  }
+
+  const fullRows = Math.floor(total / 3)
+  const remainder = total - fullRows * 3
+  const inLastRow = remainder > 0 && index >= fullRows * 3
+  classes.push(
+    inLastRow ? (remainder === 1 ? 'lg:col-span-6' : 'lg:col-span-3') : 'lg:col-span-2',
+  )
+
+  return classes.join(' ')
+}
+
 const growthIcons: Record<string, IconName> = {
   search: 'search',
   'paid-search': 'target',
   'paid-social': 'spark',
   social: 'chat',
+  branding: 'brand',
 }
 
 function GrowthServices() {
@@ -166,58 +193,75 @@ function GrowthServices() {
       </div>
 
       {/*
-        An index, not a list — four rows named up front at full confidence,
-        the case for each made only once you ask for it. Build's bento cards
-        show; Growth's channels are compared, so this leans into scanning
-        instead: reuses FAQ's exact <details name="…"> mechanism (a separate
-        group, so opening one doesn't fight the FAQ's own accordion) rather
-        than inventing a second interaction model on the same page. A card
-        grid and bordered chips were both tried for this row before and read
-        cheap at this scale (DESIGN.md) — this keeps the hairline-row
-        skeleton that didn't, and asks more of its typography instead.
-      */}
-      <div className="mt-4">
-        {growthTrack.services.map((service, index) => (
-          <details
-            key={service.slug}
-            name="growth-services"
-            style={revealDelay(index + 1, 80)}
-            className="reveal group border-t border-hairline last:border-b"
-          >
-            <summary className="flex cursor-pointer list-none items-center gap-5 py-7 text-left [&::-webkit-details-marker]:hidden sm:py-8">
-              <span className="text-sm tabular-nums text-ink-muted/50 sm:text-base">
-                {String(index + 1).padStart(2, '0')}
-              </span>
-              <Icon
-                name={growthIcons[service.slug]}
-                className="size-6 shrink-0 text-signal sm:size-7"
-              />
-              <h4 className="type-card-title flex-1 transition-colors duration-300 ease-out-expo group-hover:text-signal">
-                {service.name}
-              </h4>
-              <span className="grid size-9 shrink-0 place-items-center rounded-full border border-hairline text-ink-muted transition-transform duration-300 ease-out-expo group-open:rotate-45">
-                <Icon name="plus" className="size-4" />
-              </span>
-            </summary>
+        Bento feature cards, from a client-pinned reference — that pin
+        outranks the card-grid/bordered-chips attempts DESIGN.md already
+        logged as having read cheap here before (same precedent the Contact
+        rebuild set: a pinned reference beats a prior call). Structure only,
+        not the reference's own visual system — no fake dashboard numbers:
+        the reference's card previews show invented metrics, and PRODUCT.md
+        rules that out everywhere on this site. Each card's preview panel
+        renders the service's real deliverables instead, styled like a small
+        UI block rather than a plain tag list, so the slot the reference used
+        for fabricated proof is doing something true instead.
 
-            <div className="pb-9 pl-12 sm:pb-11 sm:pl-20">
-              <p className="type-body max-w-[60ch] text-ink-muted">
+        Flat `surface` fill with no border (not `bg-paper` + hairline) and a
+        nested white "device" card for the preview, shadowed off the flat
+        background — the reference's own card treatment, reproduced in the
+        site's tokens. `card-lift`'s hover motion is what signals
+        interactivity now that there's no border to shift colour on hover.
+      */}
+      <ul className="mt-10 grid grid-cols-1 gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-5 lg:grid-cols-6">
+        {growthTrack.services.map((service, index) => (
+          <li
+            key={service.slug}
+            style={revealDelay(index + 1, 80)}
+            className={`reveal ${bentoColSpan(index, growthTrack.services.length)}`}
+          >
+            <Link
+              to={service.to}
+              className="card-lift group flex h-full flex-col rounded-2xl bg-surface p-6 sm:p-7"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <h4 className="type-card-title text-[1.25rem]">
+                  {service.name}
+                </h4>
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-paper text-signal shadow-[0_1px_2px_rgb(5_17_39/0.06),0_6px_16px_-8px_rgb(5_17_39/0.25)]">
+                  <Icon name={growthIcons[service.slug]} className="size-5" />
+                </span>
+              </div>
+              <p className="type-body mt-2.5 text-[14px] text-ink-muted">
                 {service.blurb}
               </p>
-              <ul className="mt-4 flex flex-wrap gap-2">
-                {service.deliverables.map((item) => (
-                  <li
-                    key={item}
-                    className="rounded-full border border-hairline px-3 py-1.5 text-[12px] font-medium text-ink-muted"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </details>
+
+              {/* The preview slot — real deliverables, laid out like a
+                  small interface rather than a plain inline tag row. */}
+              <div className="mt-6 flex-1 rounded-xl bg-paper p-4 shadow-[0_1px_2px_rgb(5_17_39/0.05),0_16px_32px_-18px_rgb(5_17_39/0.3)]">
+                <p className="type-overline text-[10px] text-ink-muted/70">
+                  Included
+                </p>
+                <ul className="mt-3 flex flex-wrap gap-1.5">
+                  {service.deliverables.map((item) => (
+                    <li
+                      key={item}
+                      className="rounded-full bg-surface px-2.5 py-1 text-[11px] font-medium text-ink-muted"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <span className="mt-5 flex items-center gap-2 text-sm font-semibold text-blue-700 transition-colors duration-300 group-hover:text-signal">
+                Explore service
+                <Icon
+                  name="arrowUpRight"
+                  className="size-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-1"
+                />
+              </span>
+            </Link>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   )
 }

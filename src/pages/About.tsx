@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { Icon } from '@/components/Icons'
 import { revealDelay, useInView } from '@/lib/useInView'
 import { process } from '@/lib/services'
 
@@ -48,14 +49,17 @@ const fit = [
   {
     title: 'Lead the engagement',
     body: 'We run it end to end — strategy, delivery and the team behind both.',
+    icon: 'target' as const,
   },
   {
     title: 'Embed with yours',
     body: 'Your team sets direction; ours ships inside it, on your tools and cadence.',
+    icon: 'layers' as const,
   },
   {
     title: 'Sit behind it as the bench',
     body: 'Your team stays visible to the client or stakeholders; we do the engineering and media work behind them.',
+    icon: 'sliders' as const,
   },
 ]
 
@@ -163,49 +167,62 @@ export default function About() {
         </div>
       </section>
 
-      {/* Where we fit — the engagement-model flexibility PRODUCT.md
-          confirms, distinct from Assurance's ownership/diagnostic facts on
-          the homepage so the two pages complement rather than repeat. */}
+      {/*
+        Where we fit — the engagement-model flexibility PRODUCT.md confirms,
+        distinct from Assurance's ownership/diagnostic facts on the homepage
+        so the two pages complement rather than repeat. Layout borrowed from
+        a client-pinned reference's "Benefits" section: pitch + CTA fixed on
+        the left, the fit models as a vertical-accent-bar list on the right,
+        rather than the equal-weight three-column grid this used before.
+        Signal accent throughout — this applies across both tracks, not one.
+      */}
       <section
         ref={fitRef}
         data-shown={fitInView}
         className="mx-auto max-w-site px-5 py-20 sm:px-8 sm:py-28"
       >
-        <p className="reveal type-overline text-ink-muted">Where we fit</p>
-        <h2
-          style={revealDelay(1)}
-          className="reveal type-section-title mt-5 max-w-[18ch] text-balance"
-        >
-          Ahead of your team, inside it, or behind it.
-        </h2>
-
-        <ul className="mt-14 grid gap-10 sm:mt-16 lg:grid-cols-3 lg:gap-12">
-          {fit.map((item, i) => (
-            <li
-              key={item.title}
-              style={revealDelay(i + 2, 80)}
-              className="reveal border-t border-hairline pt-6"
+        <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+          <div className="reveal lg:sticky lg:top-28 lg:self-start">
+            <p className="type-overline text-ink-muted">Where we fit</p>
+            <h2
+              style={revealDelay(1)}
+              className="reveal type-section-title mt-5 max-w-[16ch] text-balance"
             >
-              <h3 className="type-card-title">{item.title}</h3>
-              <p className="type-body mt-3 text-ink-muted">{item.body}</p>
-            </li>
-          ))}
-        </ul>
+              Ahead of your team, inside it, or behind it.
+            </h2>
+            <p
+              style={revealDelay(2)}
+              className="reveal type-body mt-5 max-w-[38ch] text-ink-muted"
+            >
+              Whichever shape fits, the diagnostic comes first — you get the
+              findings whether or not you continue with us.
+            </p>
+            <Link
+              to="/contact"
+              style={revealDelay(3)}
+              className="press reveal type-ui mt-8 inline-flex items-center gap-2 rounded-full bg-navy px-7 py-3.5 text-white"
+            >
+              Start a conversation
+            </Link>
+          </div>
 
-        <div
-          style={revealDelay(5, 80)}
-          className="reveal mt-16 flex flex-col items-start gap-3 border-t border-hairline pt-10 sm:mt-20 sm:flex-row sm:items-center sm:justify-between"
-        >
-          <p className="type-body max-w-[46ch] text-ink-muted">
-            Whichever shape fits, the diagnostic comes first — you get the
-            findings whether or not you continue with us.
-          </p>
-          <Link
-            to="/contact"
-            className="press type-ui shrink-0 rounded-full bg-navy px-7 py-3.5 text-white"
-          >
-            Start a conversation
-          </Link>
+          <ul className="flex flex-col gap-10 sm:gap-11">
+            {fit.map((item, i) => (
+              <li
+                key={item.title}
+                style={revealDelay(i + 2, 80)}
+                className="reveal border-l-2 border-signal py-0.5 pl-6"
+              >
+                <div className="flex items-center gap-3">
+                  <Icon name={item.icon} className="size-5 shrink-0 text-signal" />
+                  <h3 className="text-lg font-semibold text-ink">
+                    {item.title}
+                  </h3>
+                </div>
+                <p className="type-body mt-2.5 text-ink-muted">{item.body}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     </>

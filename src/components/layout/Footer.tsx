@@ -109,7 +109,7 @@ export default function Footer() {
                   <li key={item.label}>
                     <a
                       href={item.href}
-                      className="press inline-flex items-center gap-2 rounded-full bg-paper px-3.5 py-2 text-[14px] text-ink-muted shadow-[0_1px_2px_rgb(5_17_39/0.06)] hover:text-ink hover:shadow-[0_4px_12px_-4px_rgb(5_17_39/0.18)]"
+                      className="press inline-flex min-h-11 items-center gap-2 rounded-full bg-paper px-3.5 py-2 text-[14px] text-ink-muted shadow-[0_1px_2px_rgb(5_17_39/0.06)] hover:text-ink hover:shadow-[0_4px_12px_-4px_rgb(5_17_39/0.18)]"
                     >
                       <BrandMark name={item.icon} className="size-[18px]" />
                       {item.label}
@@ -119,7 +119,7 @@ export default function Footer() {
                 <li>
                   <a
                     href={`mailto:${site.email}`}
-                    className="press inline-flex items-center gap-2 rounded-full bg-paper px-3.5 py-2 text-[14px] text-ink-muted shadow-[0_1px_2px_rgb(5_17_39/0.06)] hover:text-ink hover:shadow-[0_4px_12px_-4px_rgb(5_17_39/0.18)]"
+                    className="press inline-flex min-h-11 items-center gap-2 rounded-full bg-paper px-3.5 py-2 text-[14px] text-ink-muted shadow-[0_1px_2px_rgb(5_17_39/0.06)] hover:text-ink hover:shadow-[0_4px_12px_-4px_rgb(5_17_39/0.18)]"
                   >
                     <Icon name="mail" className="size-4" />
                     {site.email}

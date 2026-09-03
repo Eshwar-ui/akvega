@@ -34,11 +34,11 @@ function StackTile({ mark }: { mark: TechMark }) {
     <span
       title={mark.title}
       style={{ '--brand': mark.hex } as React.CSSProperties}
-      className="grid size-14 shrink-0 place-items-center rounded-xl border border-hairline bg-paper shadow-[0_1px_2px_rgb(5_17_39/0.05),0_16px_32px_-18px_rgb(5_17_39/0.3)] sm:size-16 lg:size-[4.75rem]"
+      className="grid size-9 shrink-0 place-items-center rounded-xl border border-hairline bg-paper shadow-[0_1px_2px_rgb(5_17_39/0.05),0_16px_32px_-18px_rgb(5_17_39/0.3)] sm:size-16 lg:size-[4.75rem]"
     >
       <TechIcon
         mark={mark}
-        className="size-7 shrink-0 bg-[var(--brand)] sm:size-8 lg:size-9"
+        className="size-4 shrink-0 bg-[var(--brand)] sm:size-8 lg:size-9"
       />
       <span className="sr-only">{mark.title}</span>
     </span>
@@ -60,7 +60,7 @@ function MarqueeColumn({
     <div className="h-full overflow-hidden">
       <div
         style={{ '--marquee-duration': `${duration}s` } as React.CSSProperties}
-        className={`marquee flex flex-col gap-3 sm:gap-4 ${reverse ? 'marquee-reverse' : ''}`}
+        className={`marquee flex flex-col gap-2 sm:gap-4 ${reverse ? 'marquee-reverse' : ''}`}
       >
         {track.map((mark, i) => (
           <StackTile key={`${mark.id}-${i}`} mark={mark} />
@@ -112,9 +112,9 @@ export default function TechStackShowcase() {
 
         <div
           style={revealDelay(2)}
-          className="reveal relative h-[380px] overflow-hidden rounded-2xl border border-hairline bg-surface/60 p-4 sm:h-[440px] sm:p-6 lg:h-[520px]"
+          className="reveal relative h-[380px] overflow-hidden rounded-2xl border border-hairline bg-surface/60 p-3 sm:h-[440px] sm:p-6 lg:h-[520px]"
         >
-          <div className="grid h-full grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid h-full grid-cols-5 gap-2 sm:gap-4">
             {columns.map((marks, i) => (
               <MarqueeColumn
                 key={i}

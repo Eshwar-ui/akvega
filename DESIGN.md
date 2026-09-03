@@ -204,24 +204,52 @@ move per section, not a restyle:
 
 ### Service architecture
 
-`src/lib/services.ts` is the single source. Two tracks — **Growth** (search,
-paid search, paid social, social presence) and **Build** (websites, commerce,
-mobile, product design, bespoke systems) — because that split *is* the pitch:
-most companies buy these from two suppliers.
+`src/lib/services.ts` is the single source. Two tracks — **Growth** (SEO/AEO/GEO,
+Google Ads, Meta Ads, social media management, branding — 5 services) and
+**Build** (websites, commerce, mobile, product design, bespoke systems) —
+because that split *is* the pitch: most companies buy these from two
+suppliers. Branding sits under Growth by client direction, not Build — it
+has no icon/anchor history under Build to migrate, so this is a clean
+placement rather than a move.
 
 Track accents: Growth = `signal`, Build = `vega`.
 
 **Build** renders as the bento grid in `Services.tsx` — image-backed cards,
-hover-reflow via GSAP Flip. **Growth** renders as an accordion index: a big
-tabular-numbered, icon-led name per row (`<details name="growth-services">`,
-its own group so it doesn't fight the FAQ's own accordion below it), blurb
-and deliverable pills revealed on open. The two tracks are deliberately
-un-alike — Build has media to show, Growth is compared/scanned — rather than
-forcing one grid language onto both. Growth's row skeleton is the same
-hairline list an earlier pass tried as an always-open two-column editorial
-row; a card grid and bordered chips were tried before that and both read
-cheap at this scale. Keep the row, not the always-open state, if this
-changes again.
+hover-reflow via GSAP Flip. **Growth** renders as its own bento (name, an
+icon badge, blurb, a nested "Included" preview card of deliverable pills, an
+explore link) — structure and surface treatment pulled from a second,
+more literal client-pinned reference pass: flat `surface` fill with no
+border (not `bg-paper` + hairline), icon badge top-right rather than
+top-left, and the "Included" panel is a nested `bg-paper` card with its own
+drop shadow, not a flat bordered panel — reproducing the reference's
+gray-card / white-nested-device look in the site's own tokens. The tabular
+index number from the first bento pass was dropped to match the reference,
+which doesn't number its cards; `card-lift`'s hover motion is the only
+interactivity cue now that there's no border to shift colour. That
+reference's own card previews show fabricated dashboard numbers; the
+"Included" panel renders the service's real deliverables instead; PRODUCT.md
+rules out invented metrics anywhere on the site, no exception for a pinned
+reference.
+
+Growth's grid runs `lg:grid-cols-6` (`sm:grid-cols-2` below that), not a
+literal 3 — `bentoColSpan()` in `Services.tsx` spans each card `lg:col-span-2`
+(a plain third) except a partial last row, which stretches to fill it: 2
+leftover cards get `col-span-3` each, a single leftover gets the full
+`col-span-6`, and the same logic spans a lone odd-one-out to `sm:col-span-2`
+at the 2-wide breakpoint. This is what makes 5 services land 3-over-2 with
+the bottom row filling the width edge to edge, matching the reference,
+instead of 2 cards stranded at a third width with a gap beside them. Unlike
+the hardcoded "tuned to 5" note this replaced, the span math itself now
+adjusts on its own if the Growth roster's count changes — no re-tune needed
+unless the conceptual row width (3, or 2 at sm) itself should change.
+
+This is the **third** documented direction for this row, each superseding
+the last: bordered chips, then an always-open two-column editorial row, then
+an accordion index (`<details>`, matching FAQ's mechanism), now this bento.
+The accordion and editorial-row history is kept here as a map of dead ends,
+not a queue to cycle back through — a pinned reference is what moved this
+one, not taste alone. If a future pass reopens this again, get a concrete
+reason (not just restlessness) before re-trying an already-logged shape.
 
 Process steps are numbered because the sequence is the content. Do not number
 anything where the order carries no information.
@@ -337,6 +365,32 @@ abstract line-art "map" (a few `currentColor` strokes at `text-ink/10`, a
 navy pin) with an honestly-labelled card: "Illustrative map — not a real
 location." Replace the whole component with a real embed if a physical
 address is ever confirmed; don't wire fake coordinates into this one.
+
+## Studio page
+
+`src/pages/About.tsx` — "Studio" in the nav, `/about` in the router. No real
+team roster, photos or founding story are confirmed, so the whole page is
+built from what PRODUCT.md and the brand guidelines already establish as
+fact, not invented biography: the Growth/Build positioning, the six
+personality traits from guideline 01 (stated as contrast pairs — "Modern,
+not futuristic" — since that's the guidelines' actual documented shape, not
+a generic adjective list), the four `lib/services.ts` process stages
+reused in a plainer form (no drawn-line spine — that's `Process.tsx`'s own
+device on the homepage, not one to spread onto a second page), and an
+engagement-model section.
+
+**Where we fit** (the closing section) went through two shapes. It started
+as an equal-weight three-column grid (title + body per engagement model,
+top-hairline separated) — the same device `Services.tsx`'s Growth section
+used at one point, before that one moved on. It's now a two-column layout
+pulled from a client-pinned reference's "Benefits" section instead: pitch
+copy, description and the CTA fixed on the left (`lg:sticky`), the three
+engagement models (lead / embed / bench) as a vertical-accent-bar list on
+the right — icon, title, body per item, marked by a short `border-l-2
+border-signal` rather than a card or hairline. `signal` throughout, not a
+track colour: this applies across both Growth and Build engagements, not
+one track. New icons for the three items (`target`, `layers`, `sliders`)
+are drawn from the existing house set — no new icon added for this.
 
 ## Header
 

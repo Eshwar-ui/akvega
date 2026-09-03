@@ -94,8 +94,16 @@ function Card({ card, compact = false }: { card: ServiceCard; compact?: boolean 
         compact ? 'rounded-lg' : 'rounded-xl'
       }`}
     >
-      <span className="flex items-center justify-between gap-3 border-b border-hairline px-3 py-2.5 sm:px-4">
-        <span className="truncate text-[11px] font-semibold leading-[1.25] text-ink sm:text-xs">
+      <span
+        className={`border-b border-hairline px-3 py-2.5 sm:px-4 ${
+          compact
+            ? 'flex flex-col gap-1'
+            : 'flex items-center justify-between gap-3'
+        }`}
+      >
+        <span
+          className={`${compact ? 'line-clamp-2' : 'truncate'} text-[11px] font-semibold leading-[1.25] text-ink sm:text-xs`}
+        >
           {card.name}
         </span>
         <span className="flex shrink-0 items-center gap-1.5 text-[9px] font-medium text-ink-muted sm:text-[10px]">

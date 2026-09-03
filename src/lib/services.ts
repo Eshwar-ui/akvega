@@ -31,10 +31,10 @@ export const tracks: Track[] = [
     services: [
       {
         slug: 'search',
-        short: 'Search and AEO',
-        name: 'Search and AI answers',
+        short: 'SEO, AEO & GEO',
+        name: 'SEO, AEO & GEO',
         blurb:
-          'Rank on Google and get quoted by the AI that now answers for it. Technical SEO, answer-engine and generative-engine optimisation run as one programme rather than three disconnected retainers.',
+          'Rank on Google, get quoted by AI answers, and show up in the generative engines now sitting between the two. Technical SEO, answer-engine and generative-engine optimisation run as one programme rather than three disconnected retainers.',
         deliverables: [
           'Technical audits',
           'Content architecture',
@@ -44,8 +44,8 @@ export const tracks: Track[] = [
       },
       {
         slug: 'paid-search',
-        short: 'Paid search',
-        name: 'Paid search',
+        short: 'Google Ads',
+        name: 'Google Ads',
         blurb:
           'Google campaigns built around profit per click, not impressions. We buy intent that is already looking for you, and cut the spend that only looks busy in a dashboard.',
         deliverables: [
@@ -57,8 +57,8 @@ export const tracks: Track[] = [
       },
       {
         slug: 'paid-social',
-        short: 'Paid social',
-        name: 'Paid social',
+        short: 'Meta Ads',
+        name: 'Meta Ads',
         blurb:
           'Meta creative and media that earns the scroll and converts past it. Creative testing and media buying sit together, so the thing that works gets more budget the same week it proves itself.',
         deliverables: [
@@ -70,8 +70,8 @@ export const tracks: Track[] = [
       },
       {
         slug: 'social',
-        short: 'Social',
-        name: 'Social media',
+        short: 'Social media',
+        name: 'Social Media Management',
         blurb:
           'Always-on content, calendar and community management that compounds instead of resetting every quarter. One voice across every channel, held to a standard.',
         deliverables: [
@@ -79,6 +79,19 @@ export const tracks: Track[] = [
           'Production',
           'Community management',
           'Reporting',
+        ],
+      },
+      {
+        slug: 'branding',
+        short: 'Branding',
+        name: 'Branding',
+        blurb:
+          'Identity systems — logo, voice and visual language — built to stay coherent across every campaign and product surface, not redrawn for each new channel.',
+        deliverables: [
+          'Brand strategy',
+          'Visual identity',
+          'Brand guidelines',
+          'Naming and voice',
         ],
       },
     ],

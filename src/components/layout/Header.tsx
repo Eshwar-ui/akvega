@@ -83,7 +83,7 @@ export default function Header() {
         <Link
           to="/"
           onClick={() => setOpen(false)}
-          className="flex items-center text-ink"
+          className="flex min-h-11 items-center text-ink"
           aria-label={`${site.name}, home`}
         >
           <LogoFull className="h-[26px] w-auto sm:h-[28px]" />
