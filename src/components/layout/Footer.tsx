@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { BrandMark } from '@/components/BrandMarks'
 import { Icon } from '@/components/Icons'
 import { LogoFull } from '@/components/Logo'
-import { tracks } from '@/lib/services'
+import { serviceHref, tracks } from '@/lib/services'
 import { useInView, revealDelay } from '@/lib/useInView'
 import { site } from '@/lib/site'
 
@@ -85,7 +85,7 @@ export default function Footer() {
             {tracks.map((track) => (
               <Column key={track.id} heading={track.label}>
                 {track.services.map((service) => (
-                  <ColumnLink key={service.slug} to={`/services#${service.slug}`}>
+                  <ColumnLink key={service.slug} to={serviceHref(service)}>
                     {service.name}
                   </ColumnLink>
                 ))}

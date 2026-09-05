@@ -68,9 +68,14 @@ export default function Contact() {
           >
             <div className="grid gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-16 xl:gap-20">
               <div>
-                <h2 className="reveal type-section-title max-w-[16ch]">
+                {/* The page's h1. Keeps `type-section-title` rather than
+                    `type-page-title` — this is a heading-level fix, not a
+                    resize; the page had no h1 at all, which left the document
+                    outline starting at h2 and gave assistive tech nothing to
+                    announce as the page's subject. */}
+                <h1 className="reveal type-section-title max-w-[16ch]">
                   We're always ready to help you and answer your questions.
-                </h2>
+                </h1>
                 <p
                   style={revealDelay(1)}
                   className="reveal type-body mt-6 max-w-[46ch] text-ink-muted"

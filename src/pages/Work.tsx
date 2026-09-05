@@ -2,10 +2,11 @@ import { Link } from 'react-router-dom'
 import { revealDelay, useInView } from '@/lib/useInView'
 
 /**
- * No real engagements exist yet to show — `lib/site.ts`'s `clients` array is
- * explicitly unrendered for the same reason (PRODUCT.md: never fabricate
- * proof). Rather than a placeholder sentence or invented case studies, this
- * is an honest, deliberately-designed empty state: says plainly that nothing
+ * No real engagements exist yet to show, and PRODUCT.md rules out fabricating
+ * proof — a placeholder `clients` wordmark array in lib/site.ts was carried
+ * unrendered for exactly that reason, and has since been removed rather than
+ * left as dead data. Rather than a placeholder sentence or invented case
+ * studies, this is an honest, designed empty state: says plainly that nothing
  * real is here yet, and hands the visitor the two things this page can't —
  * the service list, and a way to become the first real case study.
  *

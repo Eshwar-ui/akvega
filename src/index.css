@@ -318,13 +318,13 @@
   }
 
   /*
-   * Hero backdrop. Supplied bitmap — do not regenerate the dot pattern in CSS.
-   * Drop the file at public/hero-bg.png; until then the surface tint shows
-   * through on its own.
-   */
-  /*
-   * 06 — restrained gradient bands, three brand hues. This gives the stage
-   * material on its own; hero-bg.png layers over it when supplied.
+   * 06 — restrained gradient bands, three brand hues. This gives the hero
+   * stage its material with no asset dependency at all.
+   *
+   * There was a second `.hero-backdrop` layer here that pointed at
+   * public/hero-bg.png. That file was never supplied, so it only ever cost a
+   * failed request on the homepage. If a backdrop bitmap does arrive, add the
+   * layer back with the file, not ahead of it.
    */
   .hero-field {
     background-image:
@@ -379,57 +379,11 @@
   .edge-light-dark {
     box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.12);
   }
-
-  .hero-backdrop {
-    background-image: url("/hero-bg.png");
-    background-size: cover;
-    background-position: center 44%;
-    background-repeat: no-repeat;
-  }
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .nav-glass {
     background: color-mix(in oklab, var(--color-paper) 94%, var(--color-ice));
-  }
-}
-
-/*
- * 06 — one dominant directional cue per composition. The backdrop blooms
- * outward from the mark; everything else settles along that same curve.
- */
-@keyframes bloom {
-  from {
-    opacity: 0;
-    transform: scale(1.14);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes settle {
-  from {
-    opacity: 0;
-    transform: translateY(var(--settle-from, 20px)) scale(0.95);
-    filter: blur(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
   }
 }
 

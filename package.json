@@ -5,9 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "node --watch --env-file=functions/.env functions/dev-server.js",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "typecheck": "tsc -b --force",
+    "preview": "vite preview",
+    "icons": "node scripts/build-tech-icons.mjs",
+    "images": "node scripts/optimize-images.mjs",
+    "deploy": "npm run build && firebase deploy --only hosting,functions:contact --project akvegadigital",
+    "test:contact": "npm --prefix functions test"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

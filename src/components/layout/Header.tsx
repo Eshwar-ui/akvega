@@ -9,6 +9,20 @@ export default function Header() {
   const [open, setOpen] = useState(false)
   const [elevated, setElevated] = useState(location.pathname !== '/')
   const [visible, setVisible] = useState(true)
+  const [shownFor, setShownFor] = useState(location.pathname)
+
+  // Always arrive on a new page with the header showing. Landing on an anchor
+  // (`/services#search`) scrolls down on entry, which the hide-on-scroll effect
+  // below would otherwise read as a deliberate downward scroll — hiding the nav
+  // exactly when the reader most needs to see where they have landed.
+  //
+  // Adjusted during render rather than in an effect: React re-runs this
+  // component immediately with the new value and commits once, so the header
+  // never paints in the hidden state first.
+  if (shownFor !== location.pathname) {
+    setShownFor(location.pathname)
+    setVisible(true)
+  }
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
@@ -72,7 +86,7 @@ export default function Header() {
       window.removeEventListener('scroll', handleScroll)
       if (frame !== null) window.cancelAnimationFrame(frame)
     }
-  }, [location.pathname, open])
+  }, [open])
 
   return (
     <header

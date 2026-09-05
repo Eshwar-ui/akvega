@@ -10,6 +10,15 @@
 export const site = {
   name: 'Akvega',
 
+  /**
+   * Canonical origin, no trailing slash. INFERRED from the contact address
+   * below, not confirmed — it is the one value here that is wrong in a way
+   * that costs something (canonical tags, sitemap, share previews all point at
+   * it). Confirm the live domain before launch and update public/sitemap.xml,
+   * public/robots.txt and the meta tags in index.html to match.
+   */
+  url: 'https://akvega.com',
+
   headline: { lead: 'We make brands', accent: 'impossible to ignore.' },
   subhead:
     'Akvega is an independent design studio working across brand identity, digital product, and motion.',
@@ -19,8 +28,9 @@ export const site = {
 
   email: 'hello@akvega.com',
 
-  // Placeholder — no real number yet. Obviously-fake shape on purpose (see
-  // `clients` above): replace before launch, never with a guessed real one.
+  // Placeholder — no real number yet. Obviously-fake shape on purpose, so it
+  // reads as unfinished rather than wrong: replace before launch, never with a
+  // guessed real one.
   phone: '+1 (000) 000-0000',
 
   // Placeholder — Akvega has not confirmed a physical base. "Remote-first" is
@@ -35,10 +45,7 @@ export const site = {
     { label: 'Contact', to: '/contact' },
   ],
 
-  // Placeholder wordmarks. Swap for real client logos in public/.
-  clients: ['CLIENT 01', 'CLIENT 02', 'CLIENT 03', 'CLIENT 04', 'CLIENT 05'],
-
-  // `icon` must name an entry in components/Icons.tsx.
+  // `icon` must name an entry in components/BrandMarks.tsx.
   social: [
     { label: 'LinkedIn', href: '#', icon: 'linkedin' },
     { label: 'Instagram', href: '#', icon: 'instagram' },

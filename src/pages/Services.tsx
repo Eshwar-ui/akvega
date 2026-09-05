@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Icon, type IconName } from '@/components/Icons'
 import TechStack from '@/components/TechStack'
-import { tracks, type Track } from '@/lib/services'
+import { serviceCount, tracks, type Track } from '@/lib/services'
 import { revealDelay, useInView } from '@/lib/useInView'
 
 /**
@@ -109,8 +109,8 @@ export default function Services() {
               Everything we do, in one place.
             </h1>
             <p className="type-body mt-5 max-w-[52ch] text-ink-muted">
-              Nine services across two tracks. Hire one, or hire both — most
-              clients end up wanting both.
+              {serviceCount} services across two tracks. Hire one, or hire
+              both — most clients end up wanting both.
             </p>
           </div>
         </div>

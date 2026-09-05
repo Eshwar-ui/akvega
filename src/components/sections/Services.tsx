@@ -4,13 +4,31 @@ import gsap from 'gsap'
 import { Flip } from 'gsap/Flip'
 import { Link } from 'react-router-dom'
 import { Icon, type IconName } from '@/components/Icons'
-import { tracks, type Track } from '@/lib/services'
+import { serviceHref, tracks, type Track } from '@/lib/services'
 import { revealDelay, useInView } from '@/lib/useInView'
 
 gsap.registerPlugin(useGSAP, Flip)
 
+/**
+ * Bento card art. `name` is the stem of a file in public/service-media, which
+ * scripts/optimize-images.mjs emits as `<name>-768.webp` and `<name>-1440.webp`
+ * (16:9). The two widths exist because the slots differ enormously: the
+ * featured card runs 7 of 12 columns of a 95vw container — around 1060px CSS on
+ * a wide screen — while the small slots sit near 400px. One size would either
+ * blur the big one or waste most of the bytes on the other five.
+ */
+const MEDIA_WIDTHS = [768, 1440] as const
+const MEDIA_ASPECT = { width: 1440, height: 810 }
+
+// Widest slot is ~7/12 of 95vw; every other slot is well under half that. The
+// browser only needs the upper bound per breakpoint to pick correctly.
+const MEDIA_SIZES = '(min-width: 1024px) 56vw, (min-width: 768px) 50vw, 100vw'
+
+const mediaSrcSet = (name: string) =>
+  MEDIA_WIDTHS.map((w) => `/service-media/${name}-${w}.webp ${w}w`).join(', ')
+
 type ServiceMedia =
-  | { type: 'image'; src: string; alt: string }
+  | { type: 'image'; name: string; alt: string }
   | { type: 'video'; src: string; poster: string; alt: string }
 
 type HomeService = {
@@ -46,7 +64,7 @@ const homeServices: HomeService[] = [
     to: '/services#websites',
     media: {
       type: 'image',
-      src: '/service-media/web-engineering-real.png',
+      name: 'web-engineering-real',
       alt: 'Web engineer working at a dual-monitor workstation in a modern technology studio',
     },
   },
@@ -58,7 +76,7 @@ const homeServices: HomeService[] = [
     to: '/services#mobile',
     media: {
       type: 'image',
-      src: '/service-media/mobile-applications-real.png',
+      name: 'mobile-applications-real',
       alt: 'Mobile application engineer testing an app across phones and a tablet',
     },
   },
@@ -70,7 +88,7 @@ const homeServices: HomeService[] = [
     to: '/services#custom',
     media: {
       type: 'image',
-      src: '/service-media/systems-automation-real.png',
+      name: 'systems-automation-real',
       alt: 'Infrastructure automation engineer reviewing workflows in an operations room',
     },
   },
@@ -82,7 +100,7 @@ const homeServices: HomeService[] = [
     to: '/services#design',
     media: {
       type: 'image',
-      src: '/service-media/product-design-real.png',
+      name: 'product-design-real',
       alt: 'Product designers collaborating over interface wireframes and a tablet prototype',
     },
   },
@@ -94,7 +112,7 @@ const homeServices: HomeService[] = [
     to: '/services#commerce',
     media: {
       type: 'image',
-      src: '/service-media/commerce-platforms-real.png',
+      name: 'commerce-platforms-real',
       alt: 'Commerce technology team reviewing an online storefront beside unbranded products',
     },
   },
@@ -106,7 +124,7 @@ const homeServices: HomeService[] = [
     to: '/services#custom',
     media: {
       type: 'image',
-      src: '/service-media/cloud-devops-real.png',
+      name: 'cloud-devops-real',
       alt: 'Cloud and DevOps engineer inspecting deployment health in a modern operations studio',
     },
   },
@@ -132,8 +150,12 @@ function CardMedia({ media }: { media: ServiceMedia }) {
 
   return (
     <img
-      src={media.src}
+      src={`/service-media/${media.name}-${MEDIA_WIDTHS.at(-1)}.webp`}
+      srcSet={mediaSrcSet(media.name)}
+      sizes={MEDIA_SIZES}
       alt={media.alt}
+      width={MEDIA_ASPECT.width}
+      height={MEDIA_ASPECT.height}
       loading="lazy"
       decoding="async"
       className="h-full w-full object-cover"
@@ -141,7 +163,15 @@ function CardMedia({ media }: { media: ServiceMedia }) {
   )
 }
 
-const growthTrack = tracks.find((track) => track.id === 'growth') as Track
+// Fail at module load with a readable message rather than `as Track`, which
+// would have let a renamed/removed track surface as a null-deref deep in JSX.
+function requireTrack(id: string): Track {
+  const track = tracks.find((t) => t.id === id)
+  if (!track) throw new Error(`Unknown service track: ${id}`)
+  return track
+}
+
+const growthTrack = requireTrack('growth')
 
 // Bento rows are conceptually 3-wide (2-wide at the sm breakpoint); a
 // partial last row would otherwise leave a gap (5 services = 3 full-width
@@ -218,7 +248,7 @@ function GrowthServices() {
             className={`reveal ${bentoColSpan(index, growthTrack.services.length)}`}
           >
             <Link
-              to={service.to}
+              to={serviceHref(service)}
               className="card-lift group flex h-full flex-col rounded-2xl bg-surface p-6 sm:p-7"
             >
               <div className="flex items-start justify-between gap-4">
@@ -380,6 +410,17 @@ function ServiceCard({
   )
 }
 
+/**
+ * The slot-swapping reflow is a pointer affordance on a wide layout: below lg
+ * the cards stack, and on touch there is no hover to express it with. Checked
+ * per call rather than held in state — it depends only on the viewport, and a
+ * resize between calls should be honoured immediately.
+ */
+const canReflow = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(min-width: 1024px)').matches &&
+  window.matchMedia('(hover: hover) and (pointer: fine)').matches
+
 function BuildServiceGrid() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const listRef = useRef<HTMLUListElement>(null)
@@ -417,11 +458,6 @@ function BuildServiceGrid() {
   order.forEach((serviceIndex, slot) => {
     slotForService[serviceIndex] = slot
   })
-
-  const canReflow = () =>
-    typeof window !== 'undefined' &&
-    window.matchMedia('(min-width: 1024px)').matches &&
-    window.matchMedia('(hover: hover) and (pointer: fine)').matches
 
   const captureFlipState = () => {
     if (!listRef.current) return
@@ -560,7 +596,9 @@ export default function Services() {
         <div className="reveal flex flex-col gap-6 border-t border-ink/12 pt-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex items-baseline gap-5">
             <h3 className="type-track-title text-vega">Build</h3>
-            <span className="text-sm tabular-nums text-ink-muted">06</span>
+            <span className="text-sm tabular-nums text-ink-muted">
+              {String(homeServices.length).padStart(2, '0')}
+            </span>
           </div>
           <p className="type-body max-w-[46ch] text-ink-muted lg:text-right">
             Real products, platforms and infrastructure designed to hold up

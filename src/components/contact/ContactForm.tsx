@@ -13,9 +13,7 @@ import { site } from '@/lib/site'
  * from the reference's minimal editorial form, which reads as considered
  * rather than a stock input style, without introducing a new colour or type.
  *
- * Still no backend (PRODUCT.md): "Send a message" builds a mailto: from the
- * fields and hands off to the visitor's mail client — real today, swappable
- * for a real endpoint later.
+ * Submits to Firebase; Resend credentials stay on the server.
  */
 type FormState = {
   name: string
@@ -46,22 +44,6 @@ const interestOptions = [
     description: 'Search, ads & social',
   },
 ] as const
-
-function buildMailto(data: FormState) {
-  const subject = `New project inquiry — ${data.company || data.name}`
-  const body = [
-    `Name: ${data.name}`,
-    `Email: ${data.email}`,
-    data.company ? `Company: ${data.company}` : null,
-    `Area: ${data.interest === 'technology' ? 'Technology' : 'Digital'}`,
-    '',
-    data.message,
-  ]
-    .filter((line) => line !== null)
-    .join('\n')
-
-  return `mailto:${site.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-}
 
 const fieldClass =
   'w-full border-0 border-b border-hairline bg-transparent px-0 pb-3 pt-1 text-[15px] text-ink placeholder:text-ink-muted focus-visible:border-blue-600'
@@ -97,6 +79,9 @@ export default function ContactForm() {
   const [data, setData] = useState<FormState>(initialState)
   const [emailTouched, setEmailTouched] = useState(false)
   const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const [website, setWebsite] = useState('')
 
   const update = (patch: Partial<FormState>) =>
     setData((current) => ({ ...current, ...patch }))
@@ -109,11 +94,32 @@ export default function ContactForm() {
     data.interest.length > 0 &&
     data.message.trim().length > 0
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!canSend) return
-    window.location.href = buildMailto(data)
-    setSent(true)
+    if (!canSend || sending) return
+    setSending(true)
+    setSubmitError('')
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, website }),
+        signal: AbortSignal.timeout(25000),
+      })
+      const result = await response.json()
+      if (!response.ok || result.ok !== true) {
+        setSubmitError(response.status === 429
+          ? 'Too many attempts. Please try again in 10 minutes.'
+          : 'Your message could not be sent. Please try again or email us directly.')
+        return
+      }
+      setSent(true)
+      setData(initialState)
+    } catch {
+      setSubmitError('We could not confirm your message was sent. Please check your connection or email us directly.')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -125,11 +131,19 @@ export default function ContactForm() {
       </p>
 
       {!sent ? (
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6" noValidate>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6" aria-busy={sending} noValidate>
+          <div hidden aria-hidden="true">
+            <label>
+              Website
+              <input name="website" value={website} onChange={(e) => setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" />
+            </label>
+          </div>
           <Field label="Full name">
             <input
               type="text"
               value={data.name}
+              maxLength={120}
+              disabled={sending}
               onChange={(e) => update({ name: e.target.value })}
               placeholder="Jordan Ellis"
               className={fieldClass}
@@ -143,6 +157,8 @@ export default function ContactForm() {
             <input
               type="email"
               value={data.email}
+              maxLength={254}
+              disabled={sending}
               onChange={(e) => update({ email: e.target.value })}
               onBlur={() => setEmailTouched(true)}
               placeholder="jordan@company.com"
@@ -154,6 +170,8 @@ export default function ContactForm() {
             <input
               type="text"
               value={data.company}
+              maxLength={200}
+              disabled={sending}
               onChange={(e) => update({ company: e.target.value })}
               placeholder="Company name"
               className={fieldClass}
@@ -182,6 +200,7 @@ export default function ContactForm() {
                       name="interest"
                       value={option.value}
                       checked={selected}
+                      disabled={sending}
                       onChange={() => update({ interest: option.value })}
                       className="sr-only"
                       required
@@ -204,6 +223,8 @@ export default function ContactForm() {
           <Field label="Message">
             <textarea
               value={data.message}
+              maxLength={5000}
+              disabled={sending}
               onChange={(e) => update({ message: e.target.value })}
               placeholder="A line or two is plenty — we'll ask the rest in the diagnostic."
               rows={4}
@@ -211,25 +232,27 @@ export default function ContactForm() {
             />
           </Field>
 
+          {submitError && (
+            <p role="alert" className="text-[14px] text-red-600">
+              {submitError}{' '}
+              <a href={`mailto:${site.email}`} className="underline">{site.email}</a>
+            </p>
+          )}
           <button
             type="submit"
-            disabled={!canSend}
+            disabled={!canSend || sending}
             className="press type-ui flex items-center gap-2 rounded-full bg-navy px-7 py-3.5 text-white shadow-[0_10px_30px_-12px_var(--color-signal)] hover:shadow-[0_16px_36px_-12px_var(--color-signal)] disabled:pointer-events-none disabled:opacity-40"
           >
             <Icon name="arrowUpRight" className="size-4" />
-            Send a message
+            {sending ? 'Sending...' : 'Send a message'}
           </button>
         </form>
       ) : (
-        <div className="mt-8 rounded-lg bg-surface p-5">
-          <p className="type-card-title text-[1.15rem]">Almost there.</p>
+        <div role="status" className="mt-8 rounded-lg bg-surface p-5">
+          <p className="type-card-title text-[1.15rem]">Message sent.</p>
           <p className="type-body mt-2 text-ink-muted">
-            Finish sending it from your email client. If nothing opened,
-            write to us directly at{' '}
-            <a href={`mailto:${site.email}`} className="link-sweep text-blue-700">
-              {site.email}
-            </a>
-            .
+            Thanks for getting in touch. A confirmation is on its way to your inbox.
+            Our team will review your message and reply to the email address you provided.
           </p>
         </div>
       )}

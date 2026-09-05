@@ -59,9 +59,9 @@ export default function Hero() {
           const intro = gsap.timeline({ defaults: { ease: 'power4.out' } })
           intro
             .fromTo(
-              '[data-hero-field], [data-hero-backdrop]',
+              '[data-hero-field]',
               { autoAlpha: 0, scale: 1.1 },
-              { autoAlpha: 1, scale: 1, duration: 1.65, stagger: 0.08 },
+              { autoAlpha: 1, scale: 1, duration: 1.65 },
               0,
             )
             .to(
@@ -224,13 +224,6 @@ export default function Hero() {
           aria-hidden="true"
           data-hero-field
           className="hero-field pointer-events-none absolute inset-0 -z-20"
-        />
-
-        {/* Supplied backdrop bitmap, when present — layers over the field */}
-        <div
-          aria-hidden="true"
-          data-hero-backdrop
-          className="hero-backdrop pointer-events-none absolute inset-0 -z-10"
         />
 
         <HeroServiceCardsDesktop />

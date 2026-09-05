@@ -1,0 +1,5 @@
+# Akvega — all routes are public marketing pages.
+User-agent: *
+Allow: /
+
+Sitemap: https://akvega.com/sitemap.xml

@@ -23,8 +23,8 @@ import { revealDelay, useInView } from '@/lib/useInView'
  */
 const COLUMN_COUNT = 5
 
-const columns: TechMark[][] = Array.from({ length: COLUMN_COUNT }, (_, i) =>
-  renderableMarks.filter((_, index) => index % COLUMN_COUNT === i),
+const columns: TechMark[][] = Array.from({ length: COLUMN_COUNT }, (_, column) =>
+  renderableMarks.filter((_mark, index) => index % COLUMN_COUNT === column),
 )
 
 const columnDurations = [26, 32, 22, 30, 24]
@@ -117,7 +117,7 @@ export default function TechStackShowcase() {
           <div className="grid h-full grid-cols-5 gap-2 sm:gap-4">
             {columns.map((marks, i) => (
               <MarqueeColumn
-                key={i}
+                key={marks[0]?.id ?? i}
                 marks={marks}
                 reverse={i % 2 === 1}
                 duration={columnDurations[i]}

@@ -215,7 +215,19 @@ export const faqs = [
   },
 ]
 
+/**
+ * The canonical link for a service. The Services page anchors every entry by
+ * its slug, so the route is derived here rather than hand-written at each call
+ * site — which is how the homepage ended up referencing a `to` field that
+ * never existed on `Service`.
+ */
+export const serviceHref = (service: Pick<Service, 'slug'>) =>
+  `/services#${service.slug}`
+
 /** Every service in page order, with the accent of the track it belongs to. */
 export const allServices = tracks.flatMap((track) =>
   track.services.map((service) => ({ ...service, accent: track.accent })),
 )
+
+/** Total across both tracks. Never restate this as a literal in page copy. */
+export const serviceCount = allServices.length
