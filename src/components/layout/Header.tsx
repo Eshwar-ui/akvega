@@ -131,6 +131,7 @@ export default function Header({ pathname }: { pathname: string }) {
           </a>
           <a
             href={site.primaryCta.to}
+            data-cta="header-start-project"
             className="press type-ui rounded-full bg-navy px-5 py-2.5 text-white hover:bg-blue-700"
           >
             {site.primaryCta.label}
@@ -181,6 +182,7 @@ export default function Header({ pathname }: { pathname: string }) {
         </nav>
         <a
           href={site.primaryCta.to}
+          data-cta="mobile-nav-start-project"
           className="press type-ui mt-6 block rounded-full bg-navy px-5 py-3.5 text-center text-white"
         >
           {site.primaryCta.label}

@@ -73,11 +73,11 @@
         ]
       },
       {
-        "source": "**/*.@(webp|svg|png|jpg|jpeg|woff2)",
+        "source": "**/*.@(webp|svg|png|jpg|jpeg|avif|gif|ico|woff2|mp4|webm)",
         "headers": [
           {
             "key": "Cache-Control",
-            "value": "public, max-age=604800"
+            "value": "public, max-age=604800, stale-while-revalidate=86400"
           }
         ]
       },
@@ -95,6 +95,10 @@
           {
             "key": "Permissions-Policy",
             "value": "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
           }
         ]
       }

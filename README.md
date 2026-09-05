@@ -92,7 +92,8 @@ src/
   lib/          Content and data. site.ts (copy, nav, contact), services.ts
                 (the two tracks and every service), schema.ts (JSON-LD),
                 tech.ts (GENERATED), useInView.ts (revealDelay helper)
-  scripts/      reveal.ts — the vanilla scroll-entrance observer
+  scripts/      reveal.ts (scroll-entrance observer) and analytics.ts (the
+                delegated click / scroll-depth listeners) — both vanilla
   components/
     layout/     Header.tsx (island), Footer.astro (static)
     hero/       The homepage stage and its floating cards
@@ -167,9 +168,105 @@ Firebase Hosting, project `akvegadigital`.
 npm run deploy
 ```
 
-`firebase.json` carries the SPA rewrite (every path to `/index.html`, so deep
-links like `/services` resolve), long-lived cache headers on hashed `assets/`,
-and a short set of security headers.
+`firebase.json` carries the `/api/contact` rewrite to the contact function,
+`cleanUrls`, cache headers, and a short set of security headers. There is **no
+SPA catch-all rewrite** any more — the static build emits a real file per route,
+and a `**` → `/index.html` rule would swallow `404.html` along with them.
+
+Firebase applies every matching header block and the **last** one wins per
+header key, so the order in that file is load-bearing. HTML is
+`max-age=0, must-revalidate` — the routes are listed explicitly as well as by
+`**/*.html`, because `cleanUrls` serves `/services` from `services.html` and the
+extension rule never sees the requested path. Hashed `/_astro/**` output gets a
+year and `immutable`; media gets a week. Getting the HTML default wrong is what
+once left `/` on Hosting's `max-age=3600`, with a deploy invisible for an hour.
+
+## Measurement
+
+### Who owns the GA4 tag
+
+`src/layouts/Base.astro` loads **GTM (`GTM-MH6MH7F6`)** and configures **gtag** for
+`G-H4KQL6J5NQ`. That is the only GA4 tag on the page, and it must stay that
+way: initialising the Firebase Analytics SDK as well would issue a second
+`config` against the same measurement ID and double every number in the
+property. `src/lib/firebase.ts` therefore loads **Performance Monitoring
+only** — GTM cannot produce that, so it is purely additive.
+
+`page_view` is **not** sent by this code. GA4 Enhanced Measurement already
+sends one per document load, and static routing means every navigation is a
+document load. The SPA additionally had to rewrite `document.title` on
+navigation, because one `index.html` served five routes; Base.astro emits each
+page's own title into static HTML, so `src/lib/pageMeta.ts` is gone.
+
+### Custom events
+
+`src/lib/analytics.ts` is the event catalogue and the only place that decides
+what this site reports. Names and parameters are typed, so a typo is a compile
+error rather than a second near-identical row in the console.
+
+| Event | Fires when | Answers |
+| --- | --- | --- |
+| `cta_click` | Any element tagged `data-cta` | Which of the five "Start a project" buttons does the work |
+| `contact_channel_click` | A `mailto:` / `tel:` link | How many people skip the form entirely |
+| `outbound_click` | A link to another domain | Where the site sends people |
+| `contact_form_start` | First keystroke in the contact form | Top of the inquiry funnel |
+| `select_content` | Growth vs Build chosen | Which track demand is actually for |
+| `generate_lead` | `/api/contact` answered `ok` | Bottom of the funnel — **mark as a conversion in GA4** |
+| `contact_form_error` | The submission did not land | Whether the endpoint has quietly stopped working |
+| `scroll_depth` | 25 / 50 / 75 / 90% of a page | How far the long pages really read |
+
+`generate_lead` fires only on a **confirmed** success, never on the submit
+click — otherwise every failed attempt would be counted as an inquiry.
+`contact_form_error` exists because a contact endpoint that stops accepting
+posts is otherwise invisible: inquiries just stop arriving, which looks
+exactly like a quiet week.
+
+Adding a tracked CTA takes one attribute — no handler, no import:
+
+```html
+<a href="/contact" data-cta="pricing-start-project">Start a project</a>
+```
+
+`src/scripts/analytics.ts` picks it up from a single delegated click listener
+and derives the reported location (`header` / `footer` / `form` / `body`) from
+where the element sits. It is a plain module loaded from Base.astro, not a
+React island — same trade `scripts/reveal.ts` made for the scroll entrance, so
+pages that hydrate nothing stay that way.
+
+**Nothing personal is ever sent.** The contact form reports shape, not
+content: that an inquiry happened and which track it was for. Name, email and
+message go to `/api/contact` and never to analytics.
+
+### Performance Monitoring
+
+`src/lib/firebase.ts` loads the SDK via dynamic `import()` after first paint,
+so it never sits on the critical path. Loading it *is* the integration: it
+installs automatic traces for page load, Core Web Vitals (LCP, INP, CLS) and
+every outbound request. Nothing calls it directly. The load waits for `load`
+and then an idle slot: pulling it in earlier contends with the hero's GSAP
+intro and leaves it stuck at opacity 0. Production only — a dev-server bundle's
+timings say nothing about production. Data takes up to ~12h to appear the first
+time.
+
+Config comes from `.env` (`VITE_FIREBASE_*`, see `.env.example`). Every value
+is a **public** identifier that the SDK ships to the browser by design; access
+is governed by security rules and API-key restrictions, not by keeping those
+strings secret. Never put a real secret behind a `VITE_` prefix — Vite inlines
+those into the bundle.
+
+### First-run console setup
+
+Three things can only be done in the console, once:
+
+1. **Analytics → Events → mark `generate_lead` as a conversion**, so inquiries
+   are counted as conversions rather than one row among many custom events.
+2. **Admin → Data streams → Configure tag settings → Define internal traffic**:
+   add your own IP. The tag in `Base.astro` reports from `localhost` too, so
+   without this, development traffic sits in the same reports as visitors.
+3. **Admin → Custom definitions**: register `cta_label`, `cta_location`,
+   `interest`, `reason` and `percent_scrolled` as custom dimensions. GA4
+   collects the parameters either way, but no report can be broken down by
+   them until they are registered.
 
 ## Before launch
 
