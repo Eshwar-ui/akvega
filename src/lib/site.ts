@@ -19,18 +19,36 @@ export const site = {
    */
   url: 'https://akvega.com',
 
-  headline: { lead: 'We make brands', accent: 'impossible to ignore.' },
+  /**
+   * This is the homepage H1 — the strongest on-page signal after the title.
+   * It used to read "We make brands impossible to ignore.", which named none of
+   * the ten things in lib/services.ts and pitched the design studio the site no
+   * longer is. The lead/accent split is unchanged: `accent` still renders in
+   * the italic display serif, so the type treatment is exactly as designed.
+   */
+  headline: { lead: 'Growth marketing and digital build,', accent: 'one team.' },
+  /**
+   * Read by the hero AND by `Organization.description` / `WebSite.description`
+   * in lib/schema.ts, which is why this had to change. It described a studio
+   * working across "brand identity, digital product, and motion" — three things
+   * that appear nowhere in lib/services.ts — while every title, description and
+   * page on the site sells growth marketing plus digital build. Structured data
+   * is the description a search engine and an LLM take as the entity's own
+   * account of itself, so the contradiction was being stated in the one place
+   * it counts most. Wording follows PRODUCT.md's "Product Purpose".
+   */
   subhead:
-    'Akvega is an independent design studio working across brand identity, digital product, and motion.',
+    'Akvega combines growth marketing and digital build under one team — so the campaign and the product it points to are shipped by the same people.',
 
   primaryCta: { label: 'Start a project', to: '/contact' },
   secondaryCta: { label: 'See the work', to: '/work' },
 
   email: 'hello@akvega.com',
 
-  // Placeholder — no real number yet. Obviously-fake shape on purpose, so it
-  // reads as unfinished rather than wrong: replace before launch, never with a
-  // guessed real one.
+  // Real, and published in Organization.contactPoint. (The note that used to
+  // sit here still called this an obviously-fake placeholder, which stopped
+  // being true once a live number was added — a stale comment telling the next
+  // reader to replace a working contact detail.)
   phone: '+91 7032990632',
 
   // Placeholder — Akvega has not confirmed a physical base. "Remote-first" is

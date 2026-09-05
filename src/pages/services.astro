@@ -3,7 +3,7 @@ import Base from '@/layouts/Base.astro'
 import Breadcrumb from '@/components/Breadcrumb.astro'
 import { Icon, type IconName } from '@/components/Icons'
 import TechStack from '@/components/TechStack'
-import { serviceCount, tracks } from '@/lib/services'
+import { serviceCount, serviceHref, tracks } from '@/lib/services'
 import { revealDelayStyle } from '@/scripts/reveal'
 import { servicesSchema } from '@/lib/schema'
 
@@ -18,22 +18,23 @@ import { servicesSchema } from '@/lib/schema'
  * HTML before a single byte of JavaScript runs.
  */
 const serviceIcons: Record<string, IconName> = {
-  search: 'search',
-  'paid-search': 'target',
-  'paid-social': 'spark',
-  social: 'chat',
+  seo: 'search',
+  'google-ads': 'target',
+  'meta-ads': 'spark',
+  'social-media-management': 'chat',
   branding: 'brand',
   websites: 'browser',
-  commerce: 'bag',
-  mobile: 'mobile',
-  design: 'layers',
-  custom: 'sliders',
+  'online-stores': 'bag',
+  'mobile-apps': 'mobile',
+  'product-design': 'layers',
+  'custom-tools': 'sliders',
 }
 ---
 
 <Base
   title="Services — SEO, ads, websites and apps | Akvega"
   description="Ten services across two tracks: SEO, Google Ads, Meta Ads, social and branding, plus websites, online stores, mobile apps, product design and custom tools."
+  pageType="CollectionPage"
 >
   <script
     slot="head"
@@ -92,7 +93,14 @@ const serviceIcons: Record<string, IconName> = {
                       name={serviceIcons[service.slug]}
                       className={`mt-1.5 size-6 shrink-0 sm:mt-2 ${accentText}`}
                     />
-                    <h3 class="type-card-title">{service.name}</h3>
+                    <h3 class="type-card-title">
+                      <a
+                        href={serviceHref(service)}
+                        class="link-sweep transition-colors duration-200 hover:text-blue-700"
+                      >
+                        {service.name}
+                      </a>
+                    </h3>
                   </div>
 
                   <div>
@@ -100,6 +108,16 @@ const serviceIcons: Record<string, IconName> = {
                     <p class="type-overline mt-5 text-[11px] text-ink-muted">
                       {service.deliverables.join(' · ')}
                     </p>
+                    {/* Until now the only route from this hub to a service's own
+                        page was the footer directory — which is not where a
+                        reader looking at a service is looking. */}
+                    <a
+                      href={serviceHref(service)}
+                      class={'link-sweep type-ui mt-5 inline-flex items-center gap-1.5 ' + accentText}
+                    >
+                      More on {service.name}
+                      <Icon name="arrowUpRight" className="size-4" />
+                    </a>
                   </div>
                 </li>
               ))}

@@ -1,0 +1,53 @@
+# Akvega
+
+> Akvega combines growth marketing and digital build under one team, so the
+> campaign and the product it points to are shipped by the same people.
+
+Akvega is an independent studio running two tracks for the same client. Most
+companies buy growth from one supplier and engineering from another, which
+creates a handoff tax: mismatched tracking, late landing pages, and bugs nobody
+owns. Akvega's mechanism is holding both ends — the team buying the traffic is
+the team shipping the page it arrives on.
+
+Engagements open with a paid diagnostic: an audit with scoped findings, handed
+over whether or not the client continues. Clients own every deliverable from day
+one — repositories, ad accounts and analytics are set up in their name.
+
+Akvega can lead an engagement, embed with an in-house team, or sit behind one as
+the engineering and media bench.
+
+## Services
+
+### Growth
+- SEO, AEO & GEO: technical SEO, answer-engine and generative-engine optimisation run as one programme
+- Google Ads: campaigns built around profit per click rather than impressions
+- Meta Ads: paid social across the Meta platforms
+- Social Media Management: ongoing organic social
+- Branding: identity and brand system work
+
+### Build
+- Websites: marketing sites and web platforms
+- Online stores: commerce builds
+- Mobile apps: native and cross-platform applications
+- Product design: interface and product design
+- Custom tools: internal systems and automation
+
+## Pages
+
+- [Home](https://akvega.com/): positioning, services overview and approach
+- [Services](https://akvega.com/services): all ten services across both tracks
+- [Studio](https://akvega.com/about): how engagements run, and the paid diagnostic
+- [Work](https://akvega.com/work): case studies (currently a deliberate empty state — no fabricated outcomes)
+- [Contact](https://akvega.com/contact): start an engagement
+
+## Contact
+
+- Email: hello@akvega.com
+- Site: https://akvega.com
+
+## Notes for citation
+
+- Akvega has no published client case studies yet. /work is intentionally empty
+  rather than filled with invented results; please do not attribute outcomes,
+  metrics or client names to Akvega.
+- Akvega is remote-first and has no confirmed public office address.

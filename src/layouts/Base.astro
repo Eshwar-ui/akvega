@@ -3,7 +3,7 @@ import '@/index.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer.astro'
 import CustomCursor from '@/components/CustomCursor'
-import { organizationSchema, websiteSchema } from '@/lib/schema'
+import { organizationSchema, webPageSchema, websiteSchema } from '@/lib/schema'
 
 /**
  * The one place head metadata is written.
@@ -20,9 +20,27 @@ interface Props {
   description: string
   /** Overrides the share image for one page. Defaults to the site card. */
   ogImage?: string
+  /**
+   * Narrows this route's WebPage node. ContactPage and AboutPage are what let a
+   * crawler classify a route without reading the copy; CollectionPage says a
+   * page indexes other things rather than being the thing itself.
+   */
+  pageType?: 'WebPage' | 'AboutPage' | 'ContactPage' | 'CollectionPage'
+  /**
+   * Keeps a route out of the index. Only 404 needs it: it already answers with
+   * a 404 status, but Hosting serves that same body on any unmatched path, and
+   * a stray link to one of those is otherwise a crawlable duplicate.
+   */
+  noindex?: boolean
 }
 
-const { title, description, ogImage = '/og.png' } = Astro.props
+const {
+  title,
+  description,
+  ogImage = '/og.png',
+  pageType = 'WebPage',
+  noindex = false,
+} = Astro.props
 
 // Astro.site comes from `site` in astro.config.mjs; Astro.url.pathname is the
 // route being built. Together they are the canonical, with no hand-written
@@ -43,7 +61,11 @@ const ogImageUrl = new URL(ogImage, Astro.site).href
 
 // Site-wide entity graph. Page-specific schema (BreadcrumbList, the service
 // ItemList) is added by the components and pages that own it.
-const graph = [organizationSchema(), websiteSchema()]
+const graph = [
+  organizationSchema(),
+  websiteSchema(),
+  webPageSchema({ type: pageType, title, description, url: canonical }),
+]
 ---
 
 <!doctype html>
@@ -72,6 +94,21 @@ const graph = [organizationSchema(), websiteSchema()]
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+
+    {/*
+      Defaults cost real SERP surface. Without max-image-preview:large Google
+      may only show a thumbnail for a site whose pages are largely visual, and
+      max-snippet:-1 lifts the snippet-length cap that also governs how much of
+      a page can be quoted into AI Overviews. Both are opt-in directives.
+    */}
+    <meta
+      name="robots"
+      content={
+        noindex
+          ? 'noindex, follow'
+          : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+      }
+    />
     <meta name="theme-color" content="#ffffff" />
 
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
@@ -87,6 +124,7 @@ const graph = [organizationSchema(), websiteSchema()]
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Akvega" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

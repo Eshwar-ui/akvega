@@ -199,10 +199,10 @@ function bentoColSpan(index: number, total: number) {
 }
 
 const growthIcons: Record<string, IconName> = {
-  search: 'search',
-  'paid-search': 'target',
-  'paid-social': 'spark',
-  social: 'chat',
+  seo: 'search',
+  'google-ads': 'target',
+  'meta-ads': 'spark',
+  'social-media-management': 'chat',
   branding: 'brand',
 }
 
