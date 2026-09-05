@@ -2,27 +2,69 @@
   "functions": {
     "source": "functions",
     "codebase": "contact",
-    "ignore": ["node_modules", ".git", "*.log", "*.test.js", ".env.example", ".secret.local", "dev-server.js", "check-config.js"],
-    "predeploy": ["node functions/check-config.js", "npm --prefix functions test"]
+    "ignore": [
+      "node_modules",
+      ".git",
+      "*.log",
+      "*.test.js",
+      ".env.example",
+      ".secret.local",
+      "dev-server.js",
+      "check-config.js"
+    ],
+    "predeploy": [
+      "node functions/check-config.js",
+      "npm --prefix functions test"
+    ]
   },
   "hosting": {
     "public": "dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "cleanUrls": true,
     "trailingSlash": false,
     "rewrites": [
       {
         "source": "/api/contact",
-        "function": { "functionId": "contact", "region": "us-central1" }
-      },
-      {
-        "source": "**",
-        "destination": "/index.html"
+        "function": {
+          "functionId": "contact",
+          "region": "us-central1"
+        }
       }
     ],
     "headers": [
       {
-        "source": "/assets/**",
+        "source": "/",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "/@(services|about|work|contact)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "/_astro/**",
         "headers": [
           {
             "key": "Cache-Control",
@@ -33,20 +75,23 @@
       {
         "source": "**/*.@(webp|svg|png|jpg|jpeg|woff2)",
         "headers": [
-          { "key": "Cache-Control", "value": "public, max-age=604800" }
-        ]
-      },
-      {
-        "source": "/index.html",
-        "headers": [
-          { "key": "Cache-Control", "value": "no-cache, must-revalidate" }
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=604800"
+          }
         ]
       },
       {
         "source": "**",
         "headers": [
-          { "key": "X-Content-Type-Options", "value": "nosniff" },
-          { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          },
           {
             "key": "Permissions-Policy",
             "value": "geolocation=(), microphone=(), camera=(), interest-cohort=()"

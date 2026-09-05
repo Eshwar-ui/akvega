@@ -1,0 +1,114 @@
+---
+import Base from '@/layouts/Base.astro'
+import Breadcrumb from '@/components/Breadcrumb.astro'
+import { BrandMark } from '@/components/BrandMarks'
+import ContactForm from '@/components/contact/ContactForm'
+import MapPlaceholder from '@/components/contact/MapPlaceholder'
+import { site } from '@/lib/site'
+import { revealDelayStyle } from '@/scripts/reveal'
+
+/**
+ * Banner + two-column + map, rebuilt in Akvega's own system: ice/navy/signal,
+ * pill CTAs, hairline borders, and `.hero-field`'s asset-free gradient standing
+ * in for the reference's photo banner.
+ *
+ * The form is the only island on the page — it holds field state and posts to
+ * /api/contact. Everything around it, the map illustration included, is static.
+ */
+const details = [
+  { label: 'Reach us', value: site.phone },
+  { label: 'Availability', value: site.availability },
+]
+---
+
+<Base
+  title="Contact Akvega — start with a paid diagnostic"
+  description="Tell us what you are trying to solve. Every engagement opens with a paid diagnostic — an audit and a scoped plan, yours whether or not you continue with us."
+>
+  <div class="px-3 pt-3 sm:px-5 sm:pt-5">
+    <div
+      class="hero-field edge-light relative isolate overflow-hidden rounded-xl border border-hairline sm:rounded-2xl"
+    >
+      <div class="mx-auto max-w-site px-5 pb-0 pt-10 sm:px-8 sm:pt-14">
+        <Breadcrumb current="Contact" />
+      </div>
+
+      <section
+        data-reveal-root
+        data-shown="false"
+        class="mx-auto max-w-site px-5 pb-20 pt-8 sm:px-8 sm:pb-28 sm:pt-12"
+      >
+        <div class="grid gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-16 xl:gap-20">
+          <div>
+            <h1 class="reveal type-section-title max-w-[16ch]">
+              We're always ready to help you and answer your questions.
+            </h1>
+            <p style={revealDelayStyle(1)} class="reveal type-body mt-6 max-w-[46ch] text-ink-muted">
+              Every engagement opens with a paid diagnostic — an audit and a scoped plan, handed
+              over whether or not you continue with us.
+            </p>
+
+            <div style={revealDelayStyle(2)} class="reveal mt-12">
+              {
+                details.map((detail) => (
+                  <div class="grid gap-3 border-t border-hairline py-5 sm:grid-cols-[7.5rem_minmax(0,1fr)] sm:items-center sm:gap-6 sm:py-6">
+                    <p class="type-overline text-ink-muted">{detail.label}</p>
+                    <div class="text-[16px] font-medium leading-snug tracking-[-0.012em] text-ink sm:text-[18px]">
+                      {detail.value}
+                    </div>
+                  </div>
+                ))
+              }
+
+              <div
+                class="grid gap-3 border-t border-hairline py-5 sm:grid-cols-[7.5rem_minmax(0,1fr)] sm:items-center sm:gap-6 sm:py-6"
+              >
+                <p class="type-overline text-ink-muted">Email</p>
+                <div
+                  class="text-[16px] font-medium leading-snug tracking-[-0.012em] text-ink sm:text-[18px]"
+                >
+                  <a href={`mailto:${site.email}`} class="link-sweep text-blue-700">
+                    {site.email}
+                  </a>
+                </div>
+              </div>
+
+              <div
+                class="grid gap-3 border-y border-hairline py-5 sm:grid-cols-[7.5rem_minmax(0,1fr)] sm:items-center sm:gap-6 sm:py-6"
+              >
+                <p class="type-overline text-ink-muted">Social</p>
+                <div
+                  class="text-[16px] font-medium leading-snug tracking-[-0.012em] text-ink sm:text-[18px]"
+                >
+                  <ul class="flex flex-wrap gap-3">
+                    {
+                      site.social.map((item) => (
+                        <li>
+                          <a
+                            href={item.href}
+                            aria-label={item.label}
+                            class="press grid size-11 place-items-center rounded-xl border border-hairline bg-paper/80 text-ink-muted transition-colors hover:bg-paper hover:text-ink"
+                          >
+                            <BrandMark name={item.icon} className="size-[18px]" />
+                          </a>
+                        </li>
+                      ))
+                    }
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={revealDelayStyle(1)} class="reveal">
+            <ContactForm client:visible />
+          </div>
+        </div>
+
+        <div style={revealDelayStyle(3)} class="reveal mt-16 sm:mt-20">
+          <MapPlaceholder />
+        </div>
+      </section>
+    </div>
+  </div>
+</Base>

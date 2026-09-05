@@ -1,0 +1,76 @@
+---
+import Base from '@/layouts/Base.astro'
+import Breadcrumb from '@/components/Breadcrumb.astro'
+import { revealDelayStyle } from '@/scripts/reveal'
+
+/**
+ * No real engagements exist yet to show, and PRODUCT.md rules out fabricating
+ * proof. Rather than a placeholder sentence or invented case studies, this is an
+ * honest, designed empty state.
+ *
+ * The line motif is the same circular-aperture vocabulary Approach and
+ * CallToAction already carry (06) — drawn at rest as an open, unfinished ring
+ * rather than a completed one, which is the actual point being made here.
+ */
+---
+
+<Base
+  title="Work | Akvega"
+  description="Selected work from Akvega. We publish engagements we have actually shipped, with results we can stand behind — not stock outcomes with the logo swapped."
+>
+  <div class="px-3 pt-3 sm:px-5 sm:pt-5">
+    <div class="hero-field edge-light relative isolate overflow-hidden rounded-xl border border-hairline sm:rounded-2xl">
+      <div class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
+        <Breadcrumb current="Work" />
+        <p class="type-overline mt-7 text-ink-muted">Selected work</p>
+        <h1 class="type-page-title mt-3 max-w-[18ch]">The work that proves it.</h1>
+      </div>
+    </div>
+  </div>
+
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-20 sm:px-8 sm:py-28">
+    <div class="relative isolate overflow-hidden rounded-2xl border border-hairline bg-surface/60 px-6 py-20 text-center sm:px-12 sm:py-28">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 400 400"
+        class="pointer-events-none absolute left-1/2 top-1/2 -z-10 w-[560px] -translate-x-1/2 -translate-y-1/2 opacity-[0.18]"
+      >
+        <defs>
+          <linearGradient id="akv-work-empty" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="var(--color-energy)" />
+            <stop offset="50%" stop-color="var(--color-signal)" />
+            <stop offset="100%" stop-color="var(--color-vega)" />
+          </linearGradient>
+        </defs>
+        {/* An open ring, not a closed one — the incompleteness is the point
+            being made, not an accident of the motif. */}
+        <circle
+          cx="200" cy="200" r="150" pathLength="1"
+          stroke-dasharray="0.72 0.28"
+          class="draw" fill="none"
+          stroke="url(#akv-work-empty)"
+          stroke-width="1.5" stroke-linecap="round"
+        />
+      </svg>
+
+      <p class="reveal type-overline text-ink-muted">No case studies yet</p>
+      <h2 style={revealDelayStyle(1)} class="reveal type-section-title mx-auto mt-6 max-w-[18ch] text-balance">
+        Real work, not yet public.
+      </h2>
+      <p style={revealDelayStyle(2)} class="reveal type-body mx-auto mt-6 max-w-[46ch] text-ink-muted">
+        We're not going to fill this page with stock outcomes and the logo swapped out. What lands
+        here will be engagements we've actually shipped — with results we can stand behind, not
+        metrics we made up for the layout.
+      </p>
+
+      <div style={revealDelayStyle(3)} class="reveal mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <a href="/services" class="press type-ui rounded-full bg-navy px-7 py-3.5 text-white">
+          See what we do
+        </a>
+        <a href="/contact" class="press type-ui rounded-full border border-hairline px-7 py-3.5 text-ink hover:border-blue-300">
+          Start the first one
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,146 @@
+---
+import { BrandMark } from '@/components/BrandMarks'
+import { Icon } from '@/components/Icons'
+import { LogoFull } from '@/components/Logo'
+import { serviceHref, tracks } from '@/lib/services'
+import { site } from '@/lib/site'
+import { revealDelayStyle } from '@/scripts/reveal'
+
+/**
+ * The footer is a panel, not a strip — it mirrors the CTA card above it, so the
+ * page closes on two aligned rounded surfaces (navy, then ice).
+ *
+ * Static Astro rather than a React island: nothing here holds state. The only
+ * behaviour was the `useInView` entrance, which `data-reveal-root` and
+ * scripts/reveal.ts now provide with no hydration. `Icon`, `BrandMark` and
+ * `LogoFull` are React components rendered to HTML at build time — no client
+ * directive, so none of their code reaches the browser.
+ *
+ * Headings are Inter, not the display serif: 07 restricts Instrument Serif to
+ * the hero accent line, and this would have been a third context.
+ */
+const columns = [
+  ...tracks.map((track) => ({
+    heading: track.label,
+    links: track.services.map((service) => ({
+      label: service.name,
+      href: serviceHref(service),
+    })),
+  })),
+  {
+    heading: 'Explore',
+    links: site.nav.map((item) => ({ label: item.label, href: item.to })),
+  },
+]
+---
+
+<footer class="px-3 py-3 sm:px-5 sm:py-5">
+  <div
+    data-reveal-root
+    data-shown="false"
+    class="relative isolate overflow-hidden rounded-xl border border-hairline bg-surface sm:rounded-2xl"
+  >
+    {/* The gradient bloom, rising from the bottom edge to carry the lockup.
+        Purely a surface — it sits under everything and takes no pointer. */}
+    <div aria-hidden="true" class="footer-field pointer-events-none absolute inset-0 -z-10"></div>
+
+    <div class="px-6 pt-16 sm:px-10 sm:pt-20 lg:px-14">
+      {/* The pitch, and the one action. 06: large negative space, one cue. */}
+      <div class="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+        <p class="reveal type-card-title max-w-[15ch] text-balance text-ink">
+          {site.footer.tagline.lead}{' '}
+          <span class="text-blue-700">{site.footer.tagline.accent}</span>
+        </p>
+
+        <a
+          href={site.footer.cta.to}
+          style={revealDelayStyle(1)}
+          class="press reveal inline-flex shrink-0 items-center self-start rounded-full border border-navy/20 px-7 py-3 text-[clamp(1.75rem,6.5vw,4.5rem)] font-semibold leading-[1.06] text-ink hover:border-navy hover:bg-navy hover:text-white sm:px-10"
+        >
+          {site.footer.cta.label}
+        </a>
+      </div>
+
+      {/* Directory. The two tracks are the architecture — they lead. */}
+      <nav
+        aria-label="Footer"
+        class="mt-20 grid gap-10 sm:grid-cols-2 sm:gap-12 lg:mt-24 lg:grid-cols-4"
+      >
+        {
+          columns.map((column) => (
+            <div>
+              <h2 class="type-overline text-[13px] text-ink-muted">{column.heading}</h2>
+              <ul class="mt-5 space-y-3">
+                {column.links.map((link) => (
+                  <li>
+                    <a
+                      href={link.href}
+                      class="link-sweep type-ui inline-flex min-h-[24px] items-center text-ink-muted transition-colors duration-200 hover:text-ink"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+
+        <div>
+          <h2 class="type-overline text-[13px] text-ink-muted">Say hello</h2>
+          <ul class="mt-5 flex flex-wrap gap-2">
+            {
+              site.social.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    class="press inline-flex min-h-11 items-center gap-2 rounded-full bg-paper px-3.5 py-2 text-[14px] text-ink-muted shadow-[0_1px_2px_rgb(5_17_39/0.06)] hover:text-ink hover:shadow-[0_4px_12px_-4px_rgb(5_17_39/0.18)]"
+                  >
+                    <BrandMark name={item.icon} className="size-[18px]" />
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+            <li>
+              <a
+                href={`mailto:${site.email}`}
+                class="press inline-flex min-h-11 items-center gap-2 rounded-full bg-paper px-3.5 py-2 text-[14px] text-ink-muted shadow-[0_1px_2px_rgb(5_17_39/0.06)] hover:text-ink hover:shadow-[0_4px_12px_-4px_rgb(5_17_39/0.18)]"
+              >
+                <Icon name="mail" className="size-4" />
+                {site.email}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div
+        class="mt-16 flex flex-col gap-3 border-t border-hairline py-6 text-[14px] text-ink-muted sm:flex-row sm:items-center sm:justify-between"
+      >
+        <p>©&nbsp;{new Date().getFullYear()} {site.name}. All rights reserved.</p>
+        <a
+          href="#main"
+          class="group/top inline-flex items-center gap-1.5 transition-colors duration-200 hover:text-ink"
+        >
+          Back to top
+          <Icon
+            name="arrowUpRight"
+            className="size-4 transition-transform duration-300 ease-out-expo group-hover/top:-translate-y-0.5 group-hover/top:translate-x-0.5"
+          />
+        </a>
+      </div>
+    </div>
+
+    {/* The lockup closes the page at full width. It is the primary logo at
+        scale — never cropped, stretched or recoloured (04, 05). */}
+    <a
+      href="/"
+      aria-label={`${site.name}, home`}
+      style={revealDelayStyle(2)}
+      class="reveal block px-6 pb-10 sm:px-10 sm:pb-12 lg:px-14"
+    >
+      <LogoFull className="w-full" />
+    </a>
+  </div>
+</footer>

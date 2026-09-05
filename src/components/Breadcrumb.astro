@@ -1,0 +1,40 @@
+---
+/**
+ * The visible breadcrumb, plus its BreadcrumbList JSON-LD.
+ *
+ * Both come from one component on purpose: the markup and the structured data
+ * are two statements about the same trail, and Google penalises them disagreeing
+ * far more readily than it rewards either alone. Keeping them in one file makes
+ * it impossible to update one and forget the other.
+ */
+interface Props {
+  current: string
+}
+
+const { current } = Astro.props
+
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/index$/, '')
+const url = new URL(path || '/', Astro.site).href
+const home = new URL('/', Astro.site).href
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: home },
+    { '@type': 'ListItem', position: 2, name: current, item: url },
+  ],
+}
+---
+
+<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-[13px]">
+  <a href="/" class="link-sweep text-ink-muted hover:text-ink">Home</a>
+  <span aria-hidden="true" class="text-ink-muted">/</span>
+  <span class="font-medium text-ink">{current}</span>
+</nav>
+
+<script
+  type="application/ld+json"
+  is:inline
+  set:html={JSON.stringify(breadcrumbLd)}
+/>

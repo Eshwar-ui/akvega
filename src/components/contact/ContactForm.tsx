@@ -102,10 +102,14 @@ export default function ContactForm() {
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...data, website }),
         signal: AbortSignal.timeout(25000),
       })
+      const contentType = response.headers.get('content-type') || ''
+      if (!contentType.includes('application/json')) {
+        throw new Error('CONTACT_ENDPOINT_UNAVAILABLE')
+      }
       const result = await response.json()
       if (!response.ok || result.ok !== true) {
         setSubmitError(response.status === 429
@@ -115,8 +119,10 @@ export default function ContactForm() {
       }
       setSent(true)
       setData(initialState)
-    } catch {
-      setSubmitError('We could not confirm your message was sent. Please check your connection or email us directly.')
+    } catch (error) {
+      setSubmitError(error instanceof Error && error.message === 'CONTACT_ENDPOINT_UNAVAILABLE'
+        ? 'The contact service is being connected. Please email us directly while it finishes.'
+        : 'We could not confirm your message was sent. Please check your connection or email us directly.')
     } finally {
       setSending(false)
     }
@@ -248,12 +254,31 @@ export default function ContactForm() {
           </button>
         </form>
       ) : (
-        <div role="status" className="mt-8 rounded-lg bg-surface p-5">
-          <p className="type-card-title text-[1.15rem]">Message sent.</p>
-          <p className="type-body mt-2 text-ink-muted">
-            Thanks for getting in touch. A confirmation is on its way to your inbox.
-            Our team will review your message and reply to the email address you provided.
-          </p>
+        <div role="status" aria-live="polite" className="success-state relative mt-8 overflow-hidden rounded-2xl border border-blue-200/80 bg-[linear-gradient(135deg,#06152e_0%,#0d2b55_58%,#1478f2_180%)] p-6 text-white sm:p-8">
+          <div className="success-scan" aria-hidden="true" />
+          <div className="relative">
+            <div className="flex items-center justify-between gap-4">
+              <span className="type-overline text-cyan-200">Signal received</span>
+              <span className="grid size-11 place-items-center rounded-full border border-white/25 bg-white/10 text-cyan-200">
+                <Icon name="spark" className="size-5" />
+              </span>
+            </div>
+            <div className="mt-8 flex items-start gap-4">
+              <span className="success-ring grid size-12 shrink-0 place-items-center rounded-full bg-cyan-300 text-navy shadow-[0_0_0_7px_rgb(91_224_255/0.13),0_0_36px_rgb(91_224_255/0.4)]">
+                <Icon name="check" className="size-6" />
+              </span>
+              <div>
+                <p className="type-card-title text-[1.35rem] text-white">Your message is in motion.</p>
+                <p className="type-body mt-2 max-w-[34ch] text-white/70">
+                  A confirmation is on its way. We’ll review the details and reply with the next useful step.
+                </p>
+              </div>
+            </div>
+            <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-white/15 pt-4 text-[12px] font-medium uppercase tracking-[0.14em] text-white/55">
+              <span className="inline-flex items-center gap-2"><span className="size-1.5 rounded-full bg-cyan-300" /> Routed to Akvega</span>
+              <span>Reply window: soon</span>
+            </div>
+          </div>
         </div>
       )}
     </div>

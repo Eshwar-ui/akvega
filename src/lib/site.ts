@@ -31,7 +31,7 @@ export const site = {
   // Placeholder — no real number yet. Obviously-fake shape on purpose, so it
   // reads as unfinished rather than wrong: replace before launch, never with a
   // guessed real one.
-  phone: '+1 (000) 000-0000',
+  phone: '+91 7032990632',
 
   // Placeholder — Akvega has not confirmed a physical base. "Remote-first" is
   // the least specific true-shaped claim available; replace with a real

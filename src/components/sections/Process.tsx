@@ -1,13 +1,12 @@
-import { useInView, revealDelay } from '@/lib/useInView'
+import { revealDelay } from '@/lib/useInView'
 import { process } from '@/lib/services'
 
 export default function Process() {
-  const { ref, inView } = useInView<HTMLElement>()
 
   return (
     <section
-      ref={ref}
-      data-shown={inView}
+      data-reveal-root
+data-shown="false"
       className="mx-auto max-w-site px-5 py-28 sm:px-8 sm:py-40"
     >
       <h2 className="reveal type-section-title">

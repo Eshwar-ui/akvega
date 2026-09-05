@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from 'react'
-import { Link } from 'react-router-dom'
 import { Icon } from '@/components/Icons'
-import { revealDelay, useInView } from '@/lib/useInView'
+import { revealDelay } from '@/lib/useInView'
 
 type Capability = {
   name: string
@@ -93,7 +92,6 @@ function KineticRail({ activeIndex }: { activeIndex: number }) {
 }
 
 export default function Capabilities() {
-  const { ref, inView } = useInView<HTMLElement>()
   const [activeIndex, setActiveIndex] = useState(0)
   const activeCapability = capabilities[activeIndex]
 
@@ -102,8 +100,8 @@ export default function Capabilities() {
   return (
     <section
       id="capabilities"
-      ref={ref}
-      data-shown={inView}
+      data-reveal-root
+data-shown="false"
       aria-labelledby="capabilities-title"
       className="mx-auto max-w-site px-5 pt-24 sm:px-8 sm:pt-32"
     >
@@ -133,8 +131,15 @@ export default function Capabilities() {
 
         <KineticRail activeIndex={activeIndex} />
 
-        <div className="overflow-x-auto border-b border-white/12">
-          <div className="flex w-full min-w-max">
+        {/*
+          The selector scrolls horizontally on narrow screens. It was cut off
+          mid-word at the panel edge with nothing to say it continued, which
+          reads as a layout bug rather than an invitation to swipe — so the
+          rail is masked to fade its trailing edge, and scroll-snap makes a
+          swipe land on a tab instead of halfway between two.
+        */}
+        <div className="scroll-rail overflow-x-auto overscroll-x-contain border-b border-white/12 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex w-full min-w-max snap-x snap-mandatory">
             {capabilities.map((capability, index) => {
               const isActive = index === activeIndex
 
@@ -146,7 +151,7 @@ export default function Capabilities() {
                   onClick={() => handleActivate(index)}
                   onFocus={() => handleActivate(index)}
                   onPointerEnter={() => handleActivate(index)}
-                  className={`relative min-h-14 min-w-36 flex-1 touch-manipulation border-r border-white/12 px-5 text-left text-sm font-medium transition-colors duration-200 last:border-r-0 sm:min-w-40 ${
+                  className={`relative min-h-14 min-w-36 flex-1 snap-start touch-manipulation border-r border-white/12 px-5 text-left text-sm font-medium transition-colors duration-200 last:border-r-0 sm:min-w-40 ${
                     isActive
                       ? 'bg-white/10 text-white'
                       : 'text-white/56 hover:bg-white/[0.06] hover:text-white'
@@ -183,13 +188,13 @@ export default function Capabilities() {
             </p>
           </div>
 
-          <Link
-            to={activeCapability.to}
+          <a
+            href={activeCapability.to}
             className="press type-ui inline-flex min-h-11 items-center justify-center gap-2 justify-self-start rounded-full bg-white px-5 py-3 text-navy hover:bg-ice md:justify-self-end"
           >
             Explore capability
             <Icon name="arrowUpRight" className="size-4" />
-          </Link>
+          </a>
         </div>
       </div>
     </section>

@@ -1,4 +1,4 @@
-import { useInView, revealDelay } from '@/lib/useInView'
+import { revealDelay } from '@/lib/useInView'
 import { renderableMarks, techGroups, type TechMark } from '@/lib/tech'
 
 /**
@@ -48,10 +48,10 @@ export function TechIcon({
  * something when it arrives.
  */
 export default function TechStack() {
-  const { ref, inView } = useInView<HTMLDivElement>()
 
   return (
-    <div ref={ref} data-shown={inView} className="space-y-12">
+    <div data-reveal-root
+data-shown="false" className="space-y-12">
       {techGroups.map((group, gi) => {
         const marks = renderableMarks.filter((m) => m.group === group)
         if (!marks.length) return null

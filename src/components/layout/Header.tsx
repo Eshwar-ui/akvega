@@ -1,28 +1,26 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
 import { LogoFull } from '@/components/Logo'
 import TextRoll from '@/components/TextRoll'
 import { site } from '@/lib/site'
 
-export default function Header() {
-  const location = useLocation()
+/**
+ * The one island in the page chrome. It holds real state — the mobile menu,
+ * the scroll-direction hide, the over-hero transparency — so it hydrates, while
+ * the footer beside it is static Astro.
+ *
+ * react-router is gone: Astro serves real documents, so navigation is plain
+ * `<a href>` and the active route comes in as a prop from the layout rather
+ * than from `useLocation()`. That also means no client-side route changes, so
+ * the header no longer needs to re-baseline anything on navigation — each page
+ * load starts fresh with the header shown.
+ */
+export default function Header({ pathname }: { pathname: string }) {
   const [open, setOpen] = useState(false)
-  const [elevated, setElevated] = useState(location.pathname !== '/')
+  const [elevated, setElevated] = useState(pathname !== '/')
   const [visible, setVisible] = useState(true)
-  const [shownFor, setShownFor] = useState(location.pathname)
 
-  // Always arrive on a new page with the header showing. Landing on an anchor
-  // (`/services#search`) scrolls down on entry, which the hide-on-scroll effect
-  // below would otherwise read as a deliberate downward scroll — hiding the nav
-  // exactly when the reader most needs to see where they have landed.
-  //
-  // Adjusted during render rather than in an effect: React re-runs this
-  // component immediately with the new value and commits once, so the header
-  // never paints in the hidden state first.
-  if (shownFor !== location.pathname) {
-    setShownFor(location.pathname)
-    setVisible(true)
-  }
+  const isActive = (to: string) =>
+    to === '/' ? pathname === '/' : pathname.startsWith(to)
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
@@ -35,9 +33,7 @@ export default function Header() {
     const updateElevation = () => {
       const hero = document.querySelector<HTMLElement>('[data-hero-stage]')
       const isOverHero =
-        location.pathname === '/' &&
-        hero !== null &&
-        hero.getBoundingClientRect().bottom > 80
+        pathname === '/' && hero !== null && hero.getBoundingClientRect().bottom > 80
 
       setElevated(!isOverHero)
     }
@@ -50,7 +46,7 @@ export default function Header() {
       window.removeEventListener('scroll', updateElevation)
       window.removeEventListener('resize', updateElevation)
     }
-  }, [location.pathname])
+  }, [pathname])
 
   useEffect(() => {
     let lastScrollY = window.scrollY
@@ -94,38 +90,36 @@ export default function Header() {
       className={`nav-glass sticky top-0 z-50 ${elevated ? 'nav-glass-elevated' : ''} ${visible ? '' : 'nav-scroll-hidden'}`}
     >
       <div className="mx-auto flex h-20 max-w-site items-center justify-between px-5 sm:px-8">
-        <Link
-          to="/"
+        <a
+          href="/"
           onClick={() => setOpen(false)}
           className="flex min-h-11 items-center text-ink"
           aria-label={`${site.name}, home`}
         >
           <LogoFull className="h-[26px] w-auto sm:h-[28px]" />
-        </Link>
+        </a>
 
         <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-9 lg:flex">
-          {site.nav.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `type-ui relative py-1 transition-colors duration-200 hover:text-ink ${
-                  isActive ? 'text-ink' : 'text-ink-muted'
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <TextRoll>{item.label}</TextRoll>
-                  <span
-                    className={`absolute -bottom-0.5 left-0 h-px w-full origin-left bg-signal transition-transform duration-300 ease-out-expo ${
-                      isActive ? 'scale-x-100' : 'scale-x-0'
-                    }`}
-                  />
-                </>
-              )}
-            </NavLink>
-          ))}
+          {site.nav.map((item) => {
+            const active = isActive(item.to)
+            return (
+              <a
+                key={item.to}
+                href={item.to}
+                aria-current={active ? 'page' : undefined}
+                className={`type-ui relative py-1 transition-colors duration-200 hover:text-ink ${
+                  active ? 'text-ink' : 'text-ink-muted'
+                }`}
+              >
+                <TextRoll>{item.label}</TextRoll>
+                <span
+                  className={`absolute -bottom-0.5 left-0 h-px w-full origin-left bg-signal transition-transform duration-300 ease-out-expo ${
+                    active ? 'scale-x-100' : 'scale-x-0'
+                  }`}
+                />
+              </a>
+            )
+          })}
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
@@ -135,12 +129,12 @@ export default function Header() {
           >
             {site.email}
           </a>
-          <Link
-            to={site.primaryCta.to}
+          <a
+            href={site.primaryCta.to}
             className="press type-ui rounded-full bg-navy px-5 py-2.5 text-white hover:bg-blue-700"
           >
             {site.primaryCta.label}
-          </Link>
+          </a>
         </div>
 
         <button
@@ -173,27 +167,24 @@ export default function Header() {
       >
         <nav className="flex flex-col">
           {site.nav.map((item) => (
-            <NavLink
+            <a
               key={item.to}
-              to={item.to}
-              onClick={() => setOpen(false)}
-              className={({ isActive }) =>
-                `border-b border-hairline py-4 text-2xl font-medium leading-[1.2] ${
-                  isActive ? 'text-blue-700' : 'text-ink'
-                }`
-              }
+              href={item.to}
+              aria-current={isActive(item.to) ? 'page' : undefined}
+              className={`border-b border-hairline py-4 text-2xl font-medium leading-[1.2] ${
+                isActive(item.to) ? 'text-blue-700' : 'text-ink'
+              }`}
             >
               {item.label}
-            </NavLink>
+            </a>
           ))}
         </nav>
-        <Link
-          to={site.primaryCta.to}
-          onClick={() => setOpen(false)}
+        <a
+          href={site.primaryCta.to}
           className="press type-ui mt-6 block rounded-full bg-navy px-5 py-3.5 text-center text-white"
         >
           {site.primaryCta.label}
-        </Link>
+        </a>
       </div>
     </header>
   )

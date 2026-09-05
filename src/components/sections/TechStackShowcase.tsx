@@ -1,8 +1,7 @@
-import { Link } from 'react-router-dom'
 import { Icon } from '@/components/Icons'
 import { TechIcon } from '@/components/TechStack'
 import { renderableMarks, type TechMark } from '@/lib/tech'
-import { revealDelay, useInView } from '@/lib/useInView'
+import { revealDelay } from '@/lib/useInView'
 
 /**
  * A two-up layout — pitch on the left, the stack itself on the right — with
@@ -71,12 +70,11 @@ function MarqueeColumn({
 }
 
 export default function TechStackShowcase() {
-  const { ref, inView } = useInView<HTMLElement>()
 
   return (
     <section
-      ref={ref}
-      data-shown={inView}
+      data-reveal-root
+data-shown="false"
       id="tech-stack"
       className="mx-auto max-w-site px-5 py-28 sm:px-8 sm:py-36"
     >
@@ -100,14 +98,14 @@ export default function TechStackShowcase() {
             longest list of logos we can fit on a page.
           </p>
 
-          <Link
-            to="/services#stack"
+          <a
+            href="/services#stack"
             style={revealDelay(2)}
             className="press reveal mt-8 inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3.5 text-[15px] font-medium text-white shadow-[0_10px_30px_-12px_var(--color-signal)] hover:shadow-[0_16px_36px_-12px_var(--color-signal)]"
           >
             Explore the full stack
             <Icon name="arrowUpRight" className="size-4" />
-          </Link>
+          </a>
         </div>
 
         <div

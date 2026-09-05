@@ -1,13 +1,12 @@
-import { useInView, revealDelay } from '@/lib/useInView'
+import { revealDelay } from '@/lib/useInView'
 
 export default function Approach() {
-  const { ref, inView } = useInView<HTMLDivElement>()
 
   return (
     <section className="px-3 sm:px-5">
       <div
-        ref={ref}
-        data-shown={inView}
+        data-reveal-root
+data-shown="false"
         className="edge-light-dark mx-auto max-w-site overflow-hidden rounded-xl bg-navy px-5 py-24 sm:rounded-2xl sm:px-12 sm:py-32 lg:px-16"
       >
         <div className="grid items-center gap-16 lg:grid-cols-[1fr_1.2fr] lg:gap-20 xl:gap-24">

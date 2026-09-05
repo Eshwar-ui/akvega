@@ -1,8 +1,15 @@
 # Akvega
 
 Marketing site for Akvega — a studio running growth marketing and digital build
-under one roof. React 19 + TypeScript on Vite 8, Tailwind CSS v4, GSAP for the
-homepage motion, deployed to Firebase Hosting.
+under one roof. Astro 7 (static output) with React islands, TypeScript, Tailwind
+CSS v4, GSAP for the homepage motion, deployed to Firebase Hosting.
+
+Every route is prerendered to static HTML at build time. That is an SEO
+requirement, not a preference: the site was previously a client-rendered SPA
+serving one `index.html` for all five routes, which meant every page shipped the
+same title and the same `<link rel="canonical" href="https://akvega.com/">` — a
+directive telling Google that four of the five pages were duplicates of the
+homepage.
 
 ## Running it
 
@@ -31,6 +38,10 @@ The form posts to `/api/contact`. The server submits two emails to Resend:
 1. An inquiry to `CONTACT_TO`, with the visitor's address as Reply-To.
 2. An acknowledgment to the visitor, with `CONTACT_TO` as Reply-To.
 
+Both messages use a responsive inline-styled HTML template with the Akvega logo
+from `https://akvegadigital.web.app/full-logo.svg`, plus a plain-text fallback.
+Inquiry fields are HTML-escaped before they are inserted into the template.
+
 The page shows success only after Resend accepts both emails. Inbox delivery is
 not tracked; delivery failures and spam filtering can be checked in Resend.
 Identical submissions are deduplicated for 24 hours using Resend idempotency keys.
@@ -45,8 +56,9 @@ CONTACT_FROM="Akvega <contact@your-verified-domain.com>"
 CONTACT_TO=your-team-inbox@example.com
 ```
 
-The key has been moved into the ignored local `.env`. The sender and recipient
-must be filled with real addresses before sending. Do not prefix any of these
+The ignored local `.env` is configured with `Akvega <hello@akvega.com>` as
+the sender and `hello@akvega.com` as the team inbox. Resend must authorize
+sending from the `akvega.com` domain. Do not prefix any of these
 names with `VITE_`; they belong only to the server. The checked-in
 `functions/.env.example` contains no credentials.
 
@@ -75,16 +87,17 @@ deliberate, don't route around it with a bare `vite build`.
 
 ```
 src/
+  pages/        One .astro file per route. Astro routes from here.
+  layouts/      Base.astro — the only place head metadata is written
   lib/          Content and data. site.ts (copy, nav, contact), services.ts
-                (the two tracks and every service), tech.ts (GENERATED),
-                useInView.ts (the scroll-reveal hook)
+                (the two tracks and every service), schema.ts (JSON-LD),
+                tech.ts (GENERATED), useInView.ts (revealDelay helper)
+  scripts/      reveal.ts — the vanilla scroll-entrance observer
   components/
-    layout/     Header, Footer, RootLayout
+    layout/     Header.tsx (island), Footer.astro (static)
     hero/       The homepage stage and its floating cards
-    sections/   Homepage sections, in the order Home.tsx renders them
+    sections/   Homepage sections, in the order index.astro renders them
     contact/    Contact form and the map panel
-  pages/        One file per route
-  router.tsx    Routes. Home and NotFound eager, the rest lazy
   index.css     Design tokens (@theme), base styles, and every component class
 ```
 
@@ -180,3 +193,44 @@ marked with a comment at the point it appears:
 `DESIGN.md` records why the interface looks the way it does; `PRODUCT.md` holds
 the positioning and the rules about what may be claimed. Read both before
 changing copy.
+
+## Islands
+
+Astro renders everything to static HTML and hydrates only what is marked with a
+`client:*` directive. Five components are islands; nothing else ships JS.
+
+| Component | Directive | Why it needs JS |
+| --- | --- | --- |
+| `Header` | `client:load` | Mobile menu, scroll-direction hide |
+| `Hero` | `client:load` | GSAP intro timeline, above the fold |
+| `Capabilities` | `client:visible` | Tab selection state |
+| `sections/Services` | `client:visible` | GSAP Flip slot reflow |
+| `contact/ContactForm` | `client:visible` | Field state, posts to `/api/contact` |
+| `CustomCursor` | `client:idle` | Pointer-follow, pure enhancement |
+
+Everything else — Approach, Assurance, Process, Faq, CallToAction, the whole
+Services page, the footer — is static. `/services` ships one island (the header)
+and is otherwise plain HTML.
+
+The thing that made that possible was replacing the `useInView` React hook with
+`src/scripts/reveal.ts`. That hook was the only reason most sections had to be
+React at all. The contract is unchanged: put `data-reveal-root data-shown="false"`
+on a container and `.reveal` / `.draw` children animate in once, on first view.
+**Content must never depend on the entrance running.**
+
+## SEO
+
+Owned in three places, and they must not drift apart:
+
+- **`src/layouts/Base.astro`** — title, description, canonical, og/twitter, and
+  the site-wide `Organization` + `WebSite` JSON-LD. Every page passes its own
+  title and description; nothing is hardcoded per route anywhere else.
+- **`src/lib/schema.ts`** — JSON-LD builders. Two deliberate omissions are
+  documented in that file: `sameAs` (the social hrefs are still `#`) and the use
+  of `Organization` rather than `ProfessionalService` (no confirmed address).
+- **`src/components/Breadcrumb.astro`** — renders the visible trail *and* its
+  `BreadcrumbList` markup from one source, so they cannot disagree.
+
+`@astrojs/sitemap` generates `sitemap-index.xml` at build. There is no
+hand-maintained sitemap any more — the old `public/sitemap.xml` had to be edited
+per route and had already drifted.

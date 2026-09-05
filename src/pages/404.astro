@@ -1,0 +1,28 @@
+---
+import Base from '@/layouts/Base.astro'
+
+/**
+ * Firebase Hosting serves this automatically for unmatched paths, and — unlike
+ * the SPA's catch-all route, which returned HTTP 200 with the app shell — it
+ * serves it with a real 404 status. Those soft 404s were being logged by Google
+ * as low-quality pages.
+ */
+---
+
+<Base
+  title="Page not found | Akvega"
+  description="That page doesn't exist. The link may be out of date, or the page has moved."
+>
+  <div class="mx-auto flex max-w-site flex-col items-start px-5 py-32 sm:px-8">
+    <h1 class="type-page-title">That page doesn’t exist.</h1>
+    <p class="type-body mt-4 text-ink-muted">
+      The link may be out of date, or the page has moved.
+    </p>
+    <a
+      href="/"
+      class="type-ui mt-8 rounded-md bg-blue-600 px-6 py-3 text-white transition-colors duration-200 hover:bg-blue-700"
+    >
+      Back home
+    </a>
+  </div>
+</Base>

@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { Icon } from '@/components/Icons'
 
 /**
@@ -96,8 +95,8 @@ const serviceCards: ServiceCard[] = [
 
 function Card({ card, compact = false }: { card: ServiceCard; compact?: boolean }) {
   return (
-    <Link
-      to={card.to}
+    <a
+      href={card.to}
       aria-label={`Explore ${card.name}`}
       data-pointer-layer
       className={`press group block overflow-hidden border border-white/80 bg-white shadow-[0_3px_8px_rgb(5_17_39/0.07),0_28px_60px_-26px_rgb(5_17_39/0.38)] ${
@@ -141,7 +140,7 @@ function Card({ card, compact = false }: { card: ServiceCard; compact?: boolean 
           }`}
         />
       </span>
-    </Link>
+    </a>
   )
 }
 

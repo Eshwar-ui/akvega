@@ -1,16 +1,14 @@
-import { Link } from 'react-router-dom'
 import { LogoMark } from '@/components/Logo'
-import { useInView, revealDelay } from '@/lib/useInView'
+import { revealDelay } from '@/lib/useInView'
 import { site } from '@/lib/site'
 
 export default function CallToAction() {
-  const { ref, inView } = useInView<HTMLDivElement>()
 
   return (
     <section className="px-3 pb-6 sm:px-5 sm:pb-8">
       <div
-        ref={ref}
-        data-shown={inView}
+        data-reveal-root
+data-shown="false"
         className="relative isolate mx-auto max-w-site edge-light-dark overflow-hidden rounded-xl bg-navy px-5 py-20 text-center sm:rounded-2xl sm:px-8 sm:py-36"
       >
         {/* Cropped aperture, echoing the mark. 06: crop motifs boldly. */}
@@ -116,12 +114,12 @@ export default function CallToAction() {
             style={revealDelay(3)}
             className="reveal mt-10 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
           >
-            <Link
-              to={site.primaryCta.to}
+            <a
+              href={site.primaryCta.to}
               className="press type-ui rounded-full bg-white px-7 py-3.5 text-navy"
             >
               {site.primaryCta.label}
-            </Link>
+            </a>
             <a
               href={`mailto:${site.email}`}
               className="press type-ui rounded-full border border-white/20 px-7 py-3.5 text-white hover:border-white/50"

@@ -1,14 +1,13 @@
 import { Icon } from '@/components/Icons'
-import { useInView, revealDelay } from '@/lib/useInView'
+import { revealDelay } from '@/lib/useInView'
 import { faqs } from '@/lib/services'
 
 export default function Faq() {
-  const { ref, inView } = useInView<HTMLElement>()
 
   return (
     <section
-      ref={ref}
-      data-shown={inView}
+      data-reveal-root
+data-shown="false"
       className="mx-auto max-w-site px-5 py-28 sm:px-8 sm:py-40">
       <div className="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
         <h2 className="reveal type-section-title max-w-[12ch] lg:sticky lg:top-28 lg:self-start">

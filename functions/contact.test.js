@@ -36,11 +36,16 @@ test('sends to the configured inbox, with visitor reply-to and plain-text conten
   assert.equal(sent[0].from, config.from)
   assert.equal(sent[0].reply_to, valid.email)
   assert.match(sent[0].text, /<script>text<\/script>/)
-  assert.equal(sent[0].html, undefined)
+  assert.equal(typeof sent[0].html, 'string')
+  assert.match(sent[0].html, /New request received/)
+  assert.match(sent[0].html, /&lt;script&gt;text&lt;\/script&gt;/)
   assert.deepEqual(sent[1].to, [valid.email])
+  assert.equal(sent[1].from, config.from)
   assert.equal(sent[1].reply_to, config.to)
   assert.match(sent[1].subject, /received your message/)
   assert.doesNotMatch(sent[1].text, /<script>/)
+  assert.match(sent[1].html, /Message received/)
+  assert.match(sent[1].html, /https:\/\/akvegadigital\.web\.app\/full-logo\.svg/)
 })
 
 test('rejects malformed input, oversized requests, wrong methods and foreign origins without sending', async () => {

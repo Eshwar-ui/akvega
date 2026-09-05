@@ -2,7 +2,6 @@ import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Link } from 'react-router-dom'
 import {
   HeroServiceCardsDesktop,
   HeroServiceCardsMobile,
@@ -256,18 +255,18 @@ export default function Hero() {
             data-hero-reveal
             className="mt-[clamp(1.5rem,4.5vh,2.5rem)] flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
           >
-            <Link
-              to={site.primaryCta.to}
+            <a
+              href={site.primaryCta.to}
               className="press type-ui rounded-full bg-navy px-7 py-3.5 text-white shadow-[0_10px_30px_-10px_var(--color-signal)] hover:shadow-[0_18px_42px_-12px_var(--color-signal)]"
             >
               {site.primaryCta.label}
-            </Link>
-            <Link
-              to={site.secondaryCta.to}
+            </a>
+            <a
+              href={site.secondaryCta.to}
               className="press type-ui rounded-full border border-hairline bg-paper px-7 py-3.5 text-ink hover:border-blue-300 hover:text-blue-700"
             >
               {site.secondaryCta.label}
-            </Link>
+            </a>
           </div>
 
           <PlatformTiles />

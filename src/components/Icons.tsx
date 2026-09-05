@@ -41,6 +41,11 @@ const icons = {
       <path d="M12 3 14 9.5 20.5 11.5 14 13.5 12 20 10 13.5 3.5 11.5 10 9.5Z" />
     </Svg>
   ),
+  check: (p: IconProps) => (
+    <Svg {...p}>
+      <path d="m5 12.5 4.5 4.5L19 7.5" />
+    </Svg>
+  ),
   chat: (p: IconProps) => (
     <Svg {...p}>
       <path d="M4 15V6a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H8Z" />

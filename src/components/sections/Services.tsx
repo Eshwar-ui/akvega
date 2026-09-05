@@ -2,10 +2,9 @@ import { useRef, useState, type MouseEvent as ReactMouseEvent } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { Flip } from 'gsap/Flip'
-import { Link } from 'react-router-dom'
 import { Icon, type IconName } from '@/components/Icons'
 import { serviceHref, tracks, type Track } from '@/lib/services'
-import { revealDelay, useInView } from '@/lib/useInView'
+import { revealDelay } from '@/lib/useInView'
 
 gsap.registerPlugin(useGSAP, Flip)
 
@@ -247,8 +246,8 @@ function GrowthServices() {
             style={revealDelay(index + 1, 80)}
             className={`reveal ${bentoColSpan(index, growthTrack.services.length)}`}
           >
-            <Link
-              to={serviceHref(service)}
+            <a
+              href={serviceHref(service)}
               className="card-lift group flex h-full flex-col rounded-2xl bg-surface p-6 sm:p-7"
             >
               <div className="flex items-start justify-between gap-4">
@@ -288,7 +287,7 @@ function GrowthServices() {
                   className="size-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-1"
                 />
               </span>
-            </Link>
+            </a>
           </li>
         ))}
       </ul>
@@ -309,6 +308,24 @@ function ServiceCard({
 }) {
   const isFeatured = slot === 0
 
+  /*
+   * The ghosted state — a 16%-opacity greyscale photo behind ink-on-ice text —
+   * is the *resting* half of a hover pair, and the reveal that completes it is
+   * gated behind `:hover`. The slot-swapping reflow that drives it is lg-and-
+   * pointer-only (see `canReflow`), so below lg five of the six cards had no
+   * way to ever reach the revealed state: they sat permanently half-faded, with
+   * a dead gap where the image should read. That is not a smaller version of
+   * the desktop design, it is the design's loading state, frozen.
+   *
+   * So below lg every card renders in the revealed treatment — full-bleed
+   * photo, dark scrim, light type — which is what the hover was always
+   * arriving at. `lg:` restores the paired resting/hover behaviour on pointer
+   * screens, where it works.
+   *
+   * Every variant below is written out in full: Tailwind scans source for
+   * literal class strings, so a composed `${prefix}opacity-0` would never make
+   * it into the stylesheet.
+   */
   return (
     <li
       data-service-card
@@ -317,13 +334,13 @@ function ServiceCard({
       onFocus={onFocusStart}
       className={`reveal min-h-[17rem] lg:min-h-0 ${slotLayouts[slot]}`}
     >
-      <Link
-        to={service.to}
+      <a
+        href={service.to}
         aria-label={`Explore ${service.title}`}
         className={`group relative isolate flex h-full min-h-[inherit] overflow-hidden rounded-xl border transition-[border-color,box-shadow,transform] duration-700 ease-out-expo hover:-translate-y-1 hover:border-blue-300 hover:shadow-[0_24px_60px_-32px_rgb(5_17_39/0.45)] focus-visible:border-blue-400 ${
           isFeatured
             ? 'border-navy/10 bg-navy text-white'
-            : 'border-blue-200/70 bg-surface text-ink'
+            : 'border-navy/10 bg-navy text-white lg:border-blue-200/70 lg:bg-surface lg:text-ink'
         }`}
       >
         <span
@@ -331,7 +348,7 @@ function ServiceCard({
           className={`absolute inset-0 transition-[opacity,transform,filter] duration-700 ease-out-expo group-hover:scale-100 group-hover:opacity-100 group-hover:grayscale-0 group-focus-visible:scale-100 group-focus-visible:opacity-100 group-focus-visible:grayscale-0 ${
             isFeatured
               ? 'scale-100 opacity-100'
-              : 'scale-[1.04] opacity-[0.16] grayscale'
+              : 'scale-100 opacity-100 lg:scale-[1.04] lg:opacity-[0.16] lg:grayscale'
           }`}
         >
           <CardMedia media={service.media} />
@@ -342,14 +359,23 @@ function ServiceCard({
           className={`absolute inset-0 transition-opacity duration-700 ${
             isFeatured
               ? 'bg-[linear-gradient(90deg,rgb(5_17_39/0.18)_0%,rgb(5_17_39/0.72)_55%,rgb(5_17_39/0.97)_100%)]'
-              : 'bg-[linear-gradient(110deg,var(--color-surface)_20%,rgb(239_248_255/0.9)_58%,rgb(239_248_255/0.42)_100%)] group-hover:opacity-0 group-focus-visible:opacity-0'
+              : 'lg:bg-[linear-gradient(110deg,var(--color-surface)_20%,rgb(239_248_255/0.9)_58%,rgb(239_248_255/0.42)_100%)] lg:group-hover:opacity-0 lg:group-focus-visible:opacity-0'
           }`}
         />
 
         {!isFeatured && (
+          /*
+           * Two scrims, not one. The lg gradient is bottom-weighted because on
+           * desktop it only ever appears under a hover, where the eye is
+           * already on the card and the copy sits low. Below lg it is the
+           * card's permanent background and the copy runs top to bottom across
+           * whatever the photo happens to be doing there, so the mobile ramp
+           * stays much heavier through the middle — the light patches in the
+           * server-room and workshop shots ate `text-white/76` otherwise.
+           */
           <span
             aria-hidden="true"
-            className="absolute inset-0 bg-[linear-gradient(0deg,rgb(5_17_39/0.95)_0%,rgb(5_17_39/0.62)_58%,rgb(5_17_39/0.2)_100%)] opacity-0 transition-opacity duration-700 group-hover:opacity-100 group-focus-visible:opacity-100"
+            className="absolute inset-0 bg-[linear-gradient(0deg,rgb(5_17_39/0.96)_0%,rgb(5_17_39/0.86)_45%,rgb(5_17_39/0.66)_100%)] opacity-100 transition-opacity duration-700 lg:bg-[linear-gradient(0deg,rgb(5_17_39/0.95)_0%,rgb(5_17_39/0.62)_58%,rgb(5_17_39/0.2)_100%)] lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-visible:opacity-100"
           />
         )}
 
@@ -365,7 +391,7 @@ function ServiceCard({
               className={`grid size-10 place-items-center rounded-lg border transition-colors duration-700 ${
                 isFeatured
                   ? 'border-white/25 bg-white/10 text-white'
-                  : 'border-blue-200 bg-white/80 text-signal group-hover:border-white/30 group-hover:bg-white/10 group-hover:text-white group-focus-visible:border-white/30 group-focus-visible:bg-white/10 group-focus-visible:text-white'
+                  : 'border-white/25 bg-white/10 text-white lg:border-blue-200 lg:bg-white/80 lg:text-signal lg:group-hover:border-white/30 lg:group-hover:bg-white/10 lg:group-hover:text-white lg:group-focus-visible:border-white/30 lg:group-focus-visible:bg-white/10 lg:group-focus-visible:text-white'
               }`}
             >
               <Icon name={service.icon} className="size-5" />
@@ -375,7 +401,7 @@ function ServiceCard({
               className={`mt-3 text-[clamp(1.3rem,2vw,1.75rem)] font-semibold leading-tight tracking-[-0.025em] transition-colors duration-700 2xl:mt-5 ${
                 isFeatured
                   ? 'text-white'
-                  : 'text-ink group-hover:text-white group-focus-visible:text-white'
+                  : 'text-white lg:text-ink lg:group-hover:text-white lg:group-focus-visible:text-white'
               }`}
             >
               {service.title}
@@ -384,7 +410,7 @@ function ServiceCard({
               className={`mt-2 max-w-[34ch] text-[14px] leading-relaxed transition-colors duration-700 2xl:mt-3 2xl:text-[15px] ${
                 isFeatured
                   ? 'text-white/76'
-                  : 'text-ink-muted group-hover:text-white/78 group-focus-visible:text-white/78'
+                  : 'text-white/76 lg:text-ink-muted lg:group-hover:text-white/78 lg:group-focus-visible:text-white/78'
               }`}
             >
               {service.description}
@@ -395,7 +421,7 @@ function ServiceCard({
             className={`mt-5 flex items-center gap-2 text-sm font-semibold transition-colors duration-700 2xl:mt-8 ${
               isFeatured
                 ? 'text-blue-300'
-                : 'text-blue-700 group-hover:text-blue-200 group-focus-visible:text-blue-200'
+                : 'text-blue-300 lg:text-blue-700 lg:group-hover:text-blue-200 lg:group-focus-visible:text-blue-200'
             }`}
           >
             Explore service
@@ -405,7 +431,7 @@ function ServiceCard({
             />
           </span>
         </span>
-      </Link>
+      </a>
     </li>
   )
 }
@@ -570,12 +596,11 @@ function BuildServiceGrid() {
 }
 
 export default function Services() {
-  const { ref, inView } = useInView<HTMLElement>()
 
   return (
     <section
-      ref={ref}
-      data-shown={inView}
+      data-reveal-root
+data-shown="false"
       id="services"
       className="mx-auto max-w-site px-5 py-28 sm:px-8 sm:py-40"
     >

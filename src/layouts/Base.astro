@@ -1,0 +1,137 @@
+---
+import '@/index.css'
+import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer.astro'
+import CustomCursor from '@/components/CustomCursor'
+import { organizationSchema, websiteSchema } from '@/lib/schema'
+
+/**
+ * The one place head metadata is written.
+ *
+ * The SPA this replaced served a single static index.html for all five routes,
+ * so every page shipped the same <title> and — the damaging part — the same
+ * `<link rel="canonical" href="https://akvega.com/">`. A canonical is a
+ * directive: on /services, /about, /work and /contact it told Google those
+ * pages were duplicates of the homepage. Here each page passes its own, and
+ * Astro emits it into static HTML that needs no JavaScript to be read.
+ */
+interface Props {
+  title: string
+  description: string
+  /** Overrides the share image for one page. Defaults to the site card. */
+  ogImage?: string
+}
+
+const { title, description, ogImage = '/og.png' } = Astro.props
+
+// Astro.site comes from `site` in astro.config.mjs; Astro.url.pathname is the
+// route being built. Together they are the canonical, with no hand-written
+// origin to drift out of sync.
+//
+// The pathname needs normalising first. `build.format: 'file'` emits
+// /services.html, and during the build Astro reports that filename as the
+// pathname — so a naive canonical came out as https://akvega.com/index.html,
+// which is a URL Firebase's `cleanUrls` immediately redirects away from. A
+// canonical pointing at a redirect is a canonical Google discards.
+const canonicalPath = Astro.url.pathname
+  .replace(/index\.html$/, '')
+  .replace(/\.html$/, '')
+  .replace(/(.)\/$/, '$1')
+
+const canonical = new URL(canonicalPath || '/', Astro.site).href
+const ogImageUrl = new URL(ogImage, Astro.site).href
+
+// Site-wide entity graph. Page-specific schema (BreadcrumbList, the service
+// ItemList) is added by the components and pages that own it.
+const graph = [organizationSchema(), websiteSchema()]
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Tag Manager -->
+    <script is:inline>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-MH6MH7F6');</script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Google tag (gtag.js) -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-H4KQL6J5NQ"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-H4KQL6J5NQ');
+    </script>
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#ffffff" />
+
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="apple-touch-icon" href="/logo.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Akvega" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    {graph.map((node) => (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(node)} />
+    ))}
+
+    <slot name="head" />
+  </head>
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MH6MH7F6"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div class="flex min-h-dvh flex-col">
+      <a
+        href="#main"
+        class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-blue-600 focus:px-4 focus:py-2 focus:text-sm focus:text-white"
+      >
+        Skip to content
+      </a>
+
+      <Header client:load pathname={Astro.url.pathname} />
+
+      <main id="main" class="w-full max-w-full flex-1 overflow-x-hidden">
+        <slot />
+      </main>
+
+      <Footer />
+      <CustomCursor client:idle />
+    </div>
+
+    <script>
+      import { initReveal } from '@/scripts/reveal'
+      initReveal()
+    </script>
+  </body>
+</html>

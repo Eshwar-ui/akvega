@@ -36,7 +36,15 @@ const marks: { tile: Tile; mark: TechMark }[] = tiles
 
 export default function PlatformTiles() {
   return (
-    <ul className="mt-[clamp(1.5rem,5vh,3rem)] flex flex-nowrap items-start justify-center gap-x-3 sm:gap-x-6 lg:gap-x-10 xl:absolute xl:inset-x-0 xl:bottom-4 xl:mt-0">
+    /*
+     * Five tiles on one line, never wrapped — the scattered row is the effect.
+     * That makes the narrowest phone the constraint: at 320px the hero's own
+     * padding leaves ~248px for the row, and the previous 48px tiles with a
+     * 12px gap needed 288px, so the first and last tile were clipped by the
+     * stage's `overflow-hidden`. Base sizing is now set from that budget
+     * (5 × 40px + 4 × 8px = 232px) and grows from there.
+     */
+    <ul className="mt-[clamp(1.5rem,5vh,3rem)] flex flex-nowrap items-start justify-center gap-x-2 min-[400px]:gap-x-3 sm:gap-x-6 lg:gap-x-10 xl:absolute xl:inset-x-0 xl:bottom-4 xl:mt-0">
       {marks.map(({ tile, mark }, i) => (
         <li
           key={tile.name}
@@ -53,11 +61,11 @@ export default function PlatformTiles() {
               title={tile.name}
               data-pointer-layer
               style={{ '--brand': mark.hex } as React.CSSProperties}
-              className="grid size-[48px] place-items-center rounded-[14px] bg-white shadow-[0_2px_4px_rgb(5_17_39/0.05),0_16px_32px_-12px_rgb(5_17_39/0.3)] transition-shadow duration-500 ease-out-expo hover:shadow-[0_4px_8px_rgb(5_17_39/0.07),0_28px_48px_-14px_rgb(5_17_39/0.36)] sm:size-[64px] sm:rounded-[18px] lg:size-[clamp(60px,8.5vh,78px)] lg:rounded-[20px]"
+              className="grid size-10 place-items-center rounded-xl bg-white shadow-[0_2px_4px_rgb(5_17_39/0.05),0_16px_32px_-12px_rgb(5_17_39/0.3)] transition-shadow duration-500 ease-out-expo hover:shadow-[0_4px_8px_rgb(5_17_39/0.07),0_28px_48px_-14px_rgb(5_17_39/0.36)] min-[400px]:size-[48px] min-[400px]:rounded-[14px] sm:size-[64px] sm:rounded-[18px] lg:size-[clamp(60px,8.5vh,78px)] lg:rounded-[20px]"
             >
               <TechIcon
                 mark={mark}
-                className="size-6 shrink-0 bg-[var(--brand)] sm:size-7 lg:size-9"
+                className="size-5 shrink-0 bg-[var(--brand)] min-[400px]:size-6 sm:size-7 lg:size-9"
               />
               <span className="sr-only">{tile.name}</span>
             </span>

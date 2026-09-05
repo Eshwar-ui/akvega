@@ -597,6 +597,39 @@
   .capability-detail {
     animation: capability-detail-in 420ms var(--ease-out-expo) both;
   }
+
+  /*
+   * A horizontally scrollable rail whose trailing edge fades out, so a row cut
+   * off at the container edge reads as "there is more this way" rather than as
+   * a clipping bug. Masked rather than overlaid with a gradient: the rail sits
+   * on navy in one place and could sit on anything later, and a mask needs no
+   * knowledge of what is behind it.
+   *
+   * The fade is removed once the row fits — at lg the capability selector has
+   * room for all six tabs, and fading an edge with nothing past it just dims
+   * the last tab for no reason.
+   */
+  .scroll-rail {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      #000 0,
+      #000 calc(100% - 2.5rem),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      #000 0,
+      #000 calc(100% - 2.5rem),
+      transparent 100%
+    );
+  }
+
+  @media (min-width: 64rem) {
+    .scroll-rail {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+  }
 }
 
 /*
@@ -630,6 +663,28 @@
     opacity: 0;
     transform: translateY(14px);
   }
+}
+
+.success-scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 25%, rgb(91 224 255 / 0.16) 48%, transparent 70%);
+  transform: translateX(-100%);
+  animation: success-scan 1.2s var(--ease-out-expo) 140ms both;
+}
+
+.success-ring {
+  animation: success-pop 650ms var(--ease-out-expo) 80ms both;
+}
+
+@keyframes success-scan {
+  to { transform: translateX(100%); }
+}
+
+@keyframes success-pop {
+  from { opacity: 0; transform: scale(0.72) rotate(-12deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
 }
 
 @media (prefers-reduced-motion: reduce) {

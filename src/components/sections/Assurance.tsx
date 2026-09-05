@@ -1,5 +1,5 @@
 import { Icon, type IconName } from '@/components/Icons'
-import { revealDelay, useInView } from '@/lib/useInView'
+import { revealDelay } from '@/lib/useInView'
 
 /**
  * A compact trust strip between Approach and Process — the "no lock-in"
@@ -32,12 +32,11 @@ const points: Point[] = [
 ]
 
 export default function Assurance() {
-  const { ref, inView } = useInView<HTMLElement>()
 
   return (
     <section
-      ref={ref}
-      data-shown={inView}
+      data-reveal-root
+data-shown="false"
       className="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-20"
     >
       <div className="reveal flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
