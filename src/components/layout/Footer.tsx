@@ -70,6 +70,7 @@ export default function Footer() {
 
             <Link
               to={site.footer.cta.to}
+              data-cta="footer-contact"
               style={revealDelay(1)}
               className="press reveal type-track-title inline-flex shrink-0 items-center self-start rounded-full border border-navy/20 px-8 py-3 text-ink hover:border-navy hover:bg-navy hover:text-white sm:px-10"
             >

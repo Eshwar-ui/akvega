@@ -2,18 +2,37 @@
   "functions": {
     "source": "functions",
     "codebase": "contact",
-    "ignore": ["node_modules", ".git", "*.log", "*.test.js", ".env.example", ".secret.local", "dev-server.js", "check-config.js"],
-    "predeploy": ["node functions/check-config.js", "npm --prefix functions test"]
+    "ignore": [
+      "node_modules",
+      ".git",
+      "*.log",
+      "*.test.js",
+      ".env.example",
+      ".secret.local",
+      "dev-server.js",
+      "check-config.js"
+    ],
+    "predeploy": [
+      "node functions/check-config.js",
+      "npm --prefix functions test"
+    ]
   },
   "hosting": {
     "public": "dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "cleanUrls": true,
     "trailingSlash": false,
     "rewrites": [
       {
         "source": "/api/contact",
-        "function": { "functionId": "contact", "region": "us-central1" }
+        "function": {
+          "functionId": "contact",
+          "region": "us-central1"
+        }
       },
       {
         "source": "**",
@@ -21,6 +40,31 @@
       }
     ],
     "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          },
+          {
+            "key": "Permissions-Policy",
+            "value": "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+          }
+        ]
+      },
       {
         "source": "/assets/**",
         "headers": [
@@ -31,25 +75,11 @@
         ]
       },
       {
-        "source": "**/*.@(webp|svg|png|jpg|jpeg|woff2)",
+        "source": "**/*.@(webp|svg|png|jpg|jpeg|avif|gif|ico|woff2|mp4|webm)",
         "headers": [
-          { "key": "Cache-Control", "value": "public, max-age=604800" }
-        ]
-      },
-      {
-        "source": "/index.html",
-        "headers": [
-          { "key": "Cache-Control", "value": "no-cache, must-revalidate" }
-        ]
-      },
-      {
-        "source": "**",
-        "headers": [
-          { "key": "X-Content-Type-Options", "value": "nosniff" },
-          { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
           {
-            "key": "Permissions-Policy",
-            "value": "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+            "key": "Cache-Control",
+            "value": "public, max-age=604800, stale-while-revalidate=86400"
           }
         ]
       }

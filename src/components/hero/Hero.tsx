@@ -258,12 +258,14 @@ export default function Hero() {
           >
             <Link
               to={site.primaryCta.to}
+              data-cta="hero-start-project"
               className="press type-ui rounded-full bg-navy px-7 py-3.5 text-white shadow-[0_10px_30px_-10px_var(--color-signal)] hover:shadow-[0_18px_42px_-12px_var(--color-signal)]"
             >
               {site.primaryCta.label}
             </Link>
             <Link
               to={site.secondaryCta.to}
+              data-cta="hero-see-the-work"
               className="press type-ui rounded-full border border-hairline bg-paper px-7 py-3.5 text-ink hover:border-blue-300 hover:text-blue-700"
             >
               {site.secondaryCta.label}

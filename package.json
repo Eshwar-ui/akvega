@@ -13,11 +13,13 @@
     "icons": "node scripts/build-tech-icons.mjs",
     "images": "node scripts/optimize-images.mjs",
     "deploy": "npm run build && firebase deploy --only hosting,functions:contact --project akvegadigital",
-    "test:contact": "npm --prefix functions test"
+    "test:contact": "npm --prefix functions test",
+    "deploy:preview": "npm run build && firebase hosting:channel:deploy preview --expires 7d --project akvegadigital"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@tailwindcss/vite": "^4.3.3",
+    "firebase": "^12.18.0",
     "gsap": "^3.15.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

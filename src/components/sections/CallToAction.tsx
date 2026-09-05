@@ -118,6 +118,7 @@ export default function CallToAction() {
           >
             <Link
               to={site.primaryCta.to}
+              data-cta="closing-start-project"
               className="press type-ui rounded-full bg-white px-7 py-3.5 text-navy"
             >
               {site.primaryCta.label}
