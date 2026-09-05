@@ -155,8 +155,99 @@ npm run deploy
 ```
 
 `firebase.json` carries the SPA rewrite (every path to `/index.html`, so deep
-links like `/services` resolve), long-lived cache headers on hashed `assets/`,
-and a short set of security headers.
+links like `/services` resolve), the `/api/contact` rewrite to the contact
+function, cache headers, and a short set of security headers.
+
+The cache headers are ordered broadest-first on purpose. Firebase applies every
+matching block and the **last** one wins per header key, so `**` sets
+`no-store` as the default and `/assets/**` overrides it with a year. The
+default has to cover `**` rather than `/index.html`: every SPA route is
+requested as `/`, `/work`, `/contact` — paths an `/index.html` rule never
+matches, which is why `/` was being served with Hosting's default
+`max-age=3600` and a deploy stayed invisible for an hour.
+
+## Measurement
+
+### Who owns the GA4 tag
+
+`index.html` loads **GTM (`GTM-MH6MH7F6`)** and configures **gtag** for
+`G-H4KQL6J5NQ`. That is the only GA4 tag on the page, and it must stay that
+way: initialising the Firebase Analytics SDK as well would issue a second
+`config` against the same measurement ID and double every number in the
+property. `src/lib/firebase.ts` therefore loads **Performance Monitoring
+only** — GTM cannot produce that, so it is purely additive.
+
+`page_view` is **not** sent by this code. GA4 Enhanced Measurement already
+sends one on load and on every browser-history change, which React Router
+triggers on navigation. What the app does instead is keep `document.title`
+correct per route (`src/lib/pageMeta.ts`), because that is the title GA4 reads
+at the moment it fires.
+
+### Custom events
+
+`src/lib/analytics.ts` is the event catalogue and the only place that decides
+what this site reports. Names and parameters are typed, so a typo is a compile
+error rather than a second near-identical row in the console.
+
+| Event | Fires when | Answers |
+| --- | --- | --- |
+| `cta_click` | Any element tagged `data-cta` | Which of the five "Start a project" buttons does the work |
+| `contact_channel_click` | A `mailto:` / `tel:` link | How many people skip the form entirely |
+| `outbound_click` | A link to another domain | Where the site sends people |
+| `contact_form_start` | First keystroke in the contact form | Top of the inquiry funnel |
+| `select_content` | Growth vs Build chosen | Which track demand is actually for |
+| `generate_lead` | `/api/contact` answered `ok` | Bottom of the funnel — **mark as a conversion in GA4** |
+| `contact_form_error` | The submission did not land | Whether the endpoint has quietly stopped working |
+| `scroll_depth` | 25 / 50 / 75 / 90% of a page | How far the long pages really read |
+
+`generate_lead` fires only on a **confirmed** success, never on the submit
+click — otherwise every failed attempt would be counted as an inquiry.
+`contact_form_error` exists because a contact endpoint that stops accepting
+posts is otherwise invisible: inquiries just stop arriving, which looks
+exactly like a quiet week.
+
+Adding a tracked CTA takes one attribute — no handler, no import:
+
+```tsx
+<Link to="/contact" data-cta="pricing-start-project">Start a project</Link>
+```
+
+`src/components/Analytics.tsx` picks it up from a single delegated click
+listener and derives the reported location (`header` / `footer` / `form` /
+`body`) from where the element sits.
+
+**Nothing personal is ever sent.** The contact form reports shape, not
+content: that an inquiry happened and which track it was for. Name, email and
+message go to `/api/contact` and never to analytics.
+
+### Performance Monitoring
+
+`src/lib/firebase.ts` loads the SDK via dynamic `import()` after first paint,
+so it never sits on the critical path. Loading it *is* the integration: it
+installs automatic traces for page load, Core Web Vitals (LCP, INP, CLS) and
+every outbound request. Nothing calls it directly. Production only — a Vite
+dev bundle's timings say nothing about production. Data takes up to ~12h to
+appear the first time.
+
+Config comes from `.env` (`VITE_FIREBASE_*`, see `.env.example`). Every value
+is a **public** identifier that the SDK ships to the browser by design; access
+is governed by security rules and API-key restrictions, not by keeping those
+strings secret. Never put a real secret behind a `VITE_` prefix — Vite inlines
+those into the bundle.
+
+### First-run console setup
+
+Three things can only be done in the console, once:
+
+1. **Analytics → Events → mark `generate_lead` as a conversion**, so inquiries
+   are counted as conversions rather than one row among many custom events.
+2. **Admin → Data streams → Configure tag settings → Define internal traffic**:
+   add your own IP. The tag in `index.html` reports from `localhost` too, so
+   without this, development traffic sits in the same reports as visitors.
+3. **Admin → Custom definitions**: register `cta_label`, `cta_location`,
+   `interest`, `reason` and `percent_scrolled` as custom dimensions. GA4
+   collects the parameters either way, but no report can be broken down by
+   them until they are registered.
 
 ## Before launch
 

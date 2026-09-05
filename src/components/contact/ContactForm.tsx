@@ -1,6 +1,7 @@
-import { cloneElement, isValidElement, useId, useState } from 'react'
+import { cloneElement, isValidElement, useId, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
 import { Icon } from '@/components/Icons'
+import { track } from '@/lib/analytics'
 import { site } from '@/lib/site'
 
 /**
@@ -83,8 +84,27 @@ export default function ContactForm() {
   const [submitError, setSubmitError] = useState('')
   const [website, setWebsite] = useState('')
 
-  const update = (patch: Partial<FormState>) =>
+  // A ref, not state: the top of the funnel is reported once and must not
+  // cause a render — retyping a name is not a second inquiry.
+  const started = useRef(false)
+
+  const update = (patch: Partial<FormState>) => {
+    if (!started.current) {
+      started.current = true
+      track('contact_form_start', { form_name: 'contact' })
+    }
+
+    // Which track a visitor wants is the most useful thing this form knows,
+    // and it is answered before they finish typing.
+    if (patch.interest) {
+      track('select_content', {
+        content_type: 'service_interest',
+        item_id: patch.interest,
+      })
+    }
+
     setData((current) => ({ ...current, ...patch }))
+  }
 
   const emailValid = emailPattern.test(data.email.trim())
   const emailError = emailTouched && data.email.trim().length > 0 && !emailValid
@@ -108,14 +128,30 @@ export default function ContactForm() {
       })
       const result = await response.json()
       if (!response.ok || result.ok !== true) {
+        track('contact_form_error', {
+          form_name: 'contact',
+          reason: response.status === 429 ? 'rate_limited' : `http_${response.status}`,
+        })
         setSubmitError(response.status === 429
           ? 'Too many attempts. Please try again in 10 minutes.'
           : 'Your message could not be sent. Please try again or email us directly.')
         return
       }
+      // Shape, never content: that an inquiry happened and which track it was
+      // for. Name, email and message go to the API and never to analytics.
+      track('generate_lead', {
+        form_name: 'contact',
+        interest: data.interest,
+        has_company: data.company.trim().length > 0,
+      })
+
       setSent(true)
       setData(initialState)
     } catch {
+      track('contact_form_error', {
+        form_name: 'contact',
+        reason: 'network_or_invalid_response',
+      })
       setSubmitError('We could not confirm your message was sent. Please check your connection or email us directly.')
     } finally {
       setSending(false)

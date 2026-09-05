@@ -1,4 +1,5 @@
 import { Outlet, ScrollRestoration } from 'react-router-dom'
+import Analytics from '@/components/Analytics'
 import CustomCursor from '@/components/CustomCursor'
 import Footer from '@/components/layout/Footer'
 import Header from '@/components/layout/Header'
@@ -19,6 +20,7 @@ export default function RootLayout() {
       <Footer />
       <CustomCursor />
       <ScrollRestoration />
+      <Analytics />
     </div>
   )
 }
