@@ -40,7 +40,24 @@ export default function Analytics() {
   const firedThresholds = useRef<Set<number>>(new Set())
 
   useEffect(() => {
-    void loadPerformance()
+    // Deferred past `load` and then to an idle slot. Loading it during mount
+    // contends with the hero's GSAP intro and leaves it stuck at its from-state
+    // (opacity 0) — reproduced on a preview channel, and the reason the intro
+    // is the thing that must go first. Nothing is lost by waiting: the page-load
+    // trace is reconstructed from buffered PerformanceTimeline entries.
+    let idle: number | undefined
+    const start = () => {
+      const schedule = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 2000))
+      idle = schedule(() => void loadPerformance()) as unknown as number
+    }
+
+    if (document.readyState === 'complete') start()
+    else window.addEventListener('load', start, { once: true })
+
+    return () => {
+      window.removeEventListener('load', start)
+      if (idle !== undefined) window.cancelIdleCallback?.(idle)
+    }
   }, [])
 
   /**
