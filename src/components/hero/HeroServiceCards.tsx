@@ -28,7 +28,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Live',
     image: '/service-ui/campaign-control.webp',
     alt: 'Paid media workspace with a creative schedule, campaign budget and performance trends',
-    to: '/services#paid-search',
+    to: '/services/google-ads',
     position:
       'bottom-[32%] left-[-2rem] z-[1] w-[13rem] -rotate-[4deg] 2xl:bottom-[30%] 2xl:left-[1%] 2xl:w-[15rem]',
     depth: 0.72,
@@ -40,7 +40,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Tracking',
     image: '/service-ui/search-visibility.webp',
     alt: 'SEO and answer visibility workspace showing coverage, indexed pages and audit progress',
-    to: '/services#search',
+    to: '/services/seo',
     position:
       'bottom-[10%] left-[2.5rem] z-[3] w-[12.5rem] rotate-[4deg] 2xl:bottom-[9%] 2xl:left-[5%] 2xl:w-[14.5rem]',
     depth: 0.58,
@@ -52,7 +52,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Approved',
     image: '/service-ui/brand-system.webp',
     alt: 'Brand system workspace with logo geometry, colour palette, type scale and approval history',
-    to: '/services',
+    to: '/services/branding',
     position:
       'bottom-[-6%] left-[1rem] z-[4] w-[12rem] -rotate-[6deg] 2xl:bottom-[-5%] 2xl:left-[7%] 2xl:w-[14rem]',
     depth: 1,
@@ -63,7 +63,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Ready',
     image: '/service-ui/web-engineering.webp',
     alt: 'Web engineering workspace with deployment pipeline, automated tests, performance telemetry and release health',
-    to: '/services#websites',
+    to: '/services/websites',
     position:
       'bottom-[32%] right-[-2rem] z-[1] w-[13rem] rotate-[4deg] 2xl:bottom-[30%] 2xl:right-[1%] 2xl:w-[15rem]',
     depth: 0.86,
@@ -74,7 +74,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Testing',
     image: '/service-ui/mobile-delivery.webp',
     alt: 'Mobile engineering workspace with device previews, build versions, automated tests and release readiness',
-    to: '/services#mobile',
+    to: '/services/mobile-apps',
     position:
       'bottom-[10%] right-[2.5rem] z-[3] w-[12.5rem] -rotate-[4deg] 2xl:bottom-[9%] 2xl:right-[5%] 2xl:w-[14.5rem]',
     depth: 0.68,
@@ -85,7 +85,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Healthy',
     image: '/service-ui/systems-automation.webp',
     alt: 'Systems automation workspace with API connections, event routing, scheduled jobs and pipeline health',
-    to: '/services#custom',
+    to: '/services/custom-tools',
     position:
       'bottom-[-6%] right-[1rem] z-[4] w-[12rem] rotate-[6deg] 2xl:bottom-[-5%] 2xl:right-[7%] 2xl:w-[14rem]',
     depth: 0.96,
@@ -168,9 +168,29 @@ export function HeroServiceCardsDesktop() {
   )
 }
 
+/**
+ * Below xl this was a 2-up grid, which stacked six cards into three rows and
+ * pushed the hero's actual content — headline, CTAs — off a phone screen. As a
+ * carousel it occupies one row at any width and the cards get to be big enough
+ * to read, which they were not at half a phone's width.
+ *
+ * CSS scroll-snap, no carousel library and no JS of our own. The cards are
+ * links, so they are reachable by tab and focusing one scrolls it into view,
+ * which is the keyboard story most JS carousels get wrong. It also degrades to
+ * a plain scrollable row if anything fails.
+ *
+ * The negative margin and matching width let it bleed to the screen edges
+ * through the hero's px-6, so a partial next card is visible — the cue that
+ * says "this scrolls" without needing arrows or dots. `scroll-px-6` makes a
+ * snapped card land flush with the headline above it rather than against the
+ * viewport edge.
+ */
 export function HeroServiceCardsMobile() {
   return (
-    <ul className="mt-[clamp(1.75rem,5vh,3rem)] grid w-full max-w-2xl grid-flow-dense grid-cols-2 gap-3 sm:grid-cols-3 xl:hidden">
+    <ul
+      aria-label="A look inside our service workspaces"
+      className="mt-[clamp(1.75rem,5vh,3rem)] -mx-6 flex w-[calc(100%+3rem)] snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain scroll-px-6 px-6 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] xl:hidden [&::-webkit-scrollbar]:hidden"
+    >
       {serviceCards.map((card, index) => (
         <li
           key={card.name}
@@ -178,7 +198,7 @@ export function HeroServiceCardsMobile() {
           data-depth={card.depth}
           data-scroll-direction={card.scrollDirection}
           data-card-index={index}
-          className="min-w-0 will-change-transform"
+          className="w-[68%] shrink-0 snap-start will-change-transform sm:w-[42%] md:w-[31%]"
         >
           <div data-hero-card-enter className="will-change-transform">
             <Card card={card} compact />

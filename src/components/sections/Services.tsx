@@ -60,7 +60,7 @@ const homeServices: HomeService[] = [
     description:
       'Fast, resilient web products engineered for scale, discoverability and real-world traffic.',
     icon: 'browser',
-    to: '/services#websites',
+    to: '/services/websites',
     media: {
       type: 'image',
       name: 'web-engineering-real',
@@ -72,7 +72,7 @@ const homeServices: HomeService[] = [
     description:
       'Native and cross-platform apps built from first prototype through store release.',
     icon: 'mobile',
-    to: '/services#mobile',
+    to: '/services/mobile-apps',
     media: {
       type: 'image',
       name: 'mobile-applications-real',
@@ -84,7 +84,7 @@ const homeServices: HomeService[] = [
     description:
       'Integrations, internal tools and pipelines that remove repetitive work from operations.',
     icon: 'sliders',
-    to: '/services#custom',
+    to: '/services/custom-tools',
     media: {
       type: 'image',
       name: 'systems-automation-real',
@@ -96,7 +96,7 @@ const homeServices: HomeService[] = [
     description:
       'Research, flows and interface systems that move cleanly from prototype to production.',
     icon: 'layers',
-    to: '/services#design',
+    to: '/services/product-design',
     media: {
       type: 'image',
       name: 'product-design-real',
@@ -108,7 +108,7 @@ const homeServices: HomeService[] = [
     description:
       'Storefronts, payments and fulfilment flows engineered for demanding commerce operations.',
     icon: 'bag',
-    to: '/services#commerce',
+    to: '/services/online-stores',
     media: {
       type: 'image',
       name: 'commerce-platforms-real',
@@ -120,7 +120,7 @@ const homeServices: HomeService[] = [
     description:
       'Cloud infrastructure, deployment pipelines and observability built for dependable releases.',
     icon: 'spark',
-    to: '/services#custom',
+    to: '/services/custom-tools',
     media: {
       type: 'image',
       name: 'cloud-devops-real',
