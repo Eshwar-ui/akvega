@@ -34,6 +34,14 @@ const SETS = [
     quality: 80,
   },
   {
+    dir: 'public/illustration',
+    // Full-bleed page art: the 404 illustration covers the whole viewport, so
+    // the large variant is simply the source at its native 1536 (the script
+    // never upscales past that). 768 covers phones and narrow windows.
+    widths: [768, 1536],
+    quality: 78,
+  },
+  {
     dir: 'public/service-media',
     // Bento cards. The featured slot runs 7 of 12 columns of a 95vw container,
     // so ~1060px CSS on a 1920px screen; the rest are far smaller. Two widths,

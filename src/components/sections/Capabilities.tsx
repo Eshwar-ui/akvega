@@ -17,42 +17,42 @@ const capabilities: Capability[] = [
     description:
       'Fast, resilient web products engineered for scale, discoverability and real-world traffic.',
     mark: <Icon name="browser" className={`${markSize} text-vega`} />,
-    to: '/services#websites',
+    to: '/services/websites',
   },
   {
     name: 'Mobile Apps',
     description:
       'Native and cross-platform apps built from first prototype through store release.',
     mark: <Icon name="mobile" className={`${markSize} text-vega`} />,
-    to: '/services#mobile',
+    to: '/services/mobile-apps',
   },
   {
     name: 'Custom Tools',
     description:
       'Integrations, internal tools and pipelines that remove repetitive work from operations.',
     mark: <Icon name="sliders" className={`${markSize} text-vega`} />,
-    to: '/services#custom',
+    to: '/services/custom-tools',
   },
   {
     name: 'Product Design',
     description:
       'Research, flows and interface systems that move cleanly from prototype to production.',
     mark: <Icon name="layers" className={`${markSize} text-vega`} />,
-    to: '/services#design',
+    to: '/services/product-design',
   },
   {
     name: 'Online Stores',
     description:
       'Storefronts, payments and fulfilment flows engineered for demanding commerce operations.',
     mark: <Icon name="bag" className={`${markSize} text-vega`} />,
-    to: '/services#commerce',
+    to: '/services/online-stores',
   },
   {
     name: 'Cloud Hosting',
     description:
       'Cloud infrastructure, deployment pipelines and observability built for dependable releases.',
     mark: <Icon name="spark" className={`${markSize} text-vega`} />,
-    to: '/services#custom',
+    to: '/services/custom-tools',
   },
 ]
 
