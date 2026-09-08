@@ -22,7 +22,7 @@ npm run dev        # http://localhost:5173
 | ------------------- | ------------------------------------------------------- |
 | `npm run dev`       | Dev server with HMR                                     |
 | `npm run dev:api`   | Local contact API using `functions/.env`                |
-| `npm run build`     | Typecheck (`tsc -b`) then production build into `dist/` |
+| `npm run build`     | `astro check`, then production build into `dist/`      |
 | `npm run typecheck` | Types only, no bundle                                   |
 | `npm run lint`      | Oxlint                                                  |
 | `npm run preview`   | Serve the built `dist/` locally                         |
@@ -30,6 +30,7 @@ npm run dev        # http://localhost:5173
 | `npm run images`    | Convert new PNG art in `public/` to sized WebP          |
 | `npm run deploy`    | Build, then deploy Hosting and the contact function    |
 | `npm run test:contact` | Test contact validation and email handling          |
+| `npm run check:build` | Assert every sitemap route is a real file with its own canonical |
 
 ## Contact email (Resend)
 
@@ -71,10 +72,14 @@ Local submissions use real Resend delivery once the addresses are configured.
 
 ### Deploy
 
-Run `npm --prefix functions ci`, then `npm run deploy`. Firebase loads
-`functions/.env` into the function environment. Firebase Functions still requires
-a project with Blaze billing; using `.env` does not remove that requirement.
-No Secret Manager setup is used by this implementation.
+The function ships with the site: a merge to `main` deploys both. See
+"Deploying" below for the pipeline and the secrets it needs. To deploy from
+a laptop instead, run `npm --prefix functions ci`, then `npm run deploy`.
+
+Either way Firebase loads `functions/.env` into the function environment.
+Firebase Functions still requires a project with Blaze billing; using `.env`
+does not remove that requirement. No Secret Manager setup is used by this
+implementation.
 
 The endpoint validates input, limits field sizes, checks browser origins, includes
 a honeypot, and applies a best-effort per-instance burst limit. That limit resets
@@ -166,11 +171,112 @@ git show <commit>:public/service-ui/<name>.png > <name>.png
 
 ## Deploying
 
-Firebase Hosting, project `akvegadigital`.
+Firebase Hosting, project `akvegadigital`. **A merge to `main` deploys.**
+`npm run deploy` still works for emergencies, but it ships whatever is in
+that working tree and skips review, so prefer the pipeline.
+
+| Workflow | Trigger | What it does |
+| --- | --- | --- |
+| `.github/workflows/ci.yml` | every PR, and `main` after merge | lint, typecheck + build, build-output check, function tests |
+| `.github/workflows/preview.yml` | PR opened/pushed, and closed | deploys a Hosting preview channel, comments the URL, deletes it at close |
+| `.github/workflows/deploy.yml` | push to `main`, or manual | builds and deploys Hosting + the contact function to production |
+
+All three share `.github/actions/setup`, which installs both package trees
+against Node from `.nvmrc`.
+
+### One-time setup
+
+The pipeline needs one Google service account plus a handful of repository
+settings. Until they exist, `deploy.yml` fails in its first step and names
+exactly what is missing, rather than dying halfway through a deploy.
+
+**1. Create the service account** (project `akvegadigital`) with the roles a
+Hosting + Functions deploy actually needs:
 
 ```bash
-npm run deploy
+gcloud iam service-accounts create github-deploy \
+  --project akvegadigital --display-name "GitHub Actions deploy"
+
+SA=github-deploy@akvegadigital.iam.gserviceaccount.com
+for role in roles/firebasehosting.admin roles/cloudfunctions.admin \
+            roles/iam.serviceAccountUser roles/artifactregistry.writer \
+            roles/cloudbuild.builds.editor roles/run.admin \
+            roles/firebase.viewer; do
+  gcloud projects add-iam-policy-binding akvegadigital \
+    --member "serviceAccount:$SA" --role "$role"
+done
+
+gcloud iam service-accounts keys create key.json --iam-account "$SA"
 ```
+
+The long role list is what a **v2** Functions deploy costs, not
+over-provisioning: it builds a container (Cloud Build), pushes it (Artifact
+Registry) and runs it (Cloud Run). Hosting alone would need only the first.
+
+**2. Add repository secrets** (Settings -> Secrets and variables -> Actions
+-> Secrets):
+
+| Secret | Value |
+| --- | --- |
+| `FIREBASE_SERVICE_ACCOUNT` | the entire contents of `key.json` |
+| `RESEND_API_KEY` | the Resend key |
+| `CONTACT_FROM` | `Akvega <hello@akvega.com>` -- **without** the quotes |
+| `CONTACT_TO` | `hello@akvega.com` |
+
+Then delete `key.json` from disk. The three contact values are written back
+out as `functions/.env` inside the job, because that is the file Firebase
+copies into the function environment (see "Environment" above); the job
+deletes it again when it ends.
+
+Store `CONTACT_FROM` without the quotes that `functions/.env.example` shows.
+Those quotes are dotenv syntax for a local file. A secret is already a raw
+string, so including them ships a literal `"` into the From header.
+
+**3. Add repository variables** (same page -> Variables): the six
+`VITE_FIREBASE_*` values from `.env.example`. Variables rather than secrets
+because the SDK ships every one of them to the browser by design -- treating
+them as secret only hides them from the people maintaining the site.
+
+CI tolerates them being unset; the site just builds without Performance
+Monitoring, exactly as it does from a fresh clone. `deploy.yml` does not
+tolerate it: shipping production untraced is an accident, not a choice.
+
+### What guards a deploy
+
+The `predeploy` hooks in `firebase.json` run on **every** deploy -- a local
+`npm run deploy` and a hand-dispatched job included -- so they cannot be
+skipped by starting a deploy on a commit CI never saw:
+
+- `node scripts/check-build.mjs` -- every URL in the generated sitemap is a
+  real file in `dist/`, carries a **self-referential** canonical, and has its
+  own non-duplicate `<title>`. This is aimed squarely at the regression that
+  motivated the Astro rewrite: a build can compile perfectly and still tell
+  Google that four pages are copies of the homepage. Because it reads the
+  generated sitemap, adding a route extends the check with no edit here.
+- `node functions/check-config.js` -- `functions/.env` exists and is complete.
+- `npm --prefix functions test` -- the contact handler tests.
+
+Production deploys run under the `production` environment and a
+`deploy-production` concurrency group that **queues rather than cancels**.
+Hosting and the function go out in one command; two interleaved deploys can
+leave the function ahead of the HTML that calls it, and a cancelled deploy is
+the case where that ordering actually breaks.
+
+### Previews
+
+Each PR gets `https://akvegadigital--pr-<n>-<hash>.web.app`, expiring after 7
+days and deleted when the PR closes. Reviewing a rendered page matters more
+here than in most projects: canonicals, meta tags and JSON-LD are invisible
+both in a diff and in a browser window.
+
+Previews are **Hosting only**. `/api/contact` on a preview is rewritten to the
+one deployed production function, so a PR can never ship a half-deployed
+backend -- but a test submission from a preview sends real email to the real
+inbox. `functions/contact.js` allows preview-channel origins for exactly this
+reason; without that, every preview serves a form that answers 403.
+
+Pull requests from forks skip the preview job -- secrets are not exposed to
+them, so it could only fail.
 
 `firebase.json` carries the `/api/contact` rewrite to the contact function,
 `cleanUrls`, cache headers, and a short set of security headers. There is **no

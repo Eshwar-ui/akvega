@@ -6,6 +6,16 @@ const allowedOrigins = new Set([
   'https://akvega.com',
   'https://www.akvega.com',
 ])
+
+/**
+ * Firebase Hosting preview channels, one per pull request, served as
+ * `akvegadigital--<channel>-<hash>.web.app`. Only Firebase can answer on a
+ * hostname under this project, so this widens the allowlist to hosts we
+ * already control and nothing else — without it every preview deploy serves a
+ * contact form that answers 403, which is the one thing a reviewer most needs
+ * to click. Submissions from a preview reach the production inbox.
+ */
+const previewOriginPattern = /^https:\/\/akvegadigital--[a-z0-9-]+\.web\.app$/
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const windowMs = 10 * 60 * 1000
 const logoUrl = 'https://akvegadigital.web.app/full-logo.svg'
@@ -62,7 +72,7 @@ export function createContactHandler({ getConfig, fetchEmail = fetch, now = Date
     const origin = req.get('origin')
     const local = (allowLocalOrigins || process.env.FUNCTIONS_EMULATOR === 'true') &&
       /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin || '')
-    if (origin && !allowedOrigins.has(origin) && !local) {
+    if (origin && !allowedOrigins.has(origin) && !previewOriginPattern.test(origin) && !local) {
       return res.status(403).json({ error: 'Origin not allowed.' })
     }
     if (!req.is('application/json')) {

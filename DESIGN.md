@@ -293,20 +293,52 @@ stage ever feels busy, remove tiles rather than shrinking them.
 
 ## Capability rail
 
-`src/components/sections/Capabilities.tsx`, between the hero and Services on
-`Home.tsx`. The homepage now leads with six technology capabilities — Web
-Engineering, Mobile Applications, Systems & Automation, Product Design,
-Commerce Platforms, Cloud & DevOps — before the fuller service architecture.
-This is the intentional priority: technology is the primary story; growth is
-still available in Services, but no longer owns the first post-hero feature.
+`src/components/sections/Capabilities.tsx`, mounted `client:visible` between the
+hero and Services on `src/pages/index.astro`. The homepage leads with six
+technology capabilities — Websites, Mobile Apps, Custom Tools, Product Design,
+Online Stores, Cloud Hosting — before the fuller service architecture. This is
+the intentional priority: technology is the primary story; growth is still
+available in Services, but no longer owns the first post-hero feature.
 
 The old two-row tile marquee repeated the same three cards until the panel read
 as inventory and left an awkward empty lower half. It was replaced by one navy
 kinetic typography rail and one focused detail. The moving rail is deliberately
 decorative and `aria-hidden`; it repeats one full six-name sequence once to make
-the loop seamless. All real interaction stays stationary beneath it, where six
-44px-minimum buttons select the detail and the one CTA links to the active
-service. Hover, focus and tap all produce the same selection state.
+the loop seamless.
+
+### The lg split
+
+The tab-plus-detail mechanic is **`lg` and up only**, because that is the only
+width where it works. It needs room for six tabs and a pointer, and below `lg`
+it had neither: four of the six scrolled off the panel edge, selection was
+partly driven by `onPointerEnter` — which touch never fires — and reaching a
+service page cost two taps in two separate places. At `lg` all six tabs fit the
+rail, so `.scroll-rail`'s fade mask is now a guard against a seventh capability
+rather than a fix for the current six.
+
+Below `lg` the panel is what its label says: an index, so a list.
+`CapabilityIndex` renders all six as full-width rows — white icon tile, name,
+the same description, a trailing arrow — hairline-separated inside the one navy
+panel. Rows, not cards: six bordered boxes stacked in a column is the shape
+this replaced, not a variant of it. Each row is a single tap straight to its
+service page, so the "Explore capability" CTA has no mobile counterpart and
+needs none. A side effect worth keeping: all six service URLs now sit in the
+static HTML at every width, where before only the active one did.
+
+Both halves render at every width and are toggled in CSS, never by a JS media
+query — the section is server-rendered and hydrated on visible, so a
+width-dependent render would mismatch on hydration.
+
+The kinetic rail is `md` and up. At phone widths its `clamp(3rem, …)` floor put
+a 48px display face in a ~335px panel, which shows fragments of one word rather
+than a name and reads as clipped text instead of motion. Dimming the inactive
+names to `white/22` is what makes the active one legible as a *selection*, so
+that applies at `lg` only as well; between `md` and `lg` there is nothing to
+select and the names sit at one weight.
+
+The header strip's second line follows the same split — a roster-derived count
+for the list, the "select a discipline" hint for the tabs — so it never
+describes an interaction the current width does not offer.
 
 The rail pauses on hover and freezes under `prefers-reduced-motion`. Detail
 changes use a short rise on the shared exponential curve. Every capability is
