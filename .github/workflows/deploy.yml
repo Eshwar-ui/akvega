@@ -1,0 +1,119 @@
+# Production deploy. Only main reaches akvega.com, and only through here —
+# `npm run deploy` from a laptop still works but deploys whatever is in that
+# working tree, which is how an unreviewed change ships by accident.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never let two deploys interleave: Hosting and Functions are deployed in one
+# command, and a cancelled run can leave the function ahead of the HTML that
+# calls it. Queue instead of cancelling.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Hosting and contact function
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://akvega.com
+    env:
+      FIREBASE_PROJECT: akvegadigital
+      # Pinned: an unpinned `npm i -g firebase-tools` means a deploy can change
+      # behaviour with no commit behind it.
+      FIREBASE_TOOLS_VERSION: 15.26.0
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+
+      # Fail in seconds rather than after a full build, and name the exact
+      # missing key. See README "Continuous deployment" for where each lives.
+      - name: Check required configuration
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          CONTACT_FROM: ${{ secrets.CONTACT_FROM }}
+          CONTACT_TO: ${{ secrets.CONTACT_TO }}
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+        run: |
+          missing=""
+          for name in FIREBASE_SERVICE_ACCOUNT RESEND_API_KEY CONTACT_FROM CONTACT_TO \
+                      VITE_FIREBASE_API_KEY VITE_FIREBASE_PROJECT_ID VITE_FIREBASE_APP_ID; do
+            # Indirect expansion, not eval: the service account value is
+            # JSON, and eval would try to interpret it as shell.
+            if [ -z "${!name}" ]; then
+              missing="$missing $name"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository configuration:$missing"
+            exit 1
+          fi
+          echo "All required secrets and variables are present."
+
+      # Firebase reads functions/.env at deploy time and copies it into the
+      # function's environment. The file is gitignored, so CI has to recreate
+      # it; `node functions/check-config.js` (a predeploy hook) exits non-zero
+      # if it is absent or incomplete. Written outside the repo's view of
+      # `git status` concerns — it is removed again in the cleanup step.
+      - name: Write functions/.env
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          CONTACT_FROM: ${{ secrets.CONTACT_FROM }}
+          CONTACT_TO: ${{ secrets.CONTACT_TO }}
+        run: |
+          umask 077
+          {
+            printf 'RESEND_API_KEY=%s\n' "$RESEND_API_KEY"
+            printf 'CONTACT_FROM=%s\n' "$CONTACT_FROM"
+            printf 'CONTACT_TO=%s\n' "$CONTACT_TO"
+          } > functions/.env
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+
+      - name: Install Firebase CLI
+        run: npm install --global firebase-tools@${{ env.FIREBASE_TOOLS_VERSION }}
+
+      - name: Authenticate to Firebase
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          umask 077
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/service-account.json"
+          # The CLI picks this up the same way any Google client library does,
+          # which is what lets one credential cover both Hosting and Functions.
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/service-account.json" >> "$GITHUB_ENV"
+
+      # The predeploy hooks in firebase.json run the build check, the config
+      # check and the function tests again here — deliberately. This job can be
+      # started by hand on a commit CI never passed on.
+      - name: Deploy
+        run: |
+          firebase deploy \
+            --only hosting,functions:contact \
+            --project "$FIREBASE_PROJECT" \
+            --non-interactive \
+            --message "${GITHUB_SHA:0:7} via ${GITHUB_WORKFLOW} #${GITHUB_RUN_NUMBER}"
+
+      - name: Remove credentials
+        if: always()
+        run: rm -f "$RUNNER_TEMP/service-account.json" functions/.env

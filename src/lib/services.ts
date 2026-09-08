@@ -30,7 +30,7 @@ export const tracks: Track[] = [
     accent: 'signal',
     services: [
       {
-        slug: 'search',
+        slug: 'seo',
         short: 'SEO, AEO & GEO',
         name: 'SEO, AEO & GEO',
         blurb:
@@ -43,7 +43,7 @@ export const tracks: Track[] = [
         ],
       },
       {
-        slug: 'paid-search',
+        slug: 'google-ads',
         short: 'Google Ads',
         name: 'Google Ads',
         blurb:
@@ -56,7 +56,7 @@ export const tracks: Track[] = [
         ],
       },
       {
-        slug: 'paid-social',
+        slug: 'meta-ads',
         short: 'Meta Ads',
         name: 'Meta Ads',
         blurb:
@@ -69,7 +69,7 @@ export const tracks: Track[] = [
         ],
       },
       {
-        slug: 'social',
+        slug: 'social-media-management',
         short: 'Social media',
         name: 'Social Media Management',
         blurb:
@@ -117,7 +117,7 @@ export const tracks: Track[] = [
         ],
       },
       {
-        slug: 'commerce',
+        slug: 'online-stores',
         short: 'Commerce',
         name: 'Online stores',
         blurb:
@@ -130,7 +130,7 @@ export const tracks: Track[] = [
         ],
       },
       {
-        slug: 'mobile',
+        slug: 'mobile-apps',
         short: 'Mobile apps',
         name: 'Mobile apps',
         blurb:
@@ -143,7 +143,7 @@ export const tracks: Track[] = [
         ],
       },
       {
-        slug: 'design',
+        slug: 'product-design',
         short: 'Product design',
         name: 'Product design',
         blurb:
@@ -156,7 +156,7 @@ export const tracks: Track[] = [
         ],
       },
       {
-        slug: 'custom',
+        slug: 'custom-tools',
         short: 'Bespoke systems',
         name: 'Custom tools',
         blurb:
@@ -221,8 +221,15 @@ export const faqs = [
  * site — which is how the homepage ended up referencing a `to` field that
  * never existed on `Service`.
  */
+/**
+ * Each service now owns a page. This used to return `/services#<slug>`, which
+ * made ten services share one URL and one title: an anchor cannot rank on its
+ * own, so "Google Ads" and "mobile apps" were competing as the same document.
+ * Every caller — the footer directory, the homepage cards — follows this one
+ * function, so they all moved together.
+ */
 export const serviceHref = (service: Pick<Service, 'slug'>) =>
-  `/services#${service.slug}`
+  `/services/${service.slug}`
 
 /** Every service in page order, with the accent of the track it belongs to. */
 export const allServices = tracks.flatMap((track) =>

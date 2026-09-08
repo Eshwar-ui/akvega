@@ -18,6 +18,9 @@
     ]
   },
   "hosting": {
+    "predeploy": [
+      "node scripts/check-build.mjs"
+    ],
     "public": "dist",
     "ignore": [
       "firebase.json",
@@ -26,6 +29,13 @@
     ],
     "cleanUrls": true,
     "trailingSlash": false,
+    "redirects": [
+      {
+        "source": "/sitemap.xml",
+        "destination": "/sitemap-index.xml",
+        "type": 301
+      }
+    ],
     "rewrites": [
       {
         "source": "/api/contact",

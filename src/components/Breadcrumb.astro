@@ -9,28 +9,53 @@
  */
 interface Props {
   current: string
+  /**
+   * An intermediate level, for pages that sit under a hub rather than under the
+   * homepage — /services/<slug>. Omitted everywhere else, which keeps the
+   * two-level trail the top-level pages already had.
+   */
+  parent?: { label: string; href: string }
 }
 
-const { current } = Astro.props
+const { current, parent } = Astro.props
 
 const path = Astro.url.pathname.replace(/\.html$/, '').replace(/index$/, '')
 const url = new URL(path || '/', Astro.site).href
-const home = new URL('/', Astro.site).href
+
+// Built from one array so the visible trail and the markup below cannot drift.
+const trail = [
+  { label: 'Home', href: '/' },
+  ...(parent ? [parent] : []),
+  { label: current, href: url },
+]
 
 const breadcrumbLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: home },
-    { '@type': 'ListItem', position: 2, name: current, item: url },
-  ],
+  itemListElement: trail.map((step, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: step.label,
+    item: new URL(step.href, Astro.site).href,
+  })),
 }
 ---
 
-<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-[13px]">
-  <a href="/" class="link-sweep text-ink-muted hover:text-ink">Home</a>
-  <span aria-hidden="true" class="text-ink-muted">/</span>
-  <span class="font-medium text-ink">{current}</span>
+<nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-2 text-[13px]">
+  {
+    trail.map((step, index) =>
+      index === trail.length - 1 ? (
+        <span class="font-medium text-ink">{step.label}</span>
+      ) : (
+        <>
+          <a href={step.href} class="link-sweep text-ink-muted hover:text-ink">
+            {step.label}
+          </a>
+          <span aria-hidden="true" class="text-ink-muted">/</span>
+        </>
+      ),
+    )
+  }
 </nav>
 
 <script

@@ -9,6 +9,7 @@
     "build": "astro check && astro build",
     "lint": "oxlint",
     "typecheck": "astro check",
+    "check:build": "node scripts/check-build.mjs",
     "preview": "astro preview",
     "icons": "node scripts/build-tech-icons.mjs",
     "images": "node scripts/optimize-images.mjs",

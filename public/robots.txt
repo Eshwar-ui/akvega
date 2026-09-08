@@ -1,4 +1,26 @@
 # Akvega — all routes are public marketing pages.
+
+# Stated explicitly rather than left to the wildcard below. These crawlers feed
+# ChatGPT, Claude, Perplexity and Google's AI surfaces, and being quoted there is
+# now a real acquisition channel for a services business. The wildcard already
+# allows them; naming them means a future disallow has to be a decision someone
+# takes on purpose rather than something a broad rule does by accident.
+#
+# Google-Extended is the one worth understanding: it does not affect Search
+# ranking or crawling at all. It only governs whether Akvega's pages may ground
+# Gemini and AI Overviews answers. Disallowing it removes the site from those
+# answers without gaining any crawl-budget or ranking benefit.
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: CCBot
+Allow: /
+
 User-agent: *
 Allow: /
 

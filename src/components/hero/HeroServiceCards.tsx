@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Icon } from '@/components/Icons'
 
 /**
@@ -28,7 +29,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Live',
     image: '/service-ui/campaign-control.webp',
     alt: 'Paid media workspace with a creative schedule, campaign budget and performance trends',
-    to: '/services#paid-search',
+    to: '/services/google-ads',
     position:
       'bottom-[32%] left-[-2rem] z-[1] w-[13rem] -rotate-[4deg] 2xl:bottom-[30%] 2xl:left-[1%] 2xl:w-[15rem]',
     depth: 0.72,
@@ -40,7 +41,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Tracking',
     image: '/service-ui/search-visibility.webp',
     alt: 'SEO and answer visibility workspace showing coverage, indexed pages and audit progress',
-    to: '/services#search',
+    to: '/services/seo',
     position:
       'bottom-[10%] left-[2.5rem] z-[3] w-[12.5rem] rotate-[4deg] 2xl:bottom-[9%] 2xl:left-[5%] 2xl:w-[14.5rem]',
     depth: 0.58,
@@ -52,7 +53,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Approved',
     image: '/service-ui/brand-system.webp',
     alt: 'Brand system workspace with logo geometry, colour palette, type scale and approval history',
-    to: '/services',
+    to: '/services/branding',
     position:
       'bottom-[-6%] left-[1rem] z-[4] w-[12rem] -rotate-[6deg] 2xl:bottom-[-5%] 2xl:left-[7%] 2xl:w-[14rem]',
     depth: 1,
@@ -63,7 +64,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Ready',
     image: '/service-ui/web-engineering.webp',
     alt: 'Web engineering workspace with deployment pipeline, automated tests, performance telemetry and release health',
-    to: '/services#websites',
+    to: '/services/websites',
     position:
       'bottom-[32%] right-[-2rem] z-[1] w-[13rem] rotate-[4deg] 2xl:bottom-[30%] 2xl:right-[1%] 2xl:w-[15rem]',
     depth: 0.86,
@@ -74,7 +75,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Testing',
     image: '/service-ui/mobile-delivery.webp',
     alt: 'Mobile engineering workspace with device previews, build versions, automated tests and release readiness',
-    to: '/services#mobile',
+    to: '/services/mobile-apps',
     position:
       'bottom-[10%] right-[2.5rem] z-[3] w-[12.5rem] -rotate-[4deg] 2xl:bottom-[9%] 2xl:right-[5%] 2xl:w-[14.5rem]',
     depth: 0.68,
@@ -85,7 +86,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Healthy',
     image: '/service-ui/systems-automation.webp',
     alt: 'Systems automation workspace with API connections, event routing, scheduled jobs and pipeline health',
-    to: '/services#custom',
+    to: '/services/custom-tools',
     position:
       'bottom-[-6%] right-[1rem] z-[4] w-[12rem] rotate-[6deg] 2xl:bottom-[-5%] 2xl:right-[7%] 2xl:w-[14rem]',
     depth: 0.96,
@@ -168,9 +169,166 @@ export function HeroServiceCardsDesktop() {
   )
 }
 
+/** Long enough to read a card title before the next one arrives. */
+const AUTO_SCROLL_MS = 3200
+
+/**
+ * Advances the carousel on its own, and gives up the moment the visitor wants
+ * it to.
+ *
+ * An indefinitely moving element carries obligations, so all of this is the
+ * feature rather than trimming around it:
+ *
+ * - `prefers-reduced-motion: reduce` means it never starts at all, and stops
+ *   for good if the preference is switched on while the page is open.
+ * - Any real interaction — touch, wheel, a key, or focus landing on a card —
+ *   stops it permanently. Moving content out from under someone who has taken
+ *   hold of it is the single worst thing a carousel can do, and a keyboard user
+ *   tabbing through the cards is doing exactly that.
+ * - Hover pauses and resumes, for the pointer that is reading rather than
+ *   scrolling.
+ * - Off-screen or on a hidden tab, it pauses. This is also what keeps it off
+ *   above xl for free: the list is `display: none` there, so it never
+ *   intersects and the timer never runs.
+ *
+ * Position is re-derived from `scrollLeft` on every tick rather than tracked in
+ * a counter, so a half-finished scroll or a snap landing somewhere unexpected
+ * self-corrects instead of accumulating drift.
+ *
+ * It reverses at the ends rather than rewinding. With six cards a wrap-around
+ * would sweep the full width backwards, which reads as a glitch; stepping back
+ * one card at a time reads as browsing.
+ */
+function useAutoScroll(count: number) {
+  const ref = useRef<HTMLUListElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let timer: number | undefined
+    let stopped = reduced.matches
+    let step = 1
+
+    const pad = () => Number.parseFloat(getComputedStyle(el).scrollPaddingLeft) || 0
+
+    /** Which card currently sits at the snap line. */
+    const currentIndex = () => {
+      const origin = el.getBoundingClientRect().left + pad()
+      let best = 0
+      let bestDistance = Number.POSITIVE_INFINITY
+
+      for (const [index, child] of [...el.children].entries()) {
+        const distance = Math.abs(child.getBoundingClientRect().left - origin)
+        if (distance < bestDistance) {
+          bestDistance = distance
+          best = index
+        }
+      }
+
+      return best
+    }
+
+    const scrollToIndex = (index: number) => {
+      const item = el.children[index] as HTMLElement | undefined
+      if (!item) return
+
+      const delta = item.getBoundingClientRect().left - el.getBoundingClientRect().left
+      el.scrollTo({ left: el.scrollLeft + delta - pad(), behavior: 'smooth' })
+    }
+
+    const tick = () => {
+      // Measured, not counted: the last card cannot always reach the snap line,
+      // so asking the scroll position where it is beats assuming.
+      const maxScroll = el.scrollWidth - el.clientWidth
+      if (step > 0 && el.scrollLeft >= maxScroll - 4) step = -1
+      else if (step < 0 && el.scrollLeft <= 4) step = 1
+
+      scrollToIndex(Math.min(Math.max(currentIndex() + step, 0), count - 1))
+    }
+
+    const pause = () => {
+      if (timer !== undefined) {
+        window.clearInterval(timer)
+        timer = undefined
+      }
+    }
+
+    const play = () => {
+      if (stopped || timer !== undefined) return
+      timer = window.setInterval(tick, AUTO_SCROLL_MS)
+    }
+
+    /** Permanent: the visitor is driving now. */
+    const stop = () => {
+      stopped = true
+      pause()
+    }
+
+    const onPreferenceChange = () => {
+      if (reduced.matches) stop()
+    }
+
+    const onVisibility = () => (document.hidden ? pause() : play())
+
+    for (const type of ['pointerdown', 'touchstart', 'wheel', 'keydown', 'focusin']) {
+      el.addEventListener(type, stop, { passive: true })
+    }
+    el.addEventListener('pointerenter', pause)
+    el.addEventListener('pointerleave', play)
+    document.addEventListener('visibilitychange', onVisibility)
+    reduced.addEventListener('change', onPreferenceChange)
+
+    // Only runs while the carousel is actually on screen.
+    const observer = new IntersectionObserver(
+      ([entry]) => (entry?.isIntersecting ? play() : pause()),
+      { threshold: 0.25 },
+    )
+    observer.observe(el)
+
+    return () => {
+      pause()
+      observer.disconnect()
+      for (const type of ['pointerdown', 'touchstart', 'wheel', 'keydown', 'focusin']) {
+        el.removeEventListener(type, stop)
+      }
+      el.removeEventListener('pointerenter', pause)
+      el.removeEventListener('pointerleave', play)
+      document.removeEventListener('visibilitychange', onVisibility)
+      reduced.removeEventListener('change', onPreferenceChange)
+    }
+  }, [count])
+
+  return ref
+}
+
+/**
+ * Below xl this was a 2-up grid, which stacked six cards into three rows and
+ * pushed the hero's actual content — headline, CTAs — off a phone screen. As a
+ * carousel it occupies one row at any width and the cards get to be big enough
+ * to read, which they were not at half a phone's width.
+ *
+ * CSS scroll-snap, no carousel library and no JS of our own. The cards are
+ * links, so they are reachable by tab and focusing one scrolls it into view,
+ * which is the keyboard story most JS carousels get wrong. It also degrades to
+ * a plain scrollable row if anything fails.
+ *
+ * The negative margin and matching width let it bleed to the screen edges
+ * through the hero's px-6, so a partial next card is visible — the cue that
+ * says "this scrolls" without needing arrows or dots. `scroll-px-6` makes a
+ * snapped card land flush with the headline above it rather than against the
+ * viewport edge.
+ */
 export function HeroServiceCardsMobile() {
+  const ref = useAutoScroll(serviceCards.length)
+
   return (
-    <ul className="mt-[clamp(1.75rem,5vh,3rem)] grid w-full max-w-2xl grid-flow-dense grid-cols-2 gap-3 sm:grid-cols-3 xl:hidden">
+    <ul
+      ref={ref}
+      aria-label="A look inside our service workspaces"
+      className="mt-[clamp(1.75rem,5vh,3rem)] -mx-6 flex w-[calc(100%+3rem)] snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain scroll-px-6 px-6 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] xl:hidden [&::-webkit-scrollbar]:hidden"
+    >
       {serviceCards.map((card, index) => (
         <li
           key={card.name}
@@ -178,7 +336,7 @@ export function HeroServiceCardsMobile() {
           data-depth={card.depth}
           data-scroll-direction={card.scrollDirection}
           data-card-index={index}
-          className="min-w-0 will-change-transform"
+          className="w-[68%] shrink-0 snap-start will-change-transform sm:w-[42%] md:w-[31%]"
         >
           <div data-hero-card-enter className="will-change-transform">
             <Card card={card} compact />

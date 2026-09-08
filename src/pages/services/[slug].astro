@@ -1,0 +1,163 @@
+---
+import { getCollection, render } from 'astro:content'
+import Base from '@/layouts/Base.astro'
+import Breadcrumb from '@/components/Breadcrumb.astro'
+import { allServices, serviceHref, tracks } from '@/lib/services'
+import { serviceDetailSchema } from '@/lib/schema'
+import { site } from '@/lib/site'
+
+/**
+ * One page per service.
+ *
+ * These used to be anchors on /services — ten offerings sharing one URL, one
+ * title and one description. An anchor cannot rank on its own, so "Google Ads"
+ * and "mobile app development" were competing as the same document against
+ * sites that give each one a page. This is the structural half of that fix; the
+ * copy in src/content/services is the other half, because ten thin pages would
+ * be worse than one good one.
+ *
+ * The body is Markdown so a writer can edit it without touching this file.
+ * Everything else — schema, breadcrumb, the sibling links — is derived from
+ * lib/services.ts, so adding a service in one place produces a complete page.
+ */
+export async function getStaticPaths() {
+  const entries = await getCollection('services')
+
+  return entries.map((entry) => {
+    const service = allServices.find((s) => s.slug === entry.id)
+
+    // A Markdown file whose name does not match a slug in lib/services.ts would
+    // otherwise build a page that nothing links to and no card points at.
+    if (!service) {
+      throw new Error(
+        `src/content/services/${entry.id}.md has no matching slug in lib/services.ts. ` +
+          `Expected one of: ${allServices.map((s) => s.slug).join(', ')}`,
+      )
+    }
+
+    return { params: { slug: entry.id }, props: { entry, service } }
+  })
+}
+
+const { entry, service } = Astro.props
+const { Content } = await render(entry)
+
+const track = tracks.find((t) => t.services.some((s) => s.slug === service.slug))!
+
+// Siblings in the same track. Related-service links are the internal linking
+// that tells a search engine these ten pages are one coherent set rather than
+// ten unrelated documents — and they are the most likely next click.
+const siblings = track.services.filter((s) => s.slug !== service.slug)
+const otherTrack = tracks.find((t) => t.id !== track.id)!
+
+const canonical = new URL(`/services/${service.slug}`, Astro.site).href
+---
+
+<Base title={entry.data.title} description={entry.data.description}>
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(
+      serviceDetailSchema({
+        name: service.name,
+        description: entry.data.description,
+        url: canonical,
+        serviceType: track.label,
+        deliverables: service.deliverables,
+      }),
+    )}
+  />
+
+  <div class="px-3 pt-3 sm:px-5 sm:pt-5">
+    <div
+      class="hero-field edge-light relative isolate overflow-hidden rounded-xl border border-hairline sm:rounded-2xl"
+    >
+      <div class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
+        <Breadcrumb current={service.name} parent={{ label: 'Services', href: '/services' }} />
+        <p class="type-overline mt-7 text-ink-muted">{track.label}</p>
+        <h1 class="type-page-title mt-3 max-w-[20ch] text-balance">{entry.data.heading}</h1>
+        <p class="type-lede mt-6 max-w-[52ch] text-pretty text-ink-muted">
+          {entry.data.standfirst}
+        </p>
+
+        <div class="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+          <a
+            href="/contact"
+            data-cta={`service-${service.slug}-start`}
+            class="press type-ui rounded-full bg-navy px-7 py-3.5 text-center text-white"
+          >
+            Start with a diagnostic
+          </a>
+          <a
+            href="/services"
+            class="press type-ui rounded-full border border-hairline bg-paper px-7 py-3.5 text-center text-ink hover:border-blue-300 hover:text-blue-700"
+          >
+            All services
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-20 sm:px-8 sm:py-24">
+    <div class="grid gap-14 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-20">
+      {/* `prose` is defined in index.css — the Markdown body is the only long-form
+          copy on the site, so its type rules live in one place. */}
+      <div class="prose reveal">
+        <Content />
+      </div>
+
+      <aside class="reveal lg:sticky lg:top-28 lg:self-start">
+        <h2 class="type-overline text-[13px] text-ink-muted">Included</h2>
+        <ul class="mt-4 space-y-2">
+          {
+            service.deliverables.map((item) => (
+              <li class="type-ui rounded-full border border-hairline bg-paper px-4 py-2 text-ink-muted">
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+
+        <h2 class="type-overline mt-10 text-[13px] text-ink-muted">
+          More in {track.label}
+        </h2>
+        <ul class="mt-4 space-y-2.5">
+          {
+            siblings.map((s) => (
+              <li>
+                <a
+                  href={serviceHref(s)}
+                  class="link-sweep type-ui text-ink-muted transition-colors duration-200 hover:text-ink"
+                >
+                  {s.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <h2 class="type-overline mt-10 text-[13px] text-ink-muted">{otherTrack.label}</h2>
+        <ul class="mt-4 space-y-2.5">
+          {
+            otherTrack.services.map((s) => (
+              <li>
+                <a
+                  href={serviceHref(s)}
+                  class="link-sweep type-ui text-ink-muted transition-colors duration-200 hover:text-ink"
+                >
+                  {s.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="type-body mt-10 text-[14px] text-ink-muted">
+          Or email <a href={`mailto:${site.email}`} class="link-sweep text-ink">{site.email}</a>.
+        </p>
+      </aside>
+    </div>
+  </section>
+</Base>

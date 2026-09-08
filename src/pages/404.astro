@@ -6,23 +6,142 @@ import Base from '@/layouts/Base.astro'
  * the SPA's catch-all route, which returned HTTP 200 with the app shell — it
  * serves it with a real 404 status. Those soft 404s were being logged by Google
  * as low-quality pages.
+ *
+ * The illustration fills the screen below the site header, with the footer
+ * following on scroll. The stage is `100dvh - 5rem` rather than `100dvh`
+ * because the header is `sticky top-0` at `h-20`: subtracting it is what makes
+ * the art end exactly at the fold instead of pushing that much of itself out of
+ * view and leaving a slice of footer showing above it.
+ *
+ * FITTING 3:2 ART TO ANY SCREEN. The two fits below are the whole trick:
+ *
+ * - Wide enough to be roughly landscape: `cover`. Only the sky and some
+ *   foreground foliage get cropped, which costs nothing.
+ * - Narrower (a portrait phone): `cover` would crop to about a third of the
+ *   image width and leave the carved "404" reading as a single "0" — the one
+ *   thing the page exists to say. So the art switches to `contain`, and the rest
+ *   of the screen is filled by a blurred, scaled copy of the same illustration.
+ *   Contain against a flat colour left two thirds of a phone screen empty and
+ *   stopped reading as a full-bleed image at all; the blurred backdrop keeps the
+ *   whole viewport covered in the art's own palette while the "404" stays whole.
+ *   It pulls the 768 variant (40KB, and it is about to be blurred into mush),
+ *   and `display: none` above the breakpoint means wide screens never fetch it.
+ *
+ * The Home button uses the secondary (paper) style, not the navy one. With the
+ * header restored it sits directly below "Start a project", and two identical
+ * navy pills stacked in the same corner read as one control rendered twice.
+ * Paper-on-art also keeps its contrast on both crops: the pale sky a wide screen
+ * shows there, and the light blurred wash a phone shows in the same spot.
+ *
+ * The art itself carries no text, so the `h1` is `sr-only`: a screen reader
+ * still gets "Page not found" as a real heading, and the art stays decorative
+ * (`alt=""`) rather than having a traveller and a signpost described in place
+ * of the actual message.
  */
+const WIDTHS = [768, 1536] as const
+const srcset = WIDTHS.map((w) => `/illustration/404-${w}.webp ${w}w`).join(', ')
 ---
 
 <Base
   title="Page not found | Akvega"
   description="That page doesn't exist. The link may be out of date, or the page has moved."
+  noindex
 >
-  <div class="mx-auto flex max-w-site flex-col items-start px-5 py-32 sm:px-8">
-    <h1 class="type-page-title">That page doesn’t exist.</h1>
-    <p class="type-body mt-4 text-ink-muted">
-      The link may be out of date, or the page has moved.
-    </p>
+  <div class="stage relative h-[calc(100dvh-5rem)] w-full overflow-hidden">
+    <h1 class="sr-only">Page not found</h1>
+
+    <img
+      src={`/illustration/404-${WIDTHS.at(-1)}.webp`}
+      srcset={srcset}
+      sizes="100vw"
+      alt=""
+      width="1536"
+      height="1024"
+      fetchpriority="high"
+      decoding="async"
+      class="art"
+    />
+
     <a
       href="/"
-      class="type-ui mt-8 rounded-md bg-blue-600 px-6 py-3 text-white transition-colors duration-200 hover:bg-blue-700"
+      data-cta="404-home"
+      class="press type-ui absolute right-4 top-4 z-10 rounded-full border border-hairline bg-paper px-6 py-3 text-ink shadow-[0_6px_20px_-8px_rgb(5_17_39/0.35)] hover:border-blue-300 hover:text-blue-700 sm:right-6 sm:top-6"
     >
-      Back home
+      Home
     </a>
   </div>
 </Base>
+
+<style>
+  /* Sampled from the illustration's top row — holds the frame until the
+     backdrop paints, and matches the art's sky rather than flashing white. */
+  .stage {
+    background-color: #d3e8fe;
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("/illustration/404-768.webp");
+    background-size: cover;
+    background-position: 40% 50%;
+    /* Scaled past the edges so the blur has real pixels to sample there and
+       does not fade into the background colour at the frame. */
+    transform: scale(1.15);
+    filter: blur(36px) saturate(1.1);
+    /* Held back so the stage colour shows through and lifts it. At full
+       strength the blurred foliage from the foot of the art made a heavy dark
+       field behind a light illustration. Note that shifting the backdrop up
+       instead does nothing: cover on a portrait frame already matches the
+       height exactly, so there is no vertical slack for a position to move. */
+    opacity: 0.5;
+  }
+
+  /*
+   * Sized to the art rather than to the screen: width 100% with height auto
+   * means the element box *is* the picture, so the mask below lands on the
+   * picture's own top edge. Letting it fill the frame and using object-fit
+   * instead put the element's top at the top of the viewport and the art's top
+   * 300px lower, so the feather faded empty space and the join stayed visible.
+   *
+   * Pinned to the bottom so the dark foliage along the foot of the illustration
+   * meets the bottom of the screen with no seam under it — one transition
+   * instead of two. Below 11/10 the art is always shorter than the frame
+   * (it is 3:2), so this never overflows.
+   */
+  .art {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    /* Feathers the one remaining edge. The top rows of the art are flat sky,
+       so fading them into the wash costs no detail and removes the last
+       visible join between the art and its backdrop. */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 96px);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 96px);
+  }
+
+  /*
+   * Anything roughly landscape can be filled by the art alone without losing
+   * the "404", so the backdrop is dropped entirely — which also stops the
+   * browser fetching it. The horizontal 40% matters only while cover is
+   * cropping width rather than height: the carved digits sit left of centre.
+   */
+  @media (min-aspect-ratio: 11/10) {
+    .stage::before {
+      display: none;
+    }
+
+    .art {
+      position: relative;
+      height: 100%;
+      object-fit: cover;
+      object-position: 40% 50%;
+      /* Nothing to feather once the art fills the frame on its own. */
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+  }
+</style>
