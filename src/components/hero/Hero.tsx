@@ -29,10 +29,7 @@ export default function Hero() {
         },
         (context) => {
           if (!context.conditions?.animate) {
-            gsap.set(
-              '[data-hero-reveal], [data-hero-card-enter], [data-platform-enter]',
-              { clearProps: 'all' },
-            )
+            gsap.set('[data-hero-card-enter], [data-platform-enter]', { clearProps: 'all' })
             return
           }
 
@@ -48,26 +45,17 @@ export default function Hero() {
           const platformEntrances = gsap.utils
             .toArray<HTMLElement>('[data-platform-enter]')
             .filter((element) => element.offsetParent !== null)
-          const reveals = gsap.utils.toArray<HTMLElement>('[data-hero-reveal]')
           const images = serviceCardEntrances.flatMap((card) =>
             Array.from(card.querySelectorAll<HTMLElement>('img')),
           )
 
-          gsap.set(reveals, { autoAlpha: 0, y: 26 })
-
+          // The heading, lede, buttons and gradient field enter via CSS
+          // (`.hero-enter`, `.hero-field-enter` in index.css) from first
+          // paint, so the Largest Contentful Paint never waits for this
+          // island to hydrate. The timeline below starts at the same offsets
+          // it always did, so the cards still arrive in step with the copy.
           const intro = gsap.timeline({ defaults: { ease: 'power4.out' } })
           intro
-            .fromTo(
-              '[data-hero-field]',
-              { autoAlpha: 0, scale: 1.1 },
-              { autoAlpha: 1, scale: 1, duration: 1.65 },
-              0,
-            )
-            .to(
-              reveals,
-              { autoAlpha: 1, y: 0, duration: 1, stagger: 0.09 },
-              0.12,
-            )
             .fromTo(
               serviceCardEntrances,
               {
@@ -222,7 +210,7 @@ export default function Hero() {
         <div
           aria-hidden="true"
           data-hero-field
-          className="hero-field pointer-events-none absolute inset-0 -z-20"
+          className="hero-field hero-field-enter pointer-events-none absolute inset-0 -z-20"
         />
 
         <HeroServiceCardsDesktop />
@@ -235,7 +223,7 @@ export default function Hero() {
           {/* Display runs past the guidelines' 64px ceiling by client direction. */}
           <h1
             data-hero-reveal
-            className="type-display text-balance"
+            className="hero-enter type-display text-balance"
           >
             {site.headline.lead}{' '}
             <span className="font-display font-normal italic text-signal">
@@ -246,14 +234,16 @@ export default function Hero() {
           {/* Body / 16–18 */}
           <p
             data-hero-reveal
-            className="type-lede mt-[clamp(1rem,2.6vh,1.5rem)] max-w-[48ch] text-pretty text-ink-muted"
+            style={{ '--hero-i': 1 } as React.CSSProperties}
+            className="hero-enter type-lede mt-[clamp(1rem,2.6vh,1.5rem)] max-w-[48ch] text-pretty text-ink-muted"
           >
             {site.subhead}
           </p>
 
           <div
             data-hero-reveal
-            className="mt-[clamp(1.5rem,4.5vh,2.5rem)] flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
+            style={{ '--hero-i': 2 } as React.CSSProperties}
+            className="hero-enter mt-[clamp(1.5rem,4.5vh,2.5rem)] flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
           >
             <a
               href={site.primaryCta.to}

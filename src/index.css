@@ -665,6 +665,46 @@
   }
 }
 
+/*
+ * Hero entrance. The heading, lede and buttons rise in from first paint as a
+ * CSS animation — not from GSAP after hydration. The heading is the page's
+ * Largest Contentful Paint element, and hiding it until React, GSAP and the
+ * tag manager had all downloaded on a slow connection put LCP at 7.4 s on
+ * mobile (Lighthouse, live site, 2026-09-14). A CSS animation starts the
+ * moment the HTML renders, so LCP tracks First Contentful Paint instead of
+ * JavaScript arrival. GSAP still owns the cards, tiles and scroll parallax.
+ *
+ * Nothing here ever starts at opacity 0. Chrome credits an element that fades
+ * in from zero only when the fade completes, and whichever hero text block
+ * is largest on the viewport becomes the LCP element — so a full fade cost a
+ * second or more of LCP on every breakpoint. Rising from 55% opacity reads as
+ * the same entrance and is painted on the first frame.
+ *
+ * `--hero-i` staggers siblings; the field fades in underneath. Both collapse
+ * to instant under prefers-reduced-motion via the global rule below.
+ */
+.hero-enter {
+  animation: hero-rise 800ms var(--ease-out-expo) calc(120ms + var(--hero-i, 0) * 90ms) both;
+}
+
+.hero-field-enter {
+  animation: hero-field-in 1.65s var(--ease-out-expo) both;
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0.55;
+    transform: translateY(18px);
+  }
+}
+
+@keyframes hero-field-in {
+  from {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+}
+
 .success-scan {
   position: absolute;
   inset: 0;
