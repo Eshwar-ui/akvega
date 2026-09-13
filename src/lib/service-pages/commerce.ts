@@ -4,7 +4,7 @@ export const commerce: ServicePage = {
   slug: 'commerce',
   title: 'Ecommerce and online store development in Hyderabad | Akvega',
   description:
-    'Akvega builds online stores on Shopify or Next.js: UPI-first payments, cash on delivery, GST-ready invoicing and a checkout built for your biggest sale day.',
+    'Akvega builds online stores on Shopify or Next.js: UPI-first payments, cash on delivery, GST-ready invoicing and a checkout for your biggest sale day.',
   h1: 'What does an online store from Akvega actually include?',
   overview:
     'An Akvega online store is a storefront on web and mobile, built on Shopify or a custom Next.js storefront and wired into catalogue, payments and fulfilment. Payments are UPI-first with cash on delivery as an option, invoicing is GST-ready, and the checkout is built to survive your biggest sales day and a dropped connection.',

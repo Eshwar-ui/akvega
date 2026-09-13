@@ -4,7 +4,7 @@ export const search: ServicePage = {
   slug: 'search',
   title: 'SEO, AEO and GEO services in Hyderabad | Akvega',
   description:
-    'Akvega runs technical SEO, answer-engine optimisation (AEO) and generative-engine optimisation (GEO) as one programme, so you rank on Google and get cited by AI answers.',
+    'Akvega runs technical SEO, answer-engine optimisation (AEO) and generative-engine optimisation (GEO) as one programme — rank on Google, get cited by AI.',
   h1: 'What do SEO, AEO and GEO services from Akvega actually include?',
   overview:
     'Akvega’s search programme covers three surfaces at once: Google’s results, the AI answers that now sit above them, and the generative engines people ask directly. Technical fixes, content architecture, schema and entity work run as one plan rather than three retainers, and the fixes are shipped by the same team that finds them.',

@@ -36,9 +36,9 @@ import { revealDelayStyle } from '@/scripts/reveal'
  * answers the question a buyer has before they email — "how much does it
  * actually cost?" — in a sentence an answer engine can quote.
  */
-const TITLE = 'Pricing — digital marketing packages from ₹20,000 a month | Akvega'
+const TITLE = 'Digital Marketing Pricing — from ₹20,000/month | Akvega'
 const DESCRIPTION =
-  'Akvega digital marketing packages: Local Visibility ₹20,000, Search & Social Growth ₹40,000 and Market Leader ₹60,000 a month plus GST, with custom scopes to ₹1,00,000. Websites, stores and apps quoted from a paid diagnostic.'
+  'Akvega packages: Local Visibility ₹20,000, Search & Social Growth ₹40,000, Market Leader ₹60,000/month + GST. Websites and apps quoted from a diagnostic.'
 
 const PAGE_URL = `${SITE_URL}/pricing`
 const FALLBACK_PRICE = 'Quoted from the diagnostic'
@@ -155,10 +155,7 @@ const keyFacts = [
     class="mx-auto max-w-site scroll-mt-28 px-5 pb-20 sm:px-8 sm:pb-28"
   >
     <div class="reveal flex flex-col gap-6 border-t border-ink/12 pt-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
-      <div class="flex items-baseline gap-5">
-        <h2 class="type-track-title text-signal">Growth</h2>
-        <span class="text-sm tabular-nums text-ink-muted">{String(packages.length).padStart(2, '0')}</span>
-      </div>
+      <h2 class="type-track-title text-signal">Growth</h2>
       <p class="type-body max-w-[46ch] text-ink-muted lg:text-right">
         Monthly packages with a defined scope. Ad spend stays in your own accounts and is stated
         beside each package so the full monthly cost is on the page.
@@ -244,10 +241,7 @@ const keyFacts = [
   {/* Build. Per project, from the diagnostic. */}
   <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 pb-24 sm:px-8 sm:pb-32">
     <div class="reveal flex flex-col gap-6 border-t border-ink/12 pt-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
-      <div class="flex items-baseline gap-5">
-        <h2 class="type-track-title text-vega">Build</h2>
-        <span class="text-sm tabular-nums text-ink-muted">{String(buildTiers.length).padStart(2, '0')}</span>
-      </div>
+      <h2 class="type-track-title text-vega">Build</h2>
       <p class="type-body max-w-[46ch] text-ink-muted lg:text-right">
         Priced per project from the diagnostic, with the number fixed before the first line of code.
       </p>

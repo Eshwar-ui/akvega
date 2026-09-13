@@ -2,9 +2,9 @@ import type { ServicePage } from './types'
 
 export const mobile: ServicePage = {
   slug: 'mobile',
-  title: 'Mobile app development in Hyderabad: iOS and Android | Akvega',
+  title: 'Mobile App Development in Hyderabad — iOS & Android | Akvega',
   description:
-    'Akvega builds iOS and Android apps in Flutter, Expo, Swift or Kotlin, with backend, store release and the growth team that drives installs. Based in Hyderabad.',
+    'Akvega builds iOS and Android apps in Flutter, Expo, Swift or Kotlin, with backend, store release and the growth team that drives installs.',
   h1: 'What does mobile app development with Akvega include?',
   overview:
     'Akvega builds iOS and Android apps from design through store release and the releases after it. Cross-platform in Flutter or Expo where one codebase saves money, native Swift or Kotlin where it does not. The backend, push notifications, analytics and store listings ship with the app, and the team that builds it is the team that drives traffic to it.',

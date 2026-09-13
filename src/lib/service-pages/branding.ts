@@ -4,7 +4,7 @@ export const branding: ServicePage = {
   slug: 'branding',
   title: 'Branding and identity design in Hyderabad | Akvega',
   description:
-    'Akvega builds identity systems: strategy, logo, voice and guidelines that stay coherent across every campaign, website and product surface the same team ships.',
+    'Akvega builds identity systems: strategy, logo, voice and guidelines that stay coherent across every campaign, website and product surface.',
   h1: 'What does a branding engagement with Akvega actually include?',
   overview:
     'Akvega’s branding work builds an identity system: strategy, visual identity, naming and voice, and the guidelines that hold them together. The system is designed to stay coherent across every campaign, website and product surface. Because one team runs the campaigns and ships the sites, the identity is tested in use, not presented on a slide.',

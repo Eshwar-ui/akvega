@@ -2,9 +2,9 @@ import type { ServicePage } from './types'
 
 export const custom: ServicePage = {
   slug: 'custom',
-  title: 'Custom tools, integrations and automation in Hyderabad | Akvega',
+  title: 'Custom Tools and Automation in Hyderabad | Akvega',
   description:
-    'Akvega builds internal tools, API integrations, automation and data pipelines for the process you run, on Node.js, PostgreSQL and React. Yours from day one.',
+    'Akvega builds internal tools, API integrations, automation and data pipelines for the process you run, on Node.js, PostgreSQL and React.',
   h1: 'What are custom tools from Akvega, and when do you need one?',
   overview:
     'Akvega’s custom tools are the internal dashboards, API integrations, automations and data pipelines that off-the-shelf software will not bend to the process you actually run. Built in short visible cycles on Node.js, PostgreSQL and React, wired into the systems you already use, documented and handed over in your own accounts, so a department of manual effort quietly disappears.',

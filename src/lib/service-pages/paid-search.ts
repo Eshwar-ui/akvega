@@ -4,7 +4,7 @@ export const paidSearch: ServicePage = {
   slug: 'paid-search',
   title: 'Google Ads management in Hyderabad | Akvega',
   description:
-    'Akvega runs Google Ads around profit per click: account restructure, keyword and intent mapping, landing pages and conversion tracking, in an account you own.',
+    'Akvega runs Google Ads around profit per click: account restructure, keyword mapping, landing pages and conversion tracking, in your own account.',
   h1: 'What does Google Ads management from Akvega actually include?',
   overview:
     'Akvega runs Google Ads campaigns built around profit per click rather than impressions. The work covers the account structure, the keywords and the intent behind them, the landing page each click arrives on and the conversion tracking that proves what happened next. Because growth and build are one team, the landing page ships with the campaign.',

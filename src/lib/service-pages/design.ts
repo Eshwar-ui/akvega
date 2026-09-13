@@ -4,7 +4,7 @@ export const design: ServicePage = {
   slug: 'design',
   title: 'Product design and UI/UX services in Hyderabad | Akvega',
   description:
-    'Akvega designs products in Hyderabad: user research, flows, interface systems and Figma prototypes, handed over as components and tokens engineers build from.',
+    'Akvega designs products in Hyderabad: research, flows, interface systems and Figma prototypes, handed over as components engineers build from.',
   h1: 'What does product design with Akvega actually involve?',
   overview:
     'Akvega’s product design covers research, flows, interface systems and clickable prototypes for web and mobile products. The work happens in Figma and is handed over as components and tokens rather than a folder of screenshots, because the engineers who build it sit on the same team. Design is tested against real data, real devices and the people who use it.',

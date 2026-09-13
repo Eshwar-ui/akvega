@@ -210,12 +210,7 @@ function GrowthServices() {
   return (
     <div className="mt-20 sm:mt-28">
       <div className="reveal flex flex-col gap-6 border-t border-ink/12 pt-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
-        <div className="flex items-baseline gap-5">
-          <h3 className="type-track-title text-signal">Growth</h3>
-          <span className="text-sm tabular-nums text-ink-muted">
-            {String(growthTrack.services.length).padStart(2, '0')}
-          </span>
-        </div>
+        <h3 className="type-track-title text-signal">Growth</h3>
         <p className="type-body max-w-[46ch] text-ink-muted lg:text-right">
           {growthTrack.statement}
         </p>
@@ -619,12 +614,7 @@ data-shown="false"
 
       <div className="mt-24 sm:mt-36">
         <div className="reveal flex flex-col gap-6 border-t border-ink/12 pt-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
-          <div className="flex items-baseline gap-5">
-            <h3 className="type-track-title text-vega">Build</h3>
-            <span className="text-sm tabular-nums text-ink-muted">
-              {String(homeServices.length).padStart(2, '0')}
-            </span>
-          </div>
+          <h3 className="type-track-title text-vega">Build</h3>
           <p className="type-body max-w-[46ch] text-ink-muted lg:text-right">
             Real products, platforms and infrastructure designed to hold up
             when real traffic and real teams arrive.

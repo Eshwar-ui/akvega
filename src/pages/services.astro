@@ -73,12 +73,7 @@ const serviceIcons: Record<string, IconName> = {
             class={trackIndex === 0 ? '' : 'mt-24 sm:mt-32'}
           >
             <div class="reveal flex flex-col gap-6 border-t border-ink/12 pt-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
-              <div class="flex items-baseline gap-5">
-                <h2 class={`type-track-title ${accentText}`}>{track.label}</h2>
-                <span class="text-sm tabular-nums text-ink-muted">
-                  {String(track.services.length).padStart(2, '0')}
-                </span>
-              </div>
+              <h2 class={`type-track-title ${accentText}`}>{track.label}</h2>
               <p class="type-body max-w-[46ch] text-ink-muted lg:text-right">{track.statement}</p>
             </div>
 
