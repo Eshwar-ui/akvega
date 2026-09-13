@@ -16,8 +16,8 @@ import { revealDelayStyle } from '@/scripts/reveal'
  * /api/contact. Everything around it, the map illustration included, is static.
  */
 const details = [
-  { label: 'Reach us', value: site.phone },
-  { label: 'Availability', value: site.availability },
+  { label: 'Call us', value: site.phoneDisplay, href: `tel:${site.phone}` },
+  { label: 'Location', value: site.location },
 ]
 ---
 
@@ -54,7 +54,13 @@ const details = [
                   <div class="grid gap-3 border-t border-hairline py-5 sm:grid-cols-[7.5rem_minmax(0,1fr)] sm:items-center sm:gap-6 sm:py-6">
                     <p class="type-overline text-ink-muted">{detail.label}</p>
                     <div class="text-[16px] font-medium leading-snug tracking-[-0.012em] text-ink sm:text-[18px]">
-                      {detail.value}
+                      {detail.href ? (
+                        <a href={detail.href} class="link-sweep text-blue-700">
+                          {detail.value}
+                        </a>
+                      ) : (
+                        detail.value
+                      )}
                     </div>
                   </div>
                 ))
@@ -86,6 +92,8 @@ const details = [
                         <li>
                           <a
                             href={item.href}
+                            rel="me noopener"
+                            target="_blank"
                             aria-label={item.label}
                             class="press grid size-11 place-items-center rounded-xl border border-hairline bg-paper/80 text-ink-muted transition-colors hover:bg-paper hover:text-ink"
                           >

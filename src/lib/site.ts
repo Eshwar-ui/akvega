@@ -4,39 +4,106 @@
  * Voice follows Akvega Brand Guidelines v1.0 / 01: modern not futuristic,
  * confident not loud, technical not complicated, direct not abrupt.
  *
- * All copy here is placeholder: accurate in shape, not in fact. The guidelines
- * suggest the line "Engineered momentum." if the final positioning fits it.
+ * Contact and entity values below are REAL as of the September 2026 SEO plan
+ * and are read by the JSON-LD in lib/schema.ts, the
+ * footer NAP block and the contact page. Keep the NAP (name, address, phone)
+ * identical, character for character, to the Google Business Profile —
+ * consistency across the site, GBP and directories is a local-pack ranking
+ * input, and every variant string is a weaker entity match.
  */
+
+/** Canonical origin, no trailing slash. Must match `site` in astro.config.mjs. */
+export const SITE_URL = 'https://akvega.com'
+
+export const LEGAL_NAME = 'AKVEGA Private Limited'
+
+/** E.164 for `tel:` links and schema. */
+export const PHONE = '+917032990632'
+/** How the number is shown to people. */
+export const PHONE_DISPLAY = '+91 70329 90632'
+
+export const LOCALITY = 'Hyderabad'
+export const REGION = 'Telangana'
+/** ISO 3166-2 subdivision, for the geo.region meta tag. */
+export const REGION_CODE = 'TG'
+export const COUNTRY = 'IN'
+export const COUNTRY_NAME = 'India'
+/** BCP 47 for `<html lang>`; the Open Graph form is derived in the layout. */
+export const LOCALE = 'en-IN'
+
+/**
+ * Cities and regions the business serves, most specific first. Feeds
+ * `areaServed` on the Organization and every Service node.
+ */
+export const SERVICE_AREA = [
+  { type: 'City', name: 'Hyderabad' },
+  { type: 'City', name: 'Secunderabad' },
+  { type: 'State', name: 'Telangana' },
+  { type: 'Country', name: 'India' },
+] as const
+
+/**
+ * The single location sentence, used verbatim on the contact page, the
+ * footer and the location page. It must stay identical to the GBP
+ * description's opening line.
+ */
+export const LOCATION_LINE =
+  'Based in Hyderabad, India. We work remote-first with clients across Hyderabad, wider India, and the US.'
+
+export type SocialLink = {
+  label: string
+  href: string
+  /** Must name an entry in components/BrandMarks.tsx. */
+  icon: 'linkedin' | 'instagram'
+}
+
+/**
+ * Verified live profiles only. Never a placeholder: an empty or dead profile
+ * in `sameAs` is a negative entity signal, not a neutral one, which is why
+ * Dribbble is gone rather than stubbed.
+ *
+ * Instagram is @akvegadigital, not @akvega — grab the shorter handle if it
+ * frees up, and until then keep the *display name* on every platform set to
+ * exactly "Akvega", which is what entity matching keys on.
+ */
+export const SOCIAL_LINKS: readonly SocialLink[] = [
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/akvega/', icon: 'linkedin' },
+  { label: 'Instagram', href: 'https://www.instagram.com/akvegadigital/', icon: 'instagram' },
+]
+
+/**
+ * TODO: replace with the canonical Google Maps place URL once copied from the
+ * Business Profile — the full https://www.google.com/maps/place/... form, NOT
+ * the share.google short link, which is a redirect and not a stable entity
+ * identifier. Left empty it is filtered out of `sameAs` below and the contact
+ * page renders no map link.
+ */
+export const GOOGLE_BUSINESS_URL = ''
+
+export const SAME_AS: string[] = [
+  ...SOCIAL_LINKS.map((link) => link.href),
+  GOOGLE_BUSINESS_URL,
+].filter(Boolean)
+
 export const site = {
   name: 'Akvega',
-
-  /**
-   * Canonical origin, no trailing slash. INFERRED from the contact address
-   * below, not confirmed — it is the one value here that is wrong in a way
-   * that costs something (canonical tags, sitemap, share previews all point at
-   * it). Confirm the live domain before launch and update public/sitemap.xml,
-   * public/robots.txt and the meta tags in index.html to match.
-   */
-  url: 'https://akvega.com',
+  url: SITE_URL,
 
   headline: { lead: 'We make brands', accent: 'impossible to ignore.' },
   subhead:
-    'Akvega is an independent design studio working across brand identity, digital product, and motion.',
+    'Akvega combines growth marketing and digital build under one team — so the campaign and the product it points to are shipped by the same people. We work with founders and marketing leads at Indian SMBs and funded startups.',
 
   primaryCta: { label: 'Start a project', to: '/contact' },
   secondaryCta: { label: 'See the work', to: '/work' },
 
   email: 'hello@akvega.com',
+  phone: PHONE,
+  phoneDisplay: PHONE_DISPLAY,
 
-  // Placeholder — no real number yet. Obviously-fake shape on purpose, so it
-  // reads as unfinished rather than wrong: replace before launch, never with a
-  // guessed real one.
-  phone: '+91 7032990632',
-
-  // Placeholder — Akvega has not confirmed a physical base. "Remote-first" is
-  // the least specific true-shaped claim available; replace with a real
-  // office/timezone line if one gets confirmed.
-  availability: 'Remote-first · async across time zones',
+  /** Where the work happens. Replaces the old "remote-first, no office" line. */
+  location: LOCATION_LINE,
+  /** Short form for tight UI (footer address, map card title). */
+  locationShort: `${LOCALITY}, ${REGION}, ${COUNTRY_NAME}`,
 
   nav: [
     { label: 'Work', to: '/work' },
@@ -45,12 +112,7 @@ export const site = {
     { label: 'Contact', to: '/contact' },
   ],
 
-  // `icon` must name an entry in components/BrandMarks.tsx.
-  social: [
-    { label: 'LinkedIn', href: '#', icon: 'linkedin' },
-    { label: 'Instagram', href: '#', icon: 'instagram' },
-    { label: 'Dribbble', href: '#', icon: 'dribbble' },
-  ],
+  social: SOCIAL_LINKS,
 
   /**
    * Footer. The directory columns are generated from lib/services.ts and

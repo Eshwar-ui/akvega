@@ -46,7 +46,7 @@
         ]
       },
       {
-        "source": "/@(services|about|work|contact)",
+        "source": "/@(services|about|work|contact|digital-marketing-agency-hyderabad)",
         "headers": [
           {
             "key": "Cache-Control",

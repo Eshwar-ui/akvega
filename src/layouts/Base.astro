@@ -4,6 +4,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer.astro'
 import CustomCursor from '@/components/CustomCursor'
 import { organizationSchema, websiteSchema } from '@/lib/schema'
+import { COUNTRY, LOCALE, LOCALITY, REGION_CODE } from '@/lib/site'
 
 /**
  * The one place head metadata is written.
@@ -20,9 +21,29 @@ interface Props {
   description: string
   /** Overrides the share image for one page. Defaults to the site card. */
   ogImage?: string
+  /**
+   * Keep the page out of the index. Used by /work while it has nothing to
+   * show: an honest empty state is good for a visitor and a thin page for
+   * Google. The page is also filtered from the sitemap in astro.config.mjs.
+   */
+  noindex?: boolean
 }
 
-const { title, description, ogImage = '/og.png' } = Astro.props
+const { title, description, ogImage = '/og.png', noindex = false } = Astro.props
+
+// Search Console / Bing Webmaster ownership tokens. Optional: set in .env as
+// PUBLIC_GOOGLE_SITE_VERIFICATION / PUBLIC_BING_SITE_VERIFICATION and the tag
+// is emitted; leave unset and nothing is. DNS verification is the better
+// long-term route, but the meta tag is the one that works before DNS access.
+const googleVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION as string | undefined
+const bingVerification = import.meta.env.PUBLIC_BING_SITE_VERIFICATION as string | undefined
+
+const robots = noindex
+  ? 'noindex, follow'
+  : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+
+// Open Graph wants the underscore form of the BCP 47 tag.
+const ogLocale = LOCALE.replace('-', '_')
 
 // Astro.site comes from `site` in astro.config.mjs; Astro.url.pathname is the
 // route being built. Together they are the canonical, with no hand-written
@@ -47,7 +68,7 @@ const graph = [organizationSchema(), websiteSchema()]
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={LOCALE}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -72,7 +93,16 @@ const graph = [organizationSchema(), websiteSchema()]
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <meta name="robots" content={robots} />
     <meta name="theme-color" content="#ffffff" />
+
+    {googleVerification && <meta name="google-site-verification" content={googleVerification} />}
+    {bingVerification && <meta name="msvalidate.01" content={bingVerification} />}
+
+    {/* Geo hints. Weak signals on their own, but they cost nothing and agree
+        with the PostalAddress in the Organization JSON-LD below. */}
+    <meta name="geo.region" content={`${COUNTRY}-${REGION_CODE}`} />
+    <meta name="geo.placename" content={LOCALITY} />
 
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <link rel="apple-touch-icon" href="/logo.svg" />
@@ -87,6 +117,7 @@ const graph = [organizationSchema(), websiteSchema()]
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Akvega" />
+    <meta property="og:locale" content={ogLocale} />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

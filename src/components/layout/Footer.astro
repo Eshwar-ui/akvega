@@ -29,7 +29,10 @@ const columns = [
   })),
   {
     heading: 'Explore',
-    links: site.nav.map((item) => ({ label: item.label, href: item.to })),
+    links: [
+      ...site.nav.map((item) => ({ label: item.label, href: item.to })),
+      { label: 'Hyderabad', href: '/digital-marketing-agency-hyderabad' },
+    ],
   },
 ]
 ---
@@ -89,12 +92,25 @@ const columns = [
 
         <div>
           <h2 class="type-overline text-[13px] text-ink-muted">Say hello</h2>
+
+          {/* NAP. The one place the name, city and phone appear together in
+              plain text on every page — keep it identical to the Google
+              Business Profile, character for character. */}
+          <address class="mt-5 space-y-1.5 not-italic text-[14px] leading-relaxed text-ink-muted">
+            <p>{site.name} — {site.locationShort}</p>
+            <p>
+              <a href={`tel:${site.phone}`} class="link-sweep hover:text-ink">{site.phoneDisplay}</a>
+            </p>
+          </address>
+
           <ul class="mt-5 flex flex-wrap gap-2">
             {
               site.social.map((item) => (
                 <li>
                   <a
                     href={item.href}
+                    rel="me noopener"
+                    target="_blank"
                     class="press inline-flex min-h-11 items-center gap-2 rounded-full bg-paper px-3.5 py-2 text-[14px] text-ink-muted shadow-[0_1px_2px_rgb(5_17_39/0.06)] hover:text-ink hover:shadow-[0_4px_12px_-4px_rgb(5_17_39/0.18)]"
                   >
                     <BrandMark name={item.icon} className="size-[18px]" />

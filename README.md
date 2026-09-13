@@ -22,7 +22,8 @@ npm run dev        # http://localhost:5173
 | ------------------- | ------------------------------------------------------- |
 | `npm run dev`       | Dev server with HMR                                     |
 | `npm run dev:api`   | Local contact API using `functions/.env`                |
-| `npm run build`     | Typecheck (`tsc -b`) then production build into `dist/` |
+| `npm run build`     | Typecheck, production build into `dist/`, then the link guard |
+| `npm run check:links` | Fail if any built page has a placeholder link (`href="#"`) |
 | `npm run typecheck` | Types only, no bundle                                   |
 | `npm run lint`      | Oxlint                                                  |
 | `npm run preview`   | Serve the built `dist/` locally                         |
@@ -83,11 +84,37 @@ when the function restarts; it is not a durable quota or a replacement for CAPTC
 `npm run build` fails on a type error rather than shipping one — that is
 deliberate, don't route around it with a bare `vite build`.
 
+## Entity data and local SEO
+
+`src/lib/site.ts` holds the real business values — legal name, phone, city,
+locale, verified social profiles and the service area — and everything else
+derives from it: the JSON-LD graph in `src/lib/schema.ts`, the footer NAP
+block, the contact page and the Hyderabad location page. Keep the name,
+address and phone identical, character for character, to the Google Business
+Profile; NAP consistency is a local-pack ranking input.
+
+Rules that the code enforces or assumes:
+
+- `SOCIAL_LINKS` takes verified live profiles only. `scripts/check-links.mjs`
+  runs after every build and fails on a bare `href="#"`, so a placeholder
+  profile cannot ship again.
+- `GOOGLE_BUSINESS_URL` must be the canonical `google.com/maps/place/...`
+  URL, not a `share.google` short link. Empty, it is filtered out of `sameAs`
+  and the contact page shows no map link.
+- No `aggregateRating` in the schema until real reviews exist on a platform
+  Google can see. Self-declared ratings are a guideline violation.
+- `/work` is `noindex` and filtered from the sitemap while it is an empty
+  state (`astro.config.mjs`). Remove both the day it has case studies.
+- Search Console and Bing verification tags are emitted only when
+  `PUBLIC_GOOGLE_SITE_VERIFICATION` / `PUBLIC_BING_SITE_VERIFICATION` are set
+  in `.env`.
+
 ## Layout
 
 ```
 src/
   pages/        One .astro file per route. Astro routes from here.
+                digital-marketing-agency-hyderabad.astro is the location page.
   layouts/      Base.astro — the only place head metadata is written
   lib/          Content and data. site.ts (copy, nav, contact), services.ts
                 (the two tracks and every service), schema.ts (JSON-LD),

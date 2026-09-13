@@ -34,6 +34,10 @@ export default defineConfig({
       // already drifted once.
       changefreq: 'monthly',
       lastmod: new Date(),
+      // /work is an honest empty state until real case studies exist. It is
+      // `noindex` in its own head (see the page) and stays out of the sitemap
+      // so the two signals agree. Drop this filter the day it has content.
+      filter: (page) => !/\/work(\.html)?$/.test(new URL(page).pathname),
     }),
   ],
   vite: {

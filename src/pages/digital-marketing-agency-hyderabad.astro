@@ -1,0 +1,341 @@
+---
+import Base from '@/layouts/Base.astro'
+import Breadcrumb from '@/components/Breadcrumb.astro'
+import { Icon, type IconName } from '@/components/Icons'
+import { faqSchema, locationPageSchema } from '@/lib/schema'
+import { serviceHref, tracks } from '@/lib/services'
+import { LOCATION_LINE, SERVICE_AREA, site } from '@/lib/site'
+import { revealDelayStyle } from '@/scripts/reveal'
+
+/**
+ * The Hyderabad location page. Primary query: "digital marketing agency in
+ * Hyderabad"; secondary: SEO services, web development and app development
+ * company Hyderabad.
+ *
+ * Google filters doorway pages hard, so this is not the homepage with a city
+ * name substituted in. Everything here is specific to operating from
+ * Hyderabad: the local search mechanics a business here actually competes
+ * on, the areas we serve, how a first meeting works, and a FAQ a Hyderabad
+ * buyer asks that a US buyer would not. The service list links to /services
+ * rather than restating it.
+ *
+ * No client names, no review counts, no headcount. When real Hyderabad
+ * engagements exist, they belong here first — a local page with local proof
+ * is the strongest thing this site can publish.
+ */
+const PATH = '/digital-marketing-agency-hyderabad'
+const TITLE = 'Digital marketing agency in Hyderabad — SEO, ads, websites and apps | Akvega'
+const DESCRIPTION =
+  'Akvega is a Hyderabad digital marketing agency with the build team attached: SEO, Google Ads, Meta Ads and social alongside websites, apps and custom systems — one team, based in Hyderabad.'
+
+const neighbourhoods = [
+  'HITEC City',
+  'Gachibowli',
+  'Madhapur',
+  'Kondapur',
+  'Jubilee Hills',
+  'Banjara Hills',
+  'Kukatpally',
+  'Kompally',
+  'Secunderabad',
+  'Uppal',
+]
+
+const localMechanics: { title: string; body: string; icon: IconName }[] = [
+  {
+    title: 'The local pack decides who gets the call',
+    body: 'For "near me" and city-qualified searches, Google shows three businesses on a map before a single organic result. Getting into that box is a different discipline from ranking a page: a complete Google Business Profile, consistent name, address and phone across every directory, reviews that keep arriving, and a site that says the same things the profile does.',
+    icon: 'pin',
+  },
+  {
+    title: 'Search in Hyderabad is three languages, not one',
+    body: 'Buyers here search in English, Telugu and Hindi, often in the same session, and increasingly by voice. We plan keyword and answer coverage across all three where the audience warrants it, rather than translating an English plan after the fact.',
+    icon: 'chat',
+  },
+  {
+    title: 'The landing page is half the ad',
+    body: 'A Hyderabad Google Ads account competing in real estate, healthcare, education or B2B SaaS pays for every click. If the page it lands on loads slowly on a mid-range Android over a mobile connection, the campaign is subsidising a bad website. We buy the traffic and build the page, so that gap is ours to close.',
+    icon: 'target',
+  },
+  {
+    title: 'Commerce has to work the way people here pay',
+    body: 'UPI first, cash-on-delivery as an option, GST-compliant invoicing, pincode-level delivery rules and a checkout that survives a dropped connection. A storefront built for a Western checkout flow leaks orders at every one of those steps.',
+    icon: 'bag',
+  },
+]
+
+const localFaqs = [
+  {
+    q: 'Do you meet clients in person in Hyderabad?',
+    a: 'Yes. We are based in Hyderabad and meet at your office or a shared workspace for kick-offs, diagnostics and reviews. Day-to-day delivery runs remotely, which is how we also serve clients across wider India and the US.',
+  },
+  {
+    q: 'Do you only work with Hyderabad businesses?',
+    a: 'No. Hyderabad is home and where we can be in the room, but the work is the same for a client in Bengaluru, Pune or Austin. Roughly speaking, we work with founders and marketing leads at Indian SMBs and funded startups, wherever they sit.',
+  },
+  {
+    q: 'Which languages do you work in?',
+    a: 'Conversations happen in English, Telugu or Hindi, whichever is easiest for you. Campaigns and content are produced in English by default, with Telugu or Hindi creative and keyword coverage when the audience calls for it.',
+  },
+  {
+    q: 'Can you handle SEO alone, or do we have to take the build side too?',
+    a: 'Either. Most engagements start on one track. The reason to have both under one roof is that when a campaign needs a landing page, a schema fix or a checkout change, it ships the same week instead of joining another vendor’s backlog.',
+  },
+  {
+    q: 'How does an engagement start, and what does it cost?',
+    a: 'With a paid diagnostic: an audit of what exists and a scoped plan, handed over whether or not you continue with us. The quote for the work itself comes out of that scope, so you are pricing a defined piece of work rather than a retainer with no ending.',
+  },
+]
+
+const areaNames = SERVICE_AREA.map((area) => area.name)
+---
+
+<Base title={TITLE} description={DESCRIPTION}>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(locationPageSchema({ path: PATH, name: TITLE, description: DESCRIPTION }))}
+    />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema(localFaqs))} />
+  </Fragment>
+
+  <div class="px-3 pt-3 sm:px-5 sm:pt-5">
+    <div
+      class="hero-field edge-light relative isolate overflow-hidden rounded-xl border border-hairline sm:rounded-2xl"
+    >
+      <div class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
+        <Breadcrumb current="Hyderabad" />
+        <p class="type-overline mt-7 text-ink-muted">Hyderabad, Telangana</p>
+        <h1 class="type-page-title mt-3 max-w-[20ch] text-balance">
+          A digital marketing agency in Hyderabad — with the build team attached.
+        </h1>
+        <p class="type-body mt-5 max-w-[56ch] text-ink-muted">
+          Akvega runs search, ads and social for Hyderabad businesses, and builds the websites,
+          apps and systems those campaigns point to. One team, so the page the click lands on is
+          shipped by the people who bought the click.
+        </p>
+        <p class="type-body mt-4 max-w-[56ch] text-ink-muted">{LOCATION_LINE}</p>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a
+            href={site.primaryCta.to}
+            data-cta="hyderabad-hero"
+            class="press inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3.5 text-[15px] font-medium text-white shadow-[0_10px_30px_-12px_var(--color-signal)] hover:shadow-[0_16px_36px_-12px_var(--color-signal)]"
+          >
+            Start with a diagnostic
+            <Icon name="arrowUpRight" className="size-4" />
+          </a>
+          <a
+            href={`tel:${site.phone}`}
+            class="press inline-flex items-center gap-2 rounded-full border border-navy/20 bg-paper/70 px-6 py-3.5 text-[15px] font-medium text-ink hover:border-navy"
+          >
+            <Icon name="phone" className="size-4" />
+            {site.phoneDisplay}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Why local is a different game. This is the section that makes the page
+      about Hyderabad rather than about Akvega. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-20 sm:px-8 sm:py-28">
+    <div class="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
+      <div class="lg:sticky lg:top-28 lg:self-start">
+        <p class="reveal type-overline text-ink-muted">Why local is different</p>
+        <h2 class="reveal type-section-title mt-5 max-w-[12ch] text-balance">
+          Ranking in Hyderabad is not ranking in general.
+        </h2>
+      </div>
+
+      <ul class="space-y-0">
+        {
+          localMechanics.map((item, i) => (
+            <li
+              style={revealDelayStyle(i, 70)}
+              class="reveal grid gap-4 border-t border-hairline py-8 sm:grid-cols-[2.5rem_1fr] sm:gap-6 sm:py-10 last:border-b"
+            >
+              <Icon name={item.icon} className="mt-1 size-6 text-signal" />
+              <div>
+                <h3 class="type-card-title max-w-[24ch] text-balance">{item.title}</h3>
+                <p class="type-body mt-3 max-w-[62ch] text-ink-muted">{item.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {/* Services, linked rather than restated. */}
+  <section class="px-3 sm:px-5">
+    <div
+      data-reveal-root
+      data-shown="false"
+      class="edge-light-dark mx-auto max-w-site overflow-hidden rounded-xl bg-navy px-5 py-20 sm:rounded-2xl sm:px-12 sm:py-28 lg:px-16"
+    >
+      <div class="max-w-[60ch]">
+        <p class="reveal type-overline text-blue-200">What we run in Hyderabad</p>
+        <h2 class="reveal type-section-title mt-5 text-balance text-white">
+          SEO, ads and social. Websites, apps and systems. One team.
+        </h2>
+        <p style={revealDelayStyle(1)} class="reveal type-body mt-6 text-blue-200">
+          Every service below is delivered from Hyderabad. Each one links to its full description
+          on the services page.
+        </p>
+      </div>
+
+      <div class="mt-14 grid gap-12 sm:grid-cols-2 sm:gap-16">
+        {
+          tracks.map((track, ti) => (
+            <div style={revealDelayStyle(ti + 2)} class="reveal">
+              <h3
+                class={`type-track-title ${track.accent === 'signal' ? 'text-signal' : 'text-vega'}`}
+              >
+                {track.label}
+              </h3>
+              <p class="type-body mt-3 max-w-[40ch] text-blue-200">{track.statement}</p>
+              <ul class="mt-6 space-y-3">
+                {track.services.map((service) => (
+                  <li>
+                    <a
+                      href={serviceHref(service)}
+                      class="link-sweep inline-flex min-h-[24px] items-center gap-2 text-[16px] font-medium text-white hover:text-blue-100"
+                    >
+                      {service.name}
+                      <span class="text-[13px] font-normal text-blue-200">— Hyderabad</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* Service area. The list is the literal `areaServed` in the JSON-LD plus
+      the neighbourhoods a Hyderabad buyer actually types. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-20 sm:px-8 sm:py-28">
+    <div class="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
+      <div class="lg:sticky lg:top-28 lg:self-start">
+        <p class="reveal type-overline text-ink-muted">Where we work</p>
+        <h2 class="reveal type-section-title mt-5 max-w-[12ch] text-balance">
+          Across the city, and beyond it.
+        </h2>
+      </div>
+
+      <div>
+        <p class="reveal type-body max-w-[62ch] text-ink-muted">
+          We serve businesses across {areaNames.slice(0, -1).join(', ')} and {areaNames.at(-1)}.
+          In-person meetings happen anywhere in the city; delivery runs remotely, which is also
+          how we work with clients elsewhere in India and in the US.
+        </p>
+
+        <ul style={revealDelayStyle(1)} class="reveal mt-8 flex flex-wrap gap-2">
+          {
+            neighbourhoods.map((area) => (
+              <li class="inline-flex items-center gap-2 rounded-full border border-hairline bg-paper px-4 py-2 text-[14px] text-ink">
+                <Icon name="pin" className="size-3.5 text-ink-muted" />
+                {area}
+              </li>
+            ))
+          }
+        </ul>
+
+        <div
+          style={revealDelayStyle(2)}
+          class="reveal mt-12 grid gap-3 rounded-2xl border border-hairline bg-surface/60 p-6 sm:grid-cols-3 sm:gap-6 sm:p-8"
+        >
+          <div>
+            <p class="type-overline text-ink-muted">Based in</p>
+            <p class="mt-2 text-[16px] font-medium text-ink">{site.locationShort}</p>
+          </div>
+          <div>
+            <p class="type-overline text-ink-muted">Call</p>
+            <p class="mt-2 text-[16px] font-medium">
+              <a href={`tel:${site.phone}`} class="link-sweep text-blue-700">{site.phoneDisplay}</a>
+            </p>
+          </div>
+          <div>
+            <p class="type-overline text-ink-muted">Email</p>
+            <p class="mt-2 text-[16px] font-medium">
+              <a href={`mailto:${site.email}`} class="link-sweep text-blue-700">{site.email}</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* How it starts. Same operating model as everywhere on the site, stated
+      once here so the page stands alone for a visitor who lands cold. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 pb-20 sm:px-8 sm:pb-28">
+    <div class="grid gap-8 rounded-2xl border border-hairline bg-surface/60 p-6 sm:grid-cols-3 sm:gap-10 sm:p-10">
+      {
+        [
+          {
+            step: '01',
+            title: 'A paid diagnostic',
+            body: 'We audit what exists — site, search presence, ad accounts, tracking — and hand you a scoped plan. It is yours whether or not you continue with us.',
+          },
+          {
+            step: '02',
+            title: 'A fixed scope from it',
+            body: 'The quote comes out of the diagnostic, so you are buying a defined piece of work with a known end, not an open-ended retainer.',
+          },
+          {
+            step: '03',
+            title: 'Everything in your name',
+            body: 'Repositories, ad accounts, analytics and the Business Profile are set up as yours from day one. Leaving should be a decision, not an extraction.',
+          },
+        ].map((item, i) => (
+          <div style={revealDelayStyle(i, 80)} class="reveal">
+            <p class="type-overline tabular-nums text-ink-muted/60">{item.step}</p>
+            <h3 class="type-card-title mt-3">{item.title}</h3>
+            <p class="type-body mt-3 text-ink-muted">{item.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* Local FAQ. Rendered from `localFaqs`, the same array the FAQPage JSON-LD
+      in the head serialises, so the two cannot drift. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 pb-24 sm:px-8 sm:pb-32">
+    <div class="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
+      <h2 class="reveal type-section-title max-w-[12ch] lg:sticky lg:top-28 lg:self-start">
+        Questions Hyderabad clients ask.
+      </h2>
+
+      <div>
+        {
+          localFaqs.map((item, i) => (
+            <details
+              name="hyderabad-faq"
+              style={revealDelayStyle(i, 60)}
+              class="reveal group border-b border-hairline first:border-t"
+            >
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-8 py-7 text-left sm:py-8 [&::-webkit-details-marker]:hidden">
+                <span class="flex items-baseline gap-4 sm:gap-5">
+                  <span class="type-overline shrink-0 tabular-nums text-[11px] text-ink-muted/45 sm:text-xs">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span class="text-xl font-medium leading-[1.25] transition-colors duration-300 ease-out-expo group-hover:text-signal sm:text-2xl">
+                    {item.q}
+                  </span>
+                </span>
+                <span class="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full border border-hairline text-ink-muted transition-transform duration-300 ease-out-expo group-open:rotate-45">
+                  <Icon name="plus" className="size-4" />
+                </span>
+              </summary>
+              <p class="type-body max-w-[62ch] pb-8 pl-9 text-ink-muted sm:pl-12">{item.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>

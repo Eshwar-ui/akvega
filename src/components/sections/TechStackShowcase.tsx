@@ -17,16 +17,43 @@ import { revealDelay } from '@/lib/useInView'
  * track holds its marks twice back to back and animates exactly half its own
  * height, so the loop seam never shows.
  *
- * Mark selection is the same unverified placeholder set TechStack.tsx uses —
- * confirm before launch.
+ * Twelve marks, not the full set. The pitch beside the wall says "not the
+ * longest list of logos we can fit on a page", and the wall used to be thirty
+ * logos — a reader notices when the copy and the layout disagree. The full,
+ * grouped stack lives on /services#stack, which the button below links to.
  */
-const COLUMN_COUNT = 5
+const SHOWCASE_IDS = [
+  'react',
+  'nextdotjs',
+  'astro',
+  'typescript',
+  'flutter',
+  'supabase',
+  'postgresql',
+  'firebase',
+  'shopify',
+  'figma',
+  'googleads',
+  'meta',
+]
+
+const showcaseMarks: TechMark[] = SHOWCASE_IDS.flatMap((id) => {
+  const mark = renderableMarks.find((m) => m.id === id)
+  return mark ? [mark] : []
+})
+
+const COLUMN_COUNT = 4
+
+// Each column's track repeats its marks so the loop is longer than the panel
+// on every breakpoint: the marquee translates by half the track, so the track
+// must be at least twice the panel height or the bottom runs out of tiles.
+const TRACK_REPEAT = 6
 
 const columns: TechMark[][] = Array.from({ length: COLUMN_COUNT }, (_, column) =>
-  renderableMarks.filter((_mark, index) => index % COLUMN_COUNT === column),
+  showcaseMarks.filter((_mark, index) => index % COLUMN_COUNT === column),
 )
 
-const columnDurations = [26, 32, 22, 30, 24]
+const columnDurations = [26, 32, 22, 30]
 
 function StackTile({ mark }: { mark: TechMark }) {
   return (
@@ -53,7 +80,7 @@ function MarqueeColumn({
   reverse: boolean
   duration: number
 }) {
-  const track = [...marks, ...marks]
+  const track = Array.from({ length: TRACK_REPEAT }, () => marks).flat()
 
   return (
     <div className="h-full overflow-hidden">
@@ -112,7 +139,7 @@ data-shown="false"
           style={revealDelay(2)}
           className="reveal relative h-[380px] overflow-hidden rounded-2xl border border-hairline bg-surface/60 p-3 sm:h-[440px] sm:p-6 lg:h-[520px]"
         >
-          <div className="grid h-full grid-cols-5 gap-2 sm:gap-4">
+          <div className="grid h-full grid-cols-4 gap-2 sm:gap-4">
             {columns.map((marks, i) => (
               <MarqueeColumn
                 key={marks[0]?.id ?? i}
