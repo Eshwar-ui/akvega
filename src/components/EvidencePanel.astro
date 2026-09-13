@@ -1,0 +1,81 @@
+---
+import { site } from '@/lib/site'
+
+/**
+ * An evidence panel: one claim, and everything a reader — or a model
+ * deciding whether to cite the claim — needs to check it.
+ *
+ * Every field is required except `contact`, which defaults to the site
+ * email. A panel with no method, no source or no date is a marketing claim
+ * wearing a lab coat, and this component will not render one: leave the
+ * panel out until the data exists. PRODUCT.md's rule against fabricated
+ * proof applies here more than anywhere.
+ */
+interface Props {
+  id: string
+  title: string
+  claim: string
+  method: string
+  source: { label: string; href: string }
+  /** YYYY-MM-DD the data was collected. */
+  date: string
+  limitations: string
+  contact?: string
+  class?: string
+}
+
+const {
+  id,
+  title,
+  claim,
+  method,
+  source,
+  date,
+  limitations,
+  contact = site.email,
+  class: className = '',
+} = Astro.props
+
+if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+  throw new Error(`EvidencePanel "${id}": date "${date}" must be YYYY-MM-DD`)
+}
+if (!/^https?:\/\//.test(source.href) && !source.href.startsWith('/')) {
+  throw new Error(`EvidencePanel "${id}": source.href must be a URL or a site path`)
+}
+
+const rows = [
+  { term: 'Claim', body: claim },
+  { term: 'Method', body: method },
+  { term: 'Date', body: date },
+  { term: 'Limitations', body: limitations },
+]
+---
+
+<aside
+  id={id}
+  class={`evidence-panel scroll-mt-28 rounded-2xl border border-hairline bg-surface/60 p-6 sm:p-8 ${className}`}
+>
+  <p class="type-overline text-ink-muted">Evidence</p>
+  <h3 class="type-card-title mt-2">{title}</h3>
+
+  <dl class="mt-6 grid gap-x-8 gap-y-4 sm:grid-cols-[7rem_1fr]">
+    {
+      rows.map((row) => (
+        <>
+          <dt class="type-overline text-[11px] text-ink-muted">{row.term}</dt>
+          <dd class="text-[15px] leading-relaxed text-ink">{row.body}</dd>
+        </>
+      ))
+    }
+    <dt class="type-overline text-[11px] text-ink-muted">Source</dt>
+    <dd class="text-[15px] leading-relaxed">
+      <a href={source.href} rel="noopener" class="link-sweep text-blue-700">{source.label}</a>
+    </dd>
+    <dt class="type-overline text-[11px] text-ink-muted">Contact</dt>
+    <dd class="text-[15px] leading-relaxed">
+      <a href={`mailto:${contact}`} class="link-sweep text-blue-700">{contact}</a>
+    </dd>
+  </dl>
+
+  <p class="meta mt-6 text-[12px] text-ink-muted">Data collected <time datetime={date}>{date}</time>.</p>
+</aside>

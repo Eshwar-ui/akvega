@@ -1,0 +1,252 @@
+---
+import Base from '@/layouts/Base.astro'
+import Breadcrumb from '@/components/Breadcrumb.astro'
+import EvidencePanel from '@/components/EvidencePanel.astro'
+import { Icon } from '@/components/Icons'
+import KeyFacts from '@/components/KeyFacts.astro'
+import ReviewedBy from '@/components/ReviewedBy.astro'
+import { datesFor } from '@/lib/dates'
+import { evidenceFor } from '@/lib/evidence'
+import { faqSchema, serviceNode } from '@/lib/schema'
+import { servicePages, type ServicePage } from '@/lib/service-pages'
+import { allServices, serviceHref, tracks } from '@/lib/services'
+import { SITE_URL, site } from '@/lib/site'
+import { revealDelayStyle } from '@/scripts/reveal'
+
+/**
+ * One page per service, from lib/service-pages. The skeleton is fixed so
+ * every service page is structured the same way for extraction: a question
+ * as the H1, a dated overview, the key-facts block, then what is included,
+ * how it runs, evidence where real data exists, a FAQ with anchors and
+ * dates, and related services.
+ *
+ * lib/services.ts still owns the service's name, blurb and deliverables;
+ * this page owns everything else, and the two are joined by `slug`.
+ */
+export async function getStaticPaths() {
+  return servicePages.map((page) => ({ params: { slug: page.slug }, props: { page } }))
+}
+
+interface Props {
+  page: ServicePage
+}
+
+const { page } = Astro.props
+const service = allServices.find((s) => s.slug === page.slug)!
+const track = tracks.find((t) => t.services.some((s) => s.slug === page.slug))!
+const accentText = track.accent === 'signal' ? 'text-signal' : 'text-vega'
+const related = page.related
+  .map((slug) => allServices.find((s) => s.slug === slug))
+  .filter((s): s is NonNullable<typeof s> => Boolean(s))
+const evidence = evidenceFor(page.slug)
+const pageUrl = `${SITE_URL}${serviceHref(page)}`
+// Dates come from lib/page-dates.json like every other page, so the sitemap
+// lastmod, the WebPage node and the visible line all read the same value.
+const dates = datesFor(serviceHref(page))
+if (!dates) throw new Error(`No dates for ${serviceHref(page)} in src/lib/page-dates.json`)
+---
+
+<Base title={page.title} description={page.description} dates={dates}>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify({ '@context': 'https://schema.org', ...serviceNode(service, track.label) })}
+    />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema(page.faqs, pageUrl))} />
+  </Fragment>
+
+  <div class="px-3 pt-3 sm:px-5 sm:pt-5">
+    <div
+      class="hero-field edge-light relative isolate overflow-hidden rounded-xl border border-hairline sm:rounded-2xl"
+    >
+      <div class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
+        <Breadcrumb parent={{ label: 'Services', href: '/services' }} current={service.name} />
+        <p class={`type-overline mt-7 ${accentText}`}>{track.label} · {service.name}</p>
+        <h1 class="type-page-title mt-3 max-w-[22ch] text-balance">{page.h1}</h1>
+        <p class="type-body mt-5 max-w-[60ch] text-ink-muted">{page.overview}</p>
+        <ReviewedBy dates={dates} class="mt-6" />
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a
+            href={site.primaryCta.to}
+            data-cta={`service-${page.slug}-hero`}
+            class="press inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3.5 text-[15px] font-medium text-white shadow-[0_10px_30px_-12px_var(--color-signal)] hover:shadow-[0_16px_36px_-12px_var(--color-signal)]"
+          >
+            Start with a diagnostic
+            <Icon name="arrowUpRight" className="size-4" />
+          </a>
+          <a
+            href={site.diagnosticPath}
+            class="press inline-flex items-center gap-2 rounded-full border border-navy/20 bg-paper/70 px-6 py-3.5 text-[15px] font-medium text-ink hover:border-navy"
+          >
+            How the diagnostic works
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mx-auto max-w-site px-5 pt-16 sm:px-8 sm:pt-20">
+    <KeyFacts facts={page.keyFacts} class="max-w-[64ch]" />
+  </div>
+
+  {/* What is included. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
+    <div class="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
+      <div class="lg:sticky lg:top-28 lg:self-start">
+        <p class="reveal type-overline text-ink-muted">What is included</p>
+        <h2 class="reveal type-section-title mt-5 max-w-[12ch] text-balance">What the work covers.</h2>
+        <p class="reveal type-overline mt-8 text-[11px] text-ink-muted">Deliverables</p>
+        <ul class="reveal mt-3 flex flex-wrap gap-2">
+          {
+            service.deliverables.map((item) => (
+              <li class="rounded-full border border-hairline bg-paper px-3.5 py-1.5 text-[13px] text-ink">{item}</li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <ul>
+        {
+          page.included.map((item, i) => (
+            <li
+              style={revealDelayStyle(i, 70)}
+              class="reveal grid gap-3 border-t border-hairline py-7 sm:grid-cols-[2.5rem_1fr] sm:gap-6 sm:py-9 last:border-b"
+            >
+              <Icon name="check" className={`mt-1 size-5 ${accentText}`} />
+              <div>
+                <h3 class="type-card-title max-w-[26ch] text-balance">{item.title}</h3>
+                <p class="type-body mt-3 max-w-[62ch] text-ink-muted">{item.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {/* How it runs. */}
+  <section class="px-3 sm:px-5">
+    <div
+      data-reveal-root
+      data-shown="false"
+      class="edge-light-dark mx-auto max-w-site overflow-hidden rounded-xl bg-navy px-5 py-20 sm:rounded-2xl sm:px-12 sm:py-28 lg:px-16"
+    >
+      <p class="reveal type-overline text-blue-200">How it runs</p>
+      <h2 class="reveal type-section-title mt-5 max-w-[16ch] text-balance text-white">
+        {page.howItRuns.length} stages, in this order.
+      </h2>
+      <ol class="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        {
+          page.howItRuns.map((step, i) => (
+            <li style={revealDelayStyle(i + 1, 80)} class="reveal border-t border-white/15 pt-6">
+              <span class="text-sm tabular-nums text-blue-300/70">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="mt-2 text-lg font-medium text-white">{step.title}</h3>
+              <p class="mt-2 text-[15px] leading-relaxed text-blue-200">{step.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {
+    evidence.length ? (
+      <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 pt-16 sm:px-8 sm:pt-24">
+        <div class="grid gap-6 lg:grid-cols-2">
+          {evidence.map((panel, i) => (
+            <div style={revealDelayStyle(i, 80)} class="reveal">
+              <EvidencePanel {...panel} />
+            </div>
+          ))}
+        </div>
+      </section>
+    ) : null
+  }
+
+  {/* FAQ. Rendered from page.faqs, the same array the FAQPage JSON-LD in the
+      head serialises. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-20 sm:px-8 sm:py-28">
+    <div class="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
+      <h2 class="reveal type-section-title max-w-[12ch] lg:sticky lg:top-28 lg:self-start">
+        Questions about {service.name.toLowerCase()}.
+      </h2>
+
+      <div>
+        {
+          page.faqs.map((item, i) => (
+            <details
+              id={`faq-${item.slug}`}
+              name={`faq-${page.slug}`}
+              style={revealDelayStyle(i, 50)}
+              class="reveal group scroll-mt-28 border-b border-hairline first:border-t"
+            >
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-8 py-7 text-left sm:py-8 [&::-webkit-details-marker]:hidden">
+                <span class="flex items-baseline gap-4 sm:gap-5">
+                  <span class="type-overline shrink-0 tabular-nums text-[11px] text-ink-muted/45 sm:text-xs">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span class="text-xl font-medium leading-[1.25] transition-colors duration-300 ease-out-expo group-hover:text-signal sm:text-2xl">
+                    {item.q}
+                  </span>
+                </span>
+                <span class="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full border border-hairline text-ink-muted transition-transform duration-300 ease-out-expo group-open:rotate-45">
+                  <Icon name="plus" className="size-4" />
+                </span>
+              </summary>
+              <p class="type-body max-w-[62ch] pb-8 pl-9 text-ink-muted sm:pl-12">{item.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* Related services and the close. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 pb-24 sm:px-8 sm:pb-32">
+    <div class="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
+      <div class="rounded-2xl border border-hairline bg-surface/60 p-6 sm:p-8">
+        <p class="reveal type-overline text-ink-muted">Often paired with</p>
+        <ul class="mt-5 space-y-3">
+          {
+            related.map((item, i) => (
+              <li style={revealDelayStyle(i + 1, 60)} class="reveal">
+                <a href={serviceHref(item)} class="link-sweep text-[17px] font-medium text-ink">
+                  {item.name}
+                </a>
+                <p class="type-body mt-1 text-[15px] text-ink-muted">{item.short}</p>
+              </li>
+            ))
+          }
+        </ul>
+        <a href="/services" class="link-sweep mt-6 inline-block text-[14px] text-blue-700">All ten services</a>
+      </div>
+
+      <div class="edge-light-dark rounded-2xl bg-navy p-6 sm:p-10">
+        <h2 class="reveal type-section-title max-w-[18ch] text-balance text-white">
+          Start with the audit, not the retainer.
+        </h2>
+        <p style={revealDelayStyle(1)} class="reveal type-body mt-5 max-w-[46ch] text-blue-200">
+          A paid diagnostic returns within 1 to 2 working days with every finding priced. Yours to keep
+          whether or not you continue.
+        </p>
+        <div style={revealDelayStyle(2)} class="reveal mt-8 flex flex-col gap-3 sm:flex-row">
+          <a
+            href={site.primaryCta.to}
+            data-cta={`service-${page.slug}-close`}
+            class="press type-ui rounded-full bg-white px-7 py-3.5 text-center text-navy"
+          >
+            Book a diagnostic
+          </a>
+          <a
+            href="/pricing"
+            class="press type-ui rounded-full border border-white/20 px-7 py-3.5 text-center text-white hover:border-white/50"
+          >
+            See pricing
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

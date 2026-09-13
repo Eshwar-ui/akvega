@@ -1,17 +1,23 @@
 ---
 import Base from '@/layouts/Base.astro'
+import { datesFor } from '@/lib/dates'
 
 /**
  * Firebase Hosting serves this automatically for unmatched paths, and — unlike
  * the SPA's catch-all route, which returned HTTP 200 with the app shell — it
  * serves it with a real 404 status. Those soft 404s were being logged by Google
  * as low-quality pages.
+ *
+ * In dev this page also answers any unknown path (favicon.ico included), so
+ * its dates are passed explicitly rather than looked up by the request path.
  */
 ---
 
 <Base
   title="Page not found | Akvega"
   description="That page doesn't exist. The link may be out of date, or the page has moved."
+  noindex
+  dates={datesFor('/404')}
 >
   <div class="mx-auto flex max-w-site flex-col items-start px-5 py-32 sm:px-8">
     <h1 class="type-page-title">That page doesn’t exist.</h1>

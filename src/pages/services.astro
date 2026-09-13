@@ -3,9 +3,10 @@ import Base from '@/layouts/Base.astro'
 import Breadcrumb from '@/components/Breadcrumb.astro'
 import { Icon, type IconName } from '@/components/Icons'
 import TechStack from '@/components/TechStack'
-import { serviceCount, tracks } from '@/lib/services'
+import { serviceCount, serviceHref, tracks } from '@/lib/services'
 import { revealDelayStyle } from '@/scripts/reveal'
 import { servicesSchema } from '@/lib/schema'
+import ReviewedBy from '@/components/ReviewedBy.astro'
 
 /**
  * The definitive services reference — everything lib/services.ts knows, with a
@@ -54,8 +55,9 @@ const serviceIcons: Record<string, IconName> = {
         <h1 class="type-page-title mt-3 max-w-[20ch]">Everything we do, in one place.</h1>
         <p class="type-body mt-5 max-w-[52ch] text-ink-muted">
           {serviceCount} services across two tracks. Hire one, or hire both — most clients end
-          up wanting both.
+          up wanting both. Each service has its own page.
         </p>
+        <ReviewedBy class="mt-6" />
       </div>
     </div>
   </div>
@@ -92,7 +94,9 @@ const serviceIcons: Record<string, IconName> = {
                       name={serviceIcons[service.slug]}
                       className={`mt-1.5 size-6 shrink-0 sm:mt-2 ${accentText}`}
                     />
-                    <h3 class="type-card-title">{service.name}</h3>
+                    <h3 class="type-card-title">
+                      <a href={serviceHref(service)} class="link-sweep">{service.name}</a>
+                    </h3>
                   </div>
 
                   <div>

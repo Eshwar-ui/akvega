@@ -2,7 +2,10 @@
 import Base from '@/layouts/Base.astro'
 import Breadcrumb from '@/components/Breadcrumb.astro'
 import { Icon } from '@/components/Icons'
+import KeyFacts from '@/components/KeyFacts.astro'
+import ReviewedBy from '@/components/ReviewedBy.astro'
 import {
+  GROWTH_CEILING,
   PRICING_PUBLISHED,
   alwaysIncluded,
   buildTiers,
@@ -10,53 +13,51 @@ import {
   diagnostic,
   excluded,
   formatFrom,
-  growthTiers,
+  formatInr,
+  packages,
   pricingFaqs,
-  type PriceTier,
+  withGst,
 } from '@/lib/pricing'
 import { faqSchema } from '@/lib/schema'
 import { serviceHref } from '@/lib/services'
-import { site } from '@/lib/site'
+import { SITE_URL, site } from '@/lib/site'
 import { revealDelayStyle } from '@/scripts/reveal'
 
 /**
  * Pricing. Nobody else in the Hyderabad agency market publishes numbers, so
  * this page is a differentiator on its own — but only if the numbers are
- * real. Every figure comes from lib/pricing.ts; a tier whose `from` is null
- * shows "Quoted from the diagnostic" instead of a guess, and while
- * `PRICING_PUBLISHED` is false the whole page is noindex and unlinked.
+ * real. Every figure comes from lib/pricing.ts. Growth marketing is three
+ * monthly packages with confirmed prices; build work shows "Quoted from the
+ * diagnostic" until a starting price is confirmed.
  *
- * Layout: the diagnostic first, because it is the door; then Growth as
- * monthly retainers and Build as project prices; then what is always
- * included, what never is, and a FAQ that answers the question a buyer has
- * before they email — "what does 'from' actually mean?"
+ * Layout: the diagnostic first, because it is the door; the three growth
+ * packages with GST and the client's own ad budget stated beside each; Build
+ * as project prices; what is always included, what never is; and a FAQ that
+ * answers the question a buyer has before they email — "how much does it
+ * actually cost?" — in a sentence an answer engine can quote.
  */
-const TITLE = 'Pricing — starting prices for growth and build | Akvega'
+const TITLE = 'Pricing — digital marketing packages from ₹20,000 a month | Akvega'
 const DESCRIPTION =
-  'Starting prices for SEO, Google Ads, Meta Ads and social, and for websites, online stores, mobile apps and custom tools. A paid diagnostic first, then a fixed quote.'
+  'Akvega digital marketing packages: Local Visibility ₹20,000, Search & Social Growth ₹40,000 and Market Leader ₹60,000 a month plus GST, with custom scopes to ₹1,00,000. Websites, stores and apps quoted from a paid diagnostic.'
 
+const PAGE_URL = `${SITE_URL}/pricing`
 const FALLBACK_PRICE = 'Quoted from the diagnostic'
 
-const columns: { label: string; accent: 'signal' | 'vega'; lede: string; tiers: PriceTier[] }[] = [
-  {
-    label: 'Growth',
-    accent: 'signal',
-    lede: 'Monthly, with a scope you can hold us to. Ad spend is separate and stays in your own accounts.',
-    tiers: growthTiers,
-  },
-  {
-    label: 'Build',
-    accent: 'vega',
-    lede: 'Priced per project from the diagnostic, with the number fixed before the first line of code.',
-    tiers: buildTiers,
-  },
-]
+const cheapest = packages[0]
+const dearest = packages[packages.length - 1]
 
-const diagnosticPrice = formatFrom(diagnostic.from)
+const keyFacts = [
+  `Akvega digital marketing packages start at ${formatInr(cheapest.monthly)} a month plus 18% GST.`,
+  `Akvega's three packages cost ${formatInr(cheapest.monthly)}, ${formatInr(packages[1].monthly)} and ${formatInr(dearest.monthly)} a month, excluding GST.`,
+  `Custom growth marketing scopes at Akvega run up to ${formatInr(GROWTH_CEILING)} a month.`,
+  'Ad spend is paid by the client directly to Google, Meta, LinkedIn or YouTube, never through Akvega.',
+  'Every Akvega engagement starts with a paid diagnostic returned within 1 to 2 working days.',
+  'Websites, online stores, mobile apps and custom tools are quoted from the diagnostic.',
+]
 ---
 
 <Base title={TITLE} description={DESCRIPTION} noindex={!PRICING_PUBLISHED}>
-  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema(pricingFaqs))} />
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema(pricingFaqs, PAGE_URL))} />
 
   <div class="px-3 pt-3 sm:px-5 sm:pt-5">
     <div
@@ -65,19 +66,27 @@ const diagnosticPrice = formatFrom(diagnostic.from)
       <div class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
         <Breadcrumb current="Pricing" />
         <p class="type-overline mt-7 text-ink-muted">Pricing</p>
-        <h1 class="type-page-title mt-3 max-w-[16ch] text-balance">What it costs, before you ask.</h1>
+        <h1 class="type-page-title mt-3 max-w-[18ch] text-balance">
+          How much does digital marketing cost at Akvega?
+        </h1>
         <p class="type-body mt-5 max-w-[54ch] text-ink-muted">
-          Starting prices for every service we run, and the one step that turns them into a fixed
-          quote. No discovery call whose only purpose is to find out your budget.
+          Three growth marketing packages from {formatInr(cheapest.monthly)} to {formatInr(dearest.monthly)} a
+          month plus GST, custom scopes to {formatInr(GROWTH_CEILING)}, and build work quoted from a paid
+          diagnostic. No discovery call whose only purpose is to find out your budget.
         </p>
+        <ReviewedBy class="mt-6" />
       </div>
     </div>
   </div>
 
+  <div class="mx-auto max-w-site px-5 pt-16 sm:px-8 sm:pt-20">
+    <KeyFacts facts={keyFacts} class="max-w-[64ch]" />
+  </div>
+
   {/* The diagnostic. One card, on its own, because it is the door every
-      engagement walks through and the thing that makes every other price on
-      the page a real number for your scope. */}
-  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-20 sm:px-8 sm:py-28">
+      engagement walks through and the thing that turns a build range into a
+      fixed number for your scope. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
     <div
       class="reveal edge-light-dark grid gap-10 overflow-hidden rounded-2xl bg-navy px-6 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:px-14"
     >
@@ -88,10 +97,10 @@ const diagnosticPrice = formatFrom(diagnostic.from)
 
         <div class="mt-8 flex flex-wrap items-baseline gap-x-3 gap-y-1">
           {
-            diagnosticPrice ? (
+            formatFrom(diagnostic.from) ? (
               <>
                 <span class="text-[clamp(2.25rem,5vw,3.25rem)] font-semibold leading-none tracking-[-0.02em] text-white">
-                  {diagnosticPrice}
+                  {formatFrom(diagnostic.from)}
                 </span>
                 <span class="text-[15px] text-blue-200">{cadenceLabel(diagnostic.cadence)}, excl. GST</span>
               </>
@@ -102,13 +111,16 @@ const diagnosticPrice = formatFrom(diagnostic.from)
             )
           }
         </div>
-        {
-          diagnostic.durationDays ? (
-            <p class="mt-2 text-[14px] text-blue-200">
-              About {diagnostic.durationDays} working days from kickoff to handover.
-            </p>
-          ) : null
-        }
+        <p class="mt-2 text-[14px] text-blue-200">Handed over within {diagnostic.duration} of kickoff.</p>
+
+        <p class="type-overline mt-8 text-[11px] text-blue-300">What we audit</p>
+        <ul class="mt-3 flex flex-wrap gap-2">
+          {
+            diagnostic.audits.map((item) => (
+              <li class="rounded-full border border-white/15 px-3.5 py-1.5 text-[13px] text-blue-100">{item}</li>
+            ))
+          }
+        </ul>
 
         <a
           href={site.primaryCta.to}
@@ -133,101 +145,183 @@ const diagnosticPrice = formatFrom(diagnostic.from)
     </div>
   </section>
 
-  {/* The tiers. Growth then Build, in the order the site always uses. */}
-  {
-    columns.map((column, ci) => {
-      const accentText = column.accent === 'signal' ? 'text-signal' : 'text-vega'
-      return (
-        <section
-          data-reveal-root
-          data-shown="false"
-          class={`mx-auto max-w-site px-5 sm:px-8 ${ci === 0 ? 'pb-20 sm:pb-28' : 'pb-24 sm:pb-32'}`}
-        >
-          <div class="reveal flex flex-col gap-6 border-t border-ink/12 pt-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
-            <div class="flex items-baseline gap-5">
-              <h2 class={`type-track-title ${accentText}`}>{column.label}</h2>
-              <span class="text-sm tabular-nums text-ink-muted">
-                {String(column.tiers.length).padStart(2, '0')}
+  {/* Growth packages. Three cards, the middle one featured, each showing the
+      fee, the GST-inclusive total and the client's own ad budget — the three
+      numbers a buyer needs to compare us with anyone else. */}
+  <section
+    id="packages"
+    data-reveal-root
+    data-shown="false"
+    class="mx-auto max-w-site scroll-mt-28 px-5 pb-20 sm:px-8 sm:pb-28"
+  >
+    <div class="reveal flex flex-col gap-6 border-t border-ink/12 pt-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+      <div class="flex items-baseline gap-5">
+        <h2 class="type-track-title text-signal">Growth</h2>
+        <span class="text-sm tabular-nums text-ink-muted">{String(packages.length).padStart(2, '0')}</span>
+      </div>
+      <p class="type-body max-w-[46ch] text-ink-muted lg:text-right">
+        Monthly packages with a defined scope. Ad spend stays in your own accounts and is stated
+        beside each package so the full monthly cost is on the page.
+      </p>
+    </div>
+
+    <ul class="mt-10 grid gap-4 lg:grid-cols-3 lg:gap-5">
+      {
+        packages.map((pkg, i) => (
+          <li
+            id={`package-${pkg.slug}`}
+            style={revealDelayStyle(i + 1, 90)}
+            class={`reveal relative flex scroll-mt-28 flex-col rounded-2xl border p-6 sm:p-8 ${
+              pkg.featured
+                ? 'edge-light-dark border-navy bg-navy text-white'
+                : 'border-hairline bg-paper text-ink'
+            }`}
+          >
+            {pkg.featured ? (
+              <span class="absolute right-6 top-6 rounded-full bg-energy px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-navy">
+                Most chosen
               </span>
+            ) : null}
+
+            <p class={`type-overline text-[11px] ${pkg.featured ? 'text-blue-300' : 'text-ink-muted'}`}>
+              Package {String(i + 1).padStart(2, '0')}
+            </p>
+            <h3 class="type-card-title mt-3">{pkg.name}</h3>
+            <p class={`mt-3 text-[14px] leading-relaxed ${pkg.featured ? 'text-blue-200' : 'text-ink-muted'}`}>
+              {pkg.audience}
+            </p>
+
+            <div class="mt-6">
+              <p class="flex flex-wrap items-baseline gap-x-2">
+                <span class="text-[clamp(2rem,4vw,2.75rem)] font-semibold leading-none tracking-[-0.02em]">
+                  {formatInr(pkg.monthly)}
+                </span>
+                <span class={`text-[14px] ${pkg.featured ? 'text-blue-200' : 'text-ink-muted'}`}>/ month</span>
+              </p>
+              <p class={`mt-2 text-[13px] ${pkg.featured ? 'text-blue-200' : 'text-ink-muted'}`}>
+                + 18% GST · {formatInr(withGst(pkg.monthly))} a month all in
+              </p>
             </div>
-            <p class="type-body max-w-[46ch] text-ink-muted lg:text-right">{column.lede}</p>
-          </div>
 
-          <ul class="mt-4">
-            {column.tiers.map((tier, i) => {
-              const price = formatFrom(tier.from)
-              return (
-                <li
-                  id={`pricing-${tier.slug}`}
-                  style={revealDelayStyle(i + 1, 80)}
-                  class="reveal grid scroll-mt-28 gap-6 border-t border-hairline py-10 sm:py-12 lg:grid-cols-[1fr_1.4fr] lg:gap-16"
-                >
-                  <div>
-                    <h3 class="type-card-title">
-                      <a href={serviceHref(tier)} class="link-sweep">
-                        {tier.name}
-                      </a>
-                    </h3>
-                    <p class="type-body mt-3 max-w-[40ch] text-ink-muted">{tier.summary}</p>
-
-                    <div class="mt-6">
-                      {price ? (
-                        <p class="flex flex-wrap items-baseline gap-x-2">
-                          <span class="text-[13px] text-ink-muted">from</span>
-                          <span class="text-[clamp(1.75rem,3.5vw,2.5rem)] font-semibold leading-none tracking-[-0.02em] text-ink">
-                            {price}
-                          </span>
-                          <span class="text-[14px] text-ink-muted">{cadenceLabel(tier.cadence)}</span>
-                        </p>
-                      ) : (
-                        <p class="inline-flex items-center gap-2 rounded-full border border-hairline bg-paper px-4 py-2 text-[14px] font-medium text-ink">
-                          <Icon name="target" className={`size-4 ${accentText}`} />
-                          {FALLBACK_PRICE}
-                        </p>
-                      )}
-                      {tier.minimumTermMonths ? (
-                        <p class="mt-2 text-[13px] text-ink-muted">
-                          Minimum {tier.minimumTermMonths} months.
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
-
-                  <div class="grid gap-8 sm:grid-cols-2">
-                    <div>
-                      <p class="type-overline text-[11px] text-ink-muted">Included from the start</p>
-                      <ul class="mt-4 space-y-2.5">
-                        {tier.includes.map((item) => (
-                          <li class="flex items-start gap-2.5 text-[15px] leading-snug text-ink">
-                            <Icon name="check" className={`mt-0.5 size-4 shrink-0 ${accentText}`} />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <p class="type-overline text-[11px] text-ink-muted">What moves the number</p>
-                      <ul class="mt-4 space-y-2.5">
-                        {tier.scales.map((item) => (
-                          <li class="flex items-start gap-2.5 text-[15px] leading-snug text-ink-muted">
-                            <Icon name="trend" className="mt-0.5 size-4 shrink-0 text-ink-muted/60" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
+            <ul class={`mt-7 flex-1 space-y-2.5 border-t pt-6 ${pkg.featured ? 'border-white/10' : 'border-hairline'}`}>
+              {pkg.includes.map((item) => (
+                <li class="flex items-start gap-2.5 text-[15px] leading-snug">
+                  <Icon
+                    name="check"
+                    className={`mt-0.5 size-4 shrink-0 ${pkg.featured ? 'text-energy' : 'text-signal'}`}
+                  />
+                  {item}
                 </li>
-              )
-            })}
-          </ul>
-        </section>
-      )
-    })
-  }
+              ))}
+            </ul>
+
+            <p class={`mt-6 text-[13px] ${pkg.featured ? 'text-blue-200' : 'text-ink-muted'}`}>
+              Your ad budget: {formatInr(pkg.adBudget.min)} to {formatInr(pkg.adBudget.max)} a month, paid to the
+              platforms directly.
+            </p>
+
+            <a
+              href={site.primaryCta.to}
+              data-cta={`pricing-package-${pkg.slug}`}
+              class={`press mt-6 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-[15px] font-medium ${
+                pkg.featured ? 'bg-white text-navy' : 'bg-navy text-white'
+              }`}
+            >
+              Start with {pkg.name}
+              <Icon name="arrowUpRight" className="size-4" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="reveal type-body mt-8 max-w-[62ch] text-ink-muted" style={revealDelayStyle(4)}>
+      Need more than the largest package — more markets, more languages, more platforms? Custom scopes
+      run up to {formatInr(GROWTH_CEILING)} a month and are quoted from the diagnostic.
+    </p>
+  </section>
+
+  {/* Build. Per project, from the diagnostic. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 pb-24 sm:px-8 sm:pb-32">
+    <div class="reveal flex flex-col gap-6 border-t border-ink/12 pt-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+      <div class="flex items-baseline gap-5">
+        <h2 class="type-track-title text-vega">Build</h2>
+        <span class="text-sm tabular-nums text-ink-muted">{String(buildTiers.length).padStart(2, '0')}</span>
+      </div>
+      <p class="type-body max-w-[46ch] text-ink-muted lg:text-right">
+        Priced per project from the diagnostic, with the number fixed before the first line of code.
+      </p>
+    </div>
+
+    <ul class="mt-4">
+      {
+        buildTiers.map((tier, i) => {
+          const price = formatFrom(tier.from)
+          return (
+            <li
+              id={`pricing-${tier.slug}`}
+              style={revealDelayStyle(i + 1, 80)}
+              class="reveal grid scroll-mt-28 gap-6 border-t border-hairline py-10 sm:py-12 lg:grid-cols-[1fr_1.4fr] lg:gap-16"
+            >
+              <div>
+                <h3 class="type-card-title">
+                  <a href={serviceHref(tier)} class="link-sweep">
+                    {tier.name}
+                  </a>
+                </h3>
+                <p class="type-body mt-3 max-w-[40ch] text-ink-muted">{tier.summary}</p>
+
+                <div class="mt-6">
+                  {price ? (
+                    <p class="flex flex-wrap items-baseline gap-x-2">
+                      <span class="text-[13px] text-ink-muted">from</span>
+                      <span class="text-[clamp(1.75rem,3.5vw,2.5rem)] font-semibold leading-none tracking-[-0.02em] text-ink">
+                        {price}
+                      </span>
+                      <span class="text-[14px] text-ink-muted">{cadenceLabel(tier.cadence)}</span>
+                    </p>
+                  ) : (
+                    <p class="inline-flex items-center gap-2 rounded-full border border-hairline bg-paper px-4 py-2 text-[14px] font-medium text-ink">
+                      <Icon name="target" className="size-4 text-vega" />
+                      {FALLBACK_PRICE}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div class="grid gap-8 sm:grid-cols-2">
+                <div>
+                  <p class="type-overline text-[11px] text-ink-muted">Included from the start</p>
+                  <ul class="mt-4 space-y-2.5">
+                    {tier.includes.map((item) => (
+                      <li class="flex items-start gap-2.5 text-[15px] leading-snug text-ink">
+                        <Icon name="check" className="mt-0.5 size-4 shrink-0 text-vega" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p class="type-overline text-[11px] text-ink-muted">What moves the number</p>
+                  <ul class="mt-4 space-y-2.5">
+                    {tier.scales.map((item) => (
+                      <li class="flex items-start gap-2.5 text-[15px] leading-snug text-ink-muted">
+                        <Icon name="trend" className="mt-0.5 size-4 shrink-0 text-ink-muted/60" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </li>
+          )
+        })
+      }
+    </ul>
+  </section>
 
   {/* Always / never. The engagement model, stated once, next to the costs
-      the starting prices deliberately leave out. */}
+      the fees deliberately leave out. */}
   <section data-reveal-root data-shown="false" class="px-3 sm:px-5">
     <div class="mx-auto grid max-w-site gap-4 lg:grid-cols-[1.5fr_1fr]">
       <div class="rounded-2xl border border-hairline bg-surface/60 p-6 sm:p-10">
@@ -245,7 +339,7 @@ const diagnosticPrice = formatFrom(diagnostic.from)
       </div>
 
       <div class="rounded-2xl border border-hairline bg-paper p-6 sm:p-10">
-        <p class="reveal type-overline text-ink-muted">Not in the starting price</p>
+        <p class="reveal type-overline text-ink-muted">Not in the fee</p>
         <ul class="mt-6 space-y-4">
           {
             excluded.map((item, i) => (
@@ -272,9 +366,10 @@ const diagnosticPrice = formatFrom(diagnostic.from)
         {
           pricingFaqs.map((item, i) => (
             <details
+              id={`faq-${item.slug}`}
               name="pricing-faq"
               style={revealDelayStyle(i, 60)}
-              class="reveal group border-b border-hairline first:border-t"
+              class="reveal group scroll-mt-28 border-b border-hairline first:border-t"
             >
               <summary class="flex cursor-pointer list-none items-start justify-between gap-8 py-7 text-left sm:py-8 [&::-webkit-details-marker]:hidden">
                 <span class="flex items-baseline gap-4 sm:gap-5">
@@ -307,7 +402,7 @@ const diagnosticPrice = formatFrom(diagnostic.from)
         Send the problem. We’ll send the number.
       </h2>
       <p style={revealDelayStyle(1)} class="reveal type-lede mx-auto mt-5 max-w-[46ch] text-blue-200">
-        A diagnostic turns every “from” on this page into one fixed quote for your scope.
+        A diagnostic returns within {diagnostic.duration} with every finding priced.
       </p>
       <div style={revealDelayStyle(2)} class="reveal mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
         <a

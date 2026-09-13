@@ -17,10 +17,11 @@ data-shown="false"
         <div>
           {faqs.map((item, i) => (
             <details
-              key={item.q}
+              key={item.slug}
+              id={`faq-${item.slug}`}
               name="faq"
               style={revealDelay(i, 60)}
-              className="reveal group border-b border-hairline first:border-t"
+              className="reveal group scroll-mt-28 border-b border-hairline first:border-t"
             >
               <summary className="flex cursor-pointer list-none items-start justify-between gap-8 py-7 sm:py-8 text-left [&::-webkit-details-marker]:hidden">
                 <span className="flex items-baseline gap-4 sm:gap-5">

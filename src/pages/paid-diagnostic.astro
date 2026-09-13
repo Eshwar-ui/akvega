@@ -1,0 +1,327 @@
+---
+import Base from '@/layouts/Base.astro'
+import Breadcrumb from '@/components/Breadcrumb.astro'
+import { Icon, type IconName } from '@/components/Icons'
+import KeyFacts from '@/components/KeyFacts.astro'
+import ReviewedBy from '@/components/ReviewedBy.astro'
+import { diagnostic } from '@/lib/pricing'
+import { faqSchema } from '@/lib/schema'
+import type { FaqItem } from '@/lib/services'
+import { SITE_URL, site } from '@/lib/site'
+import { revealDelayStyle } from '@/scripts/reveal'
+
+/**
+ * The paid diagnostic, on its own URL. It is the one thing every Akvega
+ * engagement has in common and the concept a buyer most needs explained
+ * before they email — so it gets a claim page: one question, answered
+ * completely, with the audit scope, the turnaround and the reasons it is
+ * paid stated as checkable sentences rather than marketing.
+ *
+ * Scope, turnaround and deliverable come from lib/pricing.ts `diagnostic`,
+ * confirmed by the founder in September 2026.
+ */
+const PATH = '/paid-diagnostic'
+const TITLE = 'The paid diagnostic — how every Akvega engagement starts | Akvega'
+const DESCRIPTION =
+  'Akvega’s paid diagnostic audits your Google Business Profile, website, design and social accounts within 1 to 2 working days, and returns every finding with the cost to fix it. Yours to keep.'
+const PAGE_URL = `${SITE_URL}${PATH}`
+
+const keyFacts = [
+  'Every Akvega engagement starts with a paid diagnostic, before any retainer or project is agreed.',
+  'The Akvega diagnostic audits the Google Business Profile, website, design, Instagram and other social accounts.',
+  `Akvega returns the diagnostic within ${diagnostic.duration} of kickoff.`,
+  'Every finding in the Akvega diagnostic comes with the cost to fix it.',
+  'The client keeps the Akvega diagnostic whether or not they continue with Akvega.',
+  'The diagnostic fee is fixed and agreed before the audit starts.',
+]
+
+const audited: { title: string; body: string; icon: IconName }[] = [
+  {
+    title: 'Google Business Profile',
+    body: 'Whether it exists, who owns it, categories, service area, photos, description, reviews and whether the name, address and phone match the website and directories.',
+    icon: 'pin',
+  },
+  {
+    title: 'Website',
+    body: 'Speed on a mid-range phone, what Google can and cannot index, titles and descriptions, structured data, tracking, and whether each page says what a buyer needs to hear.',
+    icon: 'browser',
+  },
+  {
+    title: 'Design and brand consistency',
+    body: 'Whether the logo, colours, type and voice are the same on the site, the profile, the ads and the social accounts, and where they drift.',
+    icon: 'brand',
+  },
+  {
+    title: 'Instagram and social accounts',
+    body: 'Handles, bios, links, posting cadence, formats, and whether the accounts point back to a page that can convert the attention.',
+    icon: 'chat',
+  },
+  {
+    title: 'Ad accounts, where they exist',
+    body: 'Who owns them, how campaigns are structured, what conversion tracking measures, and where spend is buying impressions instead of customers.',
+    icon: 'target',
+  },
+]
+
+const receive = [
+  {
+    title: 'A written audit',
+    body: 'Every finding across the five areas, in plain language, with why it costs you customers.',
+  },
+  {
+    title: 'The cost to fix each item',
+    body: 'Each finding is priced, so the audit is also the quote. You choose which fixes to buy, in what order, and from whom.',
+  },
+  {
+    title: 'A recommended order',
+    body: 'What to fix first because everything else depends on it, and what can wait.',
+  },
+  {
+    title: 'Everything, whether or not you continue',
+    body: 'The audit is yours. Take it to your own team, another vendor, or back to Akvega.',
+  },
+]
+
+const whyPaid = [
+  {
+    title: 'A free audit is a sales pitch',
+    body: 'An audit given away has to earn its cost back in the retainer it leads to, so it is written to sell. A paid one is written to be right, because being right is what was bought.',
+  },
+  {
+    title: 'The audit is the first piece of work',
+    body: 'Two working days of a certified practitioner going through your profile, site, design and accounts is real work with a real output. It is priced like one.',
+  },
+  {
+    title: 'It removes the guess from the quote',
+    body: 'Because every finding is priced, the number you are quoted is built on what was found, not on what was assumed on a discovery call.',
+  },
+]
+
+const faqs: FaqItem[] = [
+  {
+    slug: 'what-is-the-diagnostic',
+    q: 'What is Akvega’s paid diagnostic?',
+    a: 'A paid audit of your Google Business Profile, website, design, Instagram and other social accounts, returned within 1 to 2 working days. Every finding comes with the cost to fix it, and you keep the audit whether or not you continue with Akvega.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'how-long-does-it-take',
+    q: 'How long does the diagnostic take?',
+    a: 'One to two working days from kickoff to handover. Kickoff is the short call where you share access to the accounts to be audited; the written audit follows within two working days of that.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'how-much-does-it-cost',
+    q: 'How much does the diagnostic cost?',
+    a: 'A fixed fee, agreed before the audit starts and stated in writing. It does not change with what is found. The fee is for the audit itself; the cost to fix each finding is listed separately inside it.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'why-is-it-paid',
+    q: 'Why is the diagnostic paid when other agencies offer free audits?',
+    a: 'Because a free audit has to earn its cost back in the retainer it leads to, so it is written to sell. A paid audit is written to be right. It is also two days of certified work with a real deliverable you keep.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'what-do-we-receive',
+    q: 'What exactly do we receive at the end?',
+    a: 'A written audit covering the five areas, each finding explained in plain language with its cost to fix, and a recommended order of work. It is yours to take to your own team, another vendor, or back to Akvega.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'do-we-have-to-continue',
+    q: 'Do we have to hire Akvega for the fixes afterwards?',
+    a: 'No. The audit is priced so that it stands on its own. Many findings are things your team can fix; the priced list makes it easy to decide what to do in-house, what to give Akvega and what to ignore.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'what-access-is-needed',
+    q: 'What access do you need to run the diagnostic?',
+    a: 'Read access to the website, Google Business Profile, analytics, Search Console, ad accounts and social accounts you want audited. Access is granted from your accounts to Akvega, never the other way round, and can be revoked the day the audit is delivered.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'no-website-yet',
+    q: 'Can we get a diagnostic if we do not have a website yet?',
+    a: 'Yes. The audit covers whatever exists — often a Google Business Profile and an Instagram account — and the priced findings become the scope for what to build first. The build itself is quoted from that scope.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'diagnostic-in-hyderabad',
+    q: 'Is the diagnostic done in person in Hyderabad?',
+    a: 'The kickoff can be, anywhere in Hyderabad. The audit itself is desk work and runs remotely, which is how Akvega delivers it for clients across India and the US at the same turnaround.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'who-does-the-audit',
+    q: 'Who actually performs the audit?',
+    a: 'The founder, Kalyan Kumar Bedugam, who is Google Ads and Meta Blueprint certified, with the engineering side of the team for the website review. The people who write the audit are the people who would do the work.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+]
+---
+
+<Base title={TITLE} description={DESCRIPTION}>
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema(faqs, PAGE_URL))} />
+
+  <div class="px-3 pt-3 sm:px-5 sm:pt-5">
+    <div
+      class="hero-field edge-light relative isolate overflow-hidden rounded-xl border border-hairline sm:rounded-2xl"
+    >
+      <div class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
+        <Breadcrumb current="The diagnostic" />
+        <p class="type-overline mt-7 text-ink-muted">How every engagement starts</p>
+        <h1 class="type-page-title mt-3 max-w-[22ch] text-balance">
+          What is Akvega’s paid diagnostic, and why does every engagement start with one?
+        </h1>
+        <p class="type-body mt-5 max-w-[58ch] text-ink-muted">
+          Before any retainer or project, Akvega audits everything a customer can find about you and
+          returns it within {diagnostic.duration}, with the cost to fix each item. It is the first piece
+          of work, not a sales call, and it is yours whether or not you continue.
+        </p>
+        <ReviewedBy class="mt-6" />
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a
+            href={site.primaryCta.to}
+            data-cta="diagnostic-hero"
+            class="press inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3.5 text-[15px] font-medium text-white shadow-[0_10px_30px_-12px_var(--color-signal)] hover:shadow-[0_16px_36px_-12px_var(--color-signal)]"
+          >
+            Book a diagnostic
+            <Icon name="arrowUpRight" className="size-4" />
+          </a>
+          <a
+            href="/pricing"
+            class="press inline-flex items-center gap-2 rounded-full border border-navy/20 bg-paper/70 px-6 py-3.5 text-[15px] font-medium text-ink hover:border-navy"
+          >
+            See pricing
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mx-auto max-w-site px-5 pt-16 sm:px-8 sm:pt-20">
+    <KeyFacts facts={keyFacts} class="max-w-[64ch]" />
+  </div>
+
+  {/* What is audited. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
+    <div class="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
+      <div class="lg:sticky lg:top-28 lg:self-start">
+        <p class="reveal type-overline text-ink-muted">What is audited</p>
+        <h2 class="reveal type-section-title mt-5 max-w-[12ch] text-balance">Five places a customer finds you.</h2>
+      </div>
+      <ul>
+        {
+          audited.map((item, i) => (
+            <li
+              style={revealDelayStyle(i, 70)}
+              class="reveal grid gap-3 border-t border-hairline py-7 sm:grid-cols-[2.5rem_1fr] sm:gap-6 sm:py-9 last:border-b"
+            >
+              <Icon name={item.icon} className="mt-1 size-5 text-signal" />
+              <div>
+                <h3 class="type-card-title">{item.title}</h3>
+                <p class="type-body mt-3 max-w-[62ch] text-ink-muted">{item.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {/* What you receive. */}
+  <section class="px-3 sm:px-5">
+    <div
+      data-reveal-root
+      data-shown="false"
+      class="edge-light-dark mx-auto max-w-site overflow-hidden rounded-xl bg-navy px-5 py-20 sm:rounded-2xl sm:px-12 sm:py-28 lg:px-16"
+    >
+      <p class="reveal type-overline text-blue-200">What you receive</p>
+      <h2 class="reveal type-section-title mt-5 max-w-[18ch] text-balance text-white">
+        An audit that is also a quote.
+      </h2>
+      <ol class="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        {
+          receive.map((item, i) => (
+            <li style={revealDelayStyle(i + 1, 80)} class="reveal border-t border-white/15 pt-6">
+              <span class="text-sm tabular-nums text-blue-300/70">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="mt-2 text-lg font-medium text-white">{item.title}</h3>
+              <p class="mt-2 text-[15px] leading-relaxed text-blue-200">{item.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="reveal mt-12 text-[14px] text-blue-200" style={revealDelayStyle(5)}>
+        Handed over within {diagnostic.duration} of kickoff.
+      </p>
+    </div>
+  </section>
+
+  {/* Why paid. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-20 sm:px-8 sm:py-28">
+    <div class="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
+      <div class="lg:sticky lg:top-28 lg:self-start">
+        <p class="reveal type-overline text-ink-muted">Why it is paid</p>
+        <h2 class="reveal type-section-title mt-5 max-w-[12ch] text-balance">Three reasons, none of them margin.</h2>
+      </div>
+      <ul class="grid gap-8 sm:grid-cols-3">
+        {
+          whyPaid.map((item, i) => (
+            <li style={revealDelayStyle(i, 80)} class="reveal border-t border-hairline pt-6">
+              <h3 class="text-[17px] font-medium leading-snug text-ink">{item.title}</h3>
+              <p class="type-body mt-3 text-ink-muted">{item.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {/* FAQ */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 pb-24 sm:px-8 sm:pb-32">
+    <div class="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
+      <h2 class="reveal type-section-title max-w-[12ch] lg:sticky lg:top-28 lg:self-start">
+        Questions about the diagnostic.
+      </h2>
+      <div>
+        {
+          faqs.map((item, i) => (
+            <details
+              id={`faq-${item.slug}`}
+              name="diagnostic-faq"
+              style={revealDelayStyle(i, 50)}
+              class="reveal group scroll-mt-28 border-b border-hairline first:border-t"
+            >
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-8 py-7 text-left sm:py-8 [&::-webkit-details-marker]:hidden">
+                <span class="flex items-baseline gap-4 sm:gap-5">
+                  <span class="type-overline shrink-0 tabular-nums text-[11px] text-ink-muted/45 sm:text-xs">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span class="text-xl font-medium leading-[1.25] transition-colors duration-300 ease-out-expo group-hover:text-signal sm:text-2xl">
+                    {item.q}
+                  </span>
+                </span>
+                <span class="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full border border-hairline text-ink-muted transition-transform duration-300 ease-out-expo group-open:rotate-45">
+                  <Icon name="plus" className="size-4" />
+                </span>
+              </summary>
+              <p class="type-body max-w-[62ch] pb-8 pl-9 text-ink-muted sm:pl-12">{item.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>

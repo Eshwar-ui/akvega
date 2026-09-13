@@ -1,0 +1,51 @@
+---
+/**
+ * The extraction block. Five to seven declarative sentences under the H1,
+ * each complete on its own — no pronoun that needs the previous line, no
+ * clause that needs the next. This is the part of the page an answer engine
+ * quotes verbatim; the prose below it is for the person who clicks through.
+ *
+ * Rules enforced here rather than in review:
+ * - each fact is one sentence (no "and then… which…" chains)
+ * - at most 20 words — the study's 18-token ceiling with a little slack
+ * - a fact must be checkable: no adjectives standing in for numbers
+ *
+ * A fact that fails the length check throws at build time. Shorten it or
+ * split it; do not pad the list.
+ */
+interface Props {
+  facts: string[]
+  /** Overline above the list. */
+  label?: string
+  class?: string
+}
+
+const { facts, label = 'In short', class: className = '' } = Astro.props
+
+const MAX_WORDS = 20
+
+for (const fact of facts) {
+  const words = fact.trim().split(/\s+/).length
+  if (words > MAX_WORDS) {
+    throw new Error(`KeyFacts: "${fact}" is ${words} words; the limit is ${MAX_WORDS}.`)
+  }
+}
+
+if (facts.length < 3 || facts.length > 7) {
+  throw new Error(`KeyFacts: ${facts.length} facts; use between 3 and 7.`)
+}
+---
+
+<section aria-label="Key facts" class={`key-facts ${className}`}>
+  <p class="type-overline text-ink-muted">{label}</p>
+  <ul class="mt-4 space-y-3">
+    {
+      facts.map((fact) => (
+        <li class="flex items-start gap-3 text-[16px] leading-snug text-ink sm:text-[17px]">
+          <span aria-hidden="true" class="mt-[0.6em] size-1.5 shrink-0 rounded-full bg-signal"></span>
+          <span>{fact}</span>
+        </li>
+      ))
+    }
+  </ul>
+</section>

@@ -2,9 +2,11 @@
 import Base from '@/layouts/Base.astro'
 import Breadcrumb from '@/components/Breadcrumb.astro'
 import { Icon, type IconName } from '@/components/Icons'
-import { faqSchema, locationPageSchema } from '@/lib/schema'
-import { serviceHref, tracks } from '@/lib/services'
-import { LOCATION_LINE, SERVICE_AREA, site } from '@/lib/site'
+import KeyFacts from '@/components/KeyFacts.astro'
+import ReviewedBy from '@/components/ReviewedBy.astro'
+import { faqSchema } from '@/lib/schema'
+import { serviceHref, tracks, type FaqItem } from '@/lib/services'
+import { LOCATION_LINE, SERVICE_AREA, SITE_URL, site } from '@/lib/site'
 import { revealDelayStyle } from '@/scripts/reveal'
 
 /**
@@ -64,40 +66,89 @@ const localMechanics: { title: string; body: string; icon: IconName }[] = [
   },
 ]
 
-const localFaqs = [
+const keyFacts = [
+  'Akvega is a digital marketing agency based in Hyderabad, Telangana, India.',
+  'Akvega runs SEO, Google Ads, Meta Ads and social media for Hyderabad businesses.',
+  'The same Akvega team builds the websites, online stores and mobile apps those campaigns point to.',
+  'Every Akvega engagement starts with a paid diagnostic whose findings the client keeps.',
+  'Akvega serves Hyderabad and Secunderabad in person, and wider India and the US remotely.',
+  'Akvega works in English, Telugu and Hindi.',
+]
+
+const localFaqs: FaqItem[] = [
   {
+    slug: 'meet-in-person',
+    published: '2026-09-14',
+    modified: '2026-09-14',
     q: 'Do you meet clients in person in Hyderabad?',
     a: 'Yes. We are based in Hyderabad and meet at your office or a shared workspace for kick-offs, diagnostics and reviews. Day-to-day delivery runs remotely, which is how we also serve clients across wider India and the US.',
   },
   {
+    slug: 'only-hyderabad',
+    published: '2026-09-14',
+    modified: '2026-09-14',
     q: 'Do you only work with Hyderabad businesses?',
     a: 'No. Hyderabad is home and where we can be in the room, but the work is the same for a client in Bengaluru, Pune or Austin. Roughly speaking, we work with founders and marketing leads at Indian SMBs and funded startups, wherever they sit.',
   },
   {
+    slug: 'languages',
+    published: '2026-09-14',
+    modified: '2026-09-14',
     q: 'Which languages do you work in?',
     a: 'Conversations happen in English, Telugu or Hindi, whichever is easiest for you. Campaigns and content are produced in English by default, with Telugu or Hindi creative and keyword coverage when the audience calls for it.',
   },
   {
+    slug: 'seo-alone',
+    published: '2026-09-14',
+    modified: '2026-09-14',
     q: 'Can you handle SEO alone, or do we have to take the build side too?',
     a: 'Either. Most engagements start on one track. The reason to have both under one roof is that when a campaign needs a landing page, a schema fix or a checkout change, it ships the same week instead of joining another vendor’s backlog.',
   },
   {
+    slug: 'how-it-starts',
+    published: '2026-09-14',
+    modified: '2026-09-14',
     q: 'How does an engagement start, and what does it cost?',
     a: 'With a paid diagnostic: an audit of what exists and a scoped plan, handed over whether or not you continue with us. The quote for the work itself comes out of that scope, so you are pricing a defined piece of work rather than a retainer with no ending.',
   },
+  {
+    slug: 'google-business-profile',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+    q: 'Do you set up and manage Google Business Profiles?',
+    a: 'Yes, as part of SEO for any business with a Hyderabad address or service area. The profile is created in your Google account, not ours, and kept consistent with the name, address and phone on your site and directories.',
+  },
+  {
+    slug: 'which-industries',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+    q: 'Which industries do you work with in Hyderabad?',
+    a: 'Any business where a search or an ad leads to a page, a store or an app that has to convert: real estate, healthcare, education, D2C brands and B2B software are the common ones. The diagnostic tells us quickly whether we are the right fit.',
+  },
+  {
+    slug: 'who-does-the-work',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+    q: 'Who actually does the work — is it outsourced?',
+    a: 'The people who scope the work in the diagnostic are the people who ship it. Engineering and media run in the same team, so a landing-page change or a tracking fix does not leave the room.',
+  },
+  {
+    slug: 'existing-website',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+    q: 'Can you work with our existing website and ad accounts?',
+    a: 'Yes. The diagnostic audits what you already have before proposing anything new. Most engagements improve the existing site and accounts first; a rebuild is recommended only when it is cheaper than the fixes.',
+  },
 ]
+
+const PAGE_URL = `${SITE_URL}${PATH}`
 
 const areaNames = SERVICE_AREA.map((area) => area.name)
 ---
 
 <Base title={TITLE} description={DESCRIPTION}>
   <Fragment slot="head">
-    <script
-      type="application/ld+json"
-      is:inline
-      set:html={JSON.stringify(locationPageSchema({ path: PATH, name: TITLE, description: DESCRIPTION }))}
-    />
-    <script type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema(localFaqs))} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema(localFaqs, PAGE_URL))} />
   </Fragment>
 
   <div class="px-3 pt-3 sm:px-5 sm:pt-5">
@@ -116,6 +167,7 @@ const areaNames = SERVICE_AREA.map((area) => area.name)
           shipped by the people who bought the click.
         </p>
         <p class="type-body mt-4 max-w-[56ch] text-ink-muted">{LOCATION_LINE}</p>
+        <ReviewedBy class="mt-6" />
 
         <div class="mt-8 flex flex-wrap gap-3">
           <a
@@ -138,9 +190,13 @@ const areaNames = SERVICE_AREA.map((area) => area.name)
     </div>
   </div>
 
+  <div class="mx-auto max-w-site px-5 pt-16 sm:px-8 sm:pt-20">
+    <KeyFacts facts={keyFacts} class="max-w-[64ch]" />
+  </div>
+
   {/* Why local is a different game. This is the section that makes the page
       about Hyderabad rather than about Akvega. */}
-  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-20 sm:px-8 sm:py-28">
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
     <div class="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
       <div class="lg:sticky lg:top-28 lg:self-start">
         <p class="reveal type-overline text-ink-muted">Why local is different</p>
@@ -314,9 +370,10 @@ const areaNames = SERVICE_AREA.map((area) => area.name)
         {
           localFaqs.map((item, i) => (
             <details
+              id={`faq-${item.slug}`}
               name="hyderabad-faq"
               style={revealDelayStyle(i, 60)}
-              class="reveal group border-b border-hairline first:border-t"
+              class="reveal group scroll-mt-28 border-b border-hairline first:border-t"
             >
               <summary class="flex cursor-pointer list-none items-start justify-between gap-8 py-7 text-left sm:py-8 [&::-webkit-details-marker]:hidden">
                 <span class="flex items-baseline gap-4 sm:gap-5">

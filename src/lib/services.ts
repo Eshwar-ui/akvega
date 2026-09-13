@@ -192,26 +192,106 @@ export const process = [
 ]
 
 /** Placeholder answers — confirm commercial specifics before launch. */
-export const faqs = [
+/**
+ * A question with its answer and its own dates. `slug` is the visible anchor
+ * (`#faq-<slug>`) and the `@id` in the FAQPage JSON-LD, so a citation can
+ * point at one answer. Answers are 30–50 words with the answer first: that is
+ * the length answer engines extract whole rather than summarise.
+ */
+export type FaqItem = {
+  slug: string
+  q: string
+  a: string
+  /** YYYY-MM-DD */
+  published: string
+  /** YYYY-MM-DD — bump when the answer changes, not when the page does. */
+  modified: string
+}
+
+export const faqs: FaqItem[] = [
   {
-    q: 'Can we hire you for growth without the build?',
+    slug: 'growth-without-build',
+    q: 'Can we hire Akvega for growth marketing without the build work?',
     a: 'Yes. Most engagements start on one track. The advantage of both under one roof is that when a campaign needs a landing page or a checkout fix, it does not become a two-week negotiation between vendors.',
+    published: '2026-09-05',
+    modified: '2026-09-14',
   },
   {
-    q: 'How does an engagement usually start?',
-    a: 'With a paid diagnostic. We audit what exists, agree the scope, and you leave with the findings whether or not you continue with us.',
+    slug: 'how-engagements-start',
+    q: 'How does an engagement with Akvega usually start?',
+    a: 'With a paid diagnostic. Akvega audits your Google Business Profile, website, design and social accounts within 1 to 2 working days, and you leave with the full findings and the cost to fix each item, whether or not you continue.',
+    published: '2026-09-05',
+    modified: '2026-09-14',
   },
   {
+    slug: 'how-fast-results',
     q: 'How quickly do search and ads show results?',
-    a: 'Paid channels give a readable signal within weeks. Search and answer visibility compound over months. Anyone promising otherwise is selling you the first month, not the twelfth.',
+    a: 'Paid channels give a readable signal within weeks. Search and answer-engine visibility compound over months. Anyone promising otherwise is selling you the first month, not the twelfth.',
+    published: '2026-09-05',
+    modified: '2026-09-14',
   },
   {
-    q: 'Do you work alongside our in-house team?',
-    a: 'Often. We can lead, embed, or sit behind your team as the engineering and media bench, whichever leaves you least dependent on us.',
+    slug: 'work-with-in-house-team',
+    q: 'Does Akvega work alongside an in-house marketing or engineering team?',
+    a: 'Often. Akvega can lead the engagement, embed inside your team on your tools and cadence, or sit behind it as the engineering and media bench — whichever leaves you least dependent on us.',
+    published: '2026-09-05',
+    modified: '2026-09-14',
   },
   {
-    q: 'Who owns the code and the ad accounts?',
-    a: 'You do, from day one. Repositories, ad accounts and analytics are set up in your name. Leaving should be a decision, not an extraction.',
+    slug: 'who-owns-code-and-accounts',
+    q: 'Who owns the code, ad accounts and analytics?',
+    a: 'The client does, from day one. Repositories, ad accounts and analytics are created in the client’s name, not Akvega’s. Leaving should be a decision, not an extraction.',
+    published: '2026-09-05',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'what-is-akvega',
+    q: 'What is Akvega?',
+    a: 'Akvega is a Hyderabad-based team that runs growth marketing and digital build together: SEO, Google Ads, Meta Ads and social alongside websites, online stores, mobile apps and custom tools, shipped by the same people.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'who-akvega-works-with',
+    q: 'Who does Akvega work with?',
+    a: 'Founders and marketing leads at Indian SMBs and funded startups, mostly in Hyderabad and wider India, with some clients in the US. Typically businesses that currently buy marketing and development from two separate vendors.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'why-one-team',
+    q: 'Why does Akvega run marketing and development as one team?',
+    a: 'Because the handover between an agency and a development shop is where work breaks: landing pages land late, tracking never matches, and the real fix sits in someone else’s backlog. One team owns the whole path from click to conversion.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'where-is-akvega-based',
+    q: 'Where is Akvega based, and do you work remotely?',
+    a: 'Akvega is based in Hyderabad, Telangana, India. Delivery runs remote-first, with in-person meetings across Hyderabad and clients across wider India and the US.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'what-does-the-diagnostic-include',
+    q: 'What does the paid diagnostic include?',
+    a: 'A full audit of your Google Business Profile, website, design, Instagram and other social accounts, returned within 1 to 2 working days with the cost to fix each item. The findings are yours whether or not you continue with Akvega.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'which-technologies',
+    q: 'Which technologies does Akvega build with?',
+    a: 'The smallest proven combination for the product. Typically React, Next.js or Astro and TypeScript for the web, Flutter for mobile, Supabase, PostgreSQL or Firebase for data, and Shopify for stores — chosen per project, not by default.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'what-is-aeo-geo',
+    q: 'What are AEO and GEO, and does Akvega offer them?',
+    a: 'Answer-engine optimisation (AEO) and generative-engine optimisation (GEO) make content citable by AI assistants such as ChatGPT, Gemini and Google AI Overviews. Akvega runs them as one programme with technical SEO rather than as separate retainers.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
   },
 ]
 
@@ -221,8 +301,13 @@ export const faqs = [
  * site — which is how the homepage ended up referencing a `to` field that
  * never existed on `Service`.
  */
+/**
+ * Each service has its own page. The /services hub keeps `id={slug}` anchors
+ * for in-page navigation, but every link to a service points at the page:
+ * one concept, one URL, which is what search and answer engines cite.
+ */
 export const serviceHref = (service: Pick<Service, 'slug'>) =>
-  `/services#${service.slug}`
+  `/services/${service.slug}`
 
 /** Every service in page order, with the accent of the track it belongs to. */
 export const allServices = tracks.flatMap((track) =>

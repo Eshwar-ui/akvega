@@ -1,0 +1,299 @@
+---
+import Base from '@/layouts/Base.astro'
+import Breadcrumb from '@/components/Breadcrumb.astro'
+import { Icon, type IconName } from '@/components/Icons'
+import KeyFacts from '@/components/KeyFacts.astro'
+import ReviewedBy from '@/components/ReviewedBy.astro'
+import { faqSchema } from '@/lib/schema'
+import { serviceHref, tracks, type FaqItem } from '@/lib/services'
+import { SITE_URL, site } from '@/lib/site'
+import { revealDelayStyle } from '@/scripts/reveal'
+
+/**
+ * Akvega's positioning, on its own URL. The homepage makes this argument in
+ * passing; this page makes it completely, as the unique answer to one
+ * question — the shape of page an answer engine cites. Nothing here is a
+ * claim about other businesses: it describes the two-vendor arrangement most
+ * companies run and what changes when one team holds both ends.
+ */
+const PATH = '/one-team-for-growth-and-build'
+const TITLE = 'One team for growth marketing and digital build — why it matters | Akvega'
+const DESCRIPTION =
+  'Why the team running your Google and Meta ads should also build the page they land on. Akvega runs growth marketing and digital build as one team, so nothing is lost in the handover.'
+const PAGE_URL = `${SITE_URL}${PATH}`
+
+const keyFacts = [
+  'Akvega runs growth marketing and digital build as one team, not two vendors.',
+  'The handover between a marketing agency and a development shop is where campaigns lose money.',
+  'At Akvega, the team buying the traffic is the team shipping the page it lands on.',
+  'Akvega ships landing pages, tracking fixes and checkout changes in the same week the campaign needs them.',
+  'Clients can hire Akvega for growth only, for build only, or for both.',
+  'Akvega sets up ad accounts, analytics and repositories in the client’s name from day one.',
+]
+
+const handoverTax: { title: string; body: string; icon: IconName }[] = [
+  {
+    title: 'The landing page lands late',
+    body: 'The campaign is ready on Monday. The page it needs is in a developer’s queue behind three other clients. Spend either waits, or runs to a page that was not built for it.',
+    icon: 'browser',
+  },
+  {
+    title: 'The tracking never quite matches',
+    body: 'The agency reports conversions from its pixel. The developer’s analytics say something else. Finance sees a third number. Nobody owns the reconciliation, so budget decisions are made on the most flattering figure.',
+    icon: 'trend',
+  },
+  {
+    title: 'The real fix sits in someone else’s backlog',
+    body: 'The audit finds that the checkout drops orders on a slow connection. That is not a marketing task and not on the developer’s roadmap. It stays found and unfixed while the ads keep paying for the traffic that hits it.',
+    icon: 'sliders',
+  },
+]
+
+const changes = [
+  {
+    title: 'One owner for the whole path',
+    body: 'From the ad to the page to the form to the CRM, one team is accountable for the result, and there is no gap for a problem to fall into.',
+  },
+  {
+    title: 'Fixes ship at campaign speed',
+    body: 'A new landing page, a schema change or a checkout fix is a task for the same people, in the same week, not a ticket for another vendor.',
+  },
+  {
+    title: 'One set of numbers',
+    body: 'Tracking is designed with the campaign and built with the site, so the report the campaign runs on is the same report the business runs on.',
+  },
+  {
+    title: 'The product improves the marketing',
+    body: 'The people who know why the page converts are the people writing the next ad, and the people who know which ad converts are the people designing the next page.',
+  },
+]
+
+const faqs: FaqItem[] = [
+  {
+    slug: 'what-does-one-team-mean',
+    q: 'What does “one team for growth and build” mean at Akvega?',
+    a: 'Akvega runs growth marketing — SEO, Google Ads, Meta Ads and social — and digital build — websites, online stores, mobile apps and custom tools — with the same team, so the campaign and the product it points to are shipped by the same people.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'what-is-the-handover-tax',
+    q: 'What is the handover tax between an agency and a developer?',
+    a: 'The cost of nobody owning the gap between two vendors: landing pages that land late, tracking that never matches, and fixes that sit in someone else’s backlog while the ads keep paying for traffic. Akvega removes the gap by holding both ends.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'can-we-hire-one-half',
+    q: 'Can we hire Akvega for marketing only, or for development only?',
+    a: 'Yes. Most engagements start on one track. The advantage of one team is available whenever you need it: when a campaign needs a page or a product needs traffic, the other half is already in the room.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'we-have-a-developer',
+    q: 'We already have a developer or an agency. Does this still work?',
+    a: 'Yes. Akvega can lead, embed inside your team, or sit behind your existing vendor as the engineering or media bench. What changes is that someone owns the path from click to conversion end to end.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'does-one-team-cost-more',
+    q: 'Does one team cost more than two vendors?',
+    a: 'Akvega’s growth packages run from ₹20,000 to ₹60,000 a month plus GST, and build work is quoted from a paid diagnostic. What one team removes is the unbilled cost of the handover: the late page, the mismatched numbers and the unfixed leak.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'is-this-lock-in',
+    q: 'Is having everything with one team a lock-in risk?',
+    a: 'No. Repositories, ad accounts, analytics and hosting are created in your name from day one, so leaving is a decision, not an extraction. One team is a convenience you keep because it works, not because it is hard to leave.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'how-does-it-start',
+    q: 'How does an engagement with one team start?',
+    a: 'With a paid diagnostic that audits your Google Business Profile, website, design and social accounts within 1 to 2 working days and prices every finding. Because one team audits both the marketing and the product, the findings already cross the gap.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+  {
+    slug: 'who-is-this-for',
+    q: 'Who is the one-team model for?',
+    a: 'Founders and marketing leads at Indian SMBs and funded startups who currently buy marketing and development from two vendors and are deciding whether to consolidate. Most are in Hyderabad and wider India; some are in the US.',
+    published: '2026-09-14',
+    modified: '2026-09-14',
+  },
+]
+---
+
+<Base title={TITLE} description={DESCRIPTION}>
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema(faqs, PAGE_URL))} />
+
+  <div class="px-3 pt-3 sm:px-5 sm:pt-5">
+    <div
+      class="hero-field edge-light relative isolate overflow-hidden rounded-xl border border-hairline sm:rounded-2xl"
+    >
+      <div class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
+        <Breadcrumb current="One team" />
+        <p class="type-overline mt-7 text-ink-muted">Why Akvega is built this way</p>
+        <h1 class="type-page-title mt-3 max-w-[22ch] text-balance">
+          Why should the team running your ads also build the page they land on?
+        </h1>
+        <p class="type-body mt-5 max-w-[58ch] text-ink-muted">
+          Most companies buy growth marketing and digital build from two different suppliers. Neither
+          owns the handover between them, and the handover is where the money goes. Akvega holds both
+          ends.
+        </p>
+        <ReviewedBy class="mt-6" />
+      </div>
+    </div>
+  </div>
+
+  <div class="mx-auto max-w-site px-5 pt-16 sm:px-8 sm:pt-20">
+    <KeyFacts facts={keyFacts} class="max-w-[64ch]" />
+  </div>
+
+  {/* The handover tax. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
+    <div class="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
+      <div class="lg:sticky lg:top-28 lg:self-start">
+        <p class="reveal type-overline text-ink-muted">The handover tax</p>
+        <h2 class="reveal type-section-title mt-5 max-w-[12ch] text-balance">Three ways two vendors lose you money.</h2>
+      </div>
+      <ul>
+        {
+          handoverTax.map((item, i) => (
+            <li
+              style={revealDelayStyle(i, 70)}
+              class="reveal grid gap-3 border-t border-hairline py-7 sm:grid-cols-[2.5rem_1fr] sm:gap-6 sm:py-9 last:border-b"
+            >
+              <Icon name={item.icon} className="mt-1 size-5 text-signal" />
+              <div>
+                <h3 class="type-card-title max-w-[24ch] text-balance">{item.title}</h3>
+                <p class="type-body mt-3 max-w-[62ch] text-ink-muted">{item.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {/* What one team changes. */}
+  <section class="px-3 sm:px-5">
+    <div
+      data-reveal-root
+      data-shown="false"
+      class="edge-light-dark mx-auto max-w-site overflow-hidden rounded-xl bg-navy px-5 py-20 sm:rounded-2xl sm:px-12 sm:py-28 lg:px-16"
+    >
+      <p class="reveal type-overline text-blue-200">What one team changes</p>
+      <h2 class="reveal type-section-title mt-5 max-w-[20ch] text-balance text-white">
+        The team buying the traffic is the team shipping the page it arrives on.
+      </h2>
+      <ol class="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        {
+          changes.map((item, i) => (
+            <li style={revealDelayStyle(i + 1, 80)} class="reveal border-t border-white/15 pt-6">
+              <span class="text-sm tabular-nums text-blue-300/70">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="mt-2 text-lg font-medium text-white">{item.title}</h3>
+              <p class="mt-2 text-[15px] leading-relaxed text-blue-200">{item.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {/* The two tracks, linked. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-20 sm:px-8 sm:py-28">
+    <div class="grid gap-10 sm:grid-cols-2 sm:gap-16">
+      {
+        tracks.map((track, ti) => (
+          <div style={revealDelayStyle(ti)} class="reveal">
+            <h2 class={`type-track-title ${track.accent === 'signal' ? 'text-signal' : 'text-vega'}`}>
+              {track.label}
+            </h2>
+            <p class="type-body mt-3 max-w-[40ch] text-ink-muted">{track.statement}</p>
+            <ul class="mt-6 space-y-3">
+              {track.services.map((service) => (
+                <li>
+                  <a href={serviceHref(service)} class="link-sweep text-[16px] font-medium text-ink">
+                    {service.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* FAQ */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 pb-20 sm:px-8 sm:pb-28">
+    <div class="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
+      <h2 class="reveal type-section-title max-w-[12ch] lg:sticky lg:top-28 lg:self-start">
+        Questions about one team.
+      </h2>
+      <div>
+        {
+          faqs.map((item, i) => (
+            <details
+              id={`faq-${item.slug}`}
+              name="one-team-faq"
+              style={revealDelayStyle(i, 50)}
+              class="reveal group scroll-mt-28 border-b border-hairline first:border-t"
+            >
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-8 py-7 text-left sm:py-8 [&::-webkit-details-marker]:hidden">
+                <span class="flex items-baseline gap-4 sm:gap-5">
+                  <span class="type-overline shrink-0 tabular-nums text-[11px] text-ink-muted/45 sm:text-xs">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span class="text-xl font-medium leading-[1.25] transition-colors duration-300 ease-out-expo group-hover:text-signal sm:text-2xl">
+                    {item.q}
+                  </span>
+                </span>
+                <span class="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full border border-hairline text-ink-muted transition-transform duration-300 ease-out-expo group-open:rotate-45">
+                  <Icon name="plus" className="size-4" />
+                </span>
+              </summary>
+              <p class="type-body max-w-[62ch] pb-8 pl-9 text-ink-muted sm:pl-12">{item.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="px-3 pb-6 sm:px-5 sm:pb-8">
+    <div
+      data-reveal-root
+      data-shown="false"
+      class="edge-light-dark mx-auto max-w-site overflow-hidden rounded-xl bg-navy px-5 py-16 text-center sm:rounded-2xl sm:px-8 sm:py-24"
+    >
+      <h2 class="reveal type-section-title mx-auto max-w-[18ch] text-balance text-white">
+        Tell us where the handover is costing you.
+      </h2>
+      <p style={revealDelayStyle(1)} class="reveal type-lede mx-auto mt-5 max-w-[46ch] text-blue-200">
+        A paid diagnostic audits both the marketing and the product, and prices every finding.
+      </p>
+      <div style={revealDelayStyle(2)} class="reveal mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+        <a
+          href={site.primaryCta.to}
+          data-cta="one-team-start-project"
+          class="press type-ui rounded-full bg-white px-7 py-3.5 text-navy"
+        >
+          {site.primaryCta.label}
+        </a>
+        <a
+          href={site.diagnosticPath}
+          class="press type-ui rounded-full border border-white/20 px-7 py-3.5 text-white hover:border-white/50"
+        >
+          How the diagnostic works
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

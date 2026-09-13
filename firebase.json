@@ -46,7 +46,16 @@
         ]
       },
       {
-        "source": "/@(services|about|work|contact|pricing|digital-marketing-agency-hyderabad)",
+        "source": "/@(services|about|work|contact|pricing|digital-marketing-agency-hyderabad|paid-diagnostic|one-team-for-growth-and-build)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "/services/**",
         "headers": [
           {
             "key": "Cache-Control",

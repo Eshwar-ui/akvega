@@ -1,6 +1,11 @@
-import { allServices, faqs, tracks, type Service } from '@/lib/services'
+import { allServices, faqs, serviceHref, tracks, type FaqItem, type Service } from '@/lib/services'
+import type { PageDates } from '@/lib/dates'
 import {
   COUNTRY,
+  FOUNDER_CERTIFICATIONS,
+  FOUNDER_NAME,
+  FOUNDER_SAME_AS,
+  FOUNDER_TITLE,
   LEGAL_NAME,
   LOCALE,
   LOCALITY,
@@ -21,8 +26,8 @@ import {
  * - No `aggregateRating`. Self-declared ratings without a review source are a
  *   structured-data guideline violation and can draw a manual action. Add it
  *   only once real reviews exist on a platform Google can see.
- * - No `sameAs` on the founder. The LinkedIn URL has not been verified, and an
- *   unverified identifier is worse than none. Add it when confirmed.
+ * - No `sameAs` on the founder until `FOUNDER_LINKEDIN` in lib/site.ts is a
+ *   verified URL. An unverified identifier is worse than none.
  *
  * The Organization is typed as both `Organization` and `ProfessionalService`
  * now that Hyderabad is the confirmed base: the LocalBusiness family needs a
@@ -72,13 +77,7 @@ export function organizationSchema(): Json {
     image: { '@id': LOGO_ID },
     address: postalAddress,
     areaServed,
-    founder: {
-      '@type': 'Person',
-      '@id': FOUNDER_ID,
-      name: 'Kalyan Kumar Bedugam',
-      jobTitle: 'Founder',
-      worksFor: { '@id': ORG_ID },
-    },
+    founder: { '@id': FOUNDER_ID },
     knowsAbout: [
       'Search engine optimisation',
       'Answer engine optimisation',
@@ -104,6 +103,59 @@ export function organizationSchema(): Json {
   }
 }
 
+/**
+ * The founder as a first-class node, referenced by the Organization
+ * (`founder`) and by every WebPage (`author`, `reviewedBy`). One node, one
+ * `@id`, so the attribution on twenty pages resolves to one person.
+ */
+export function founderSchema(): Json {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': FOUNDER_ID,
+    name: FOUNDER_NAME,
+    jobTitle: FOUNDER_TITLE,
+    worksFor: { '@id': ORG_ID },
+    hasCredential: FOUNDER_CERTIFICATIONS.map((credential) => ({
+      '@type': 'EducationalOccupationalCredential',
+      name: credential.name,
+      credentialCategory: 'certification',
+      recognizedBy: { '@type': 'Organization', name: credential.issuer },
+    })),
+    knowsAbout: ['Google Ads', 'Meta Ads', 'Search engine optimisation', 'Web and mobile development'],
+    ...(FOUNDER_SAME_AS.length ? { sameAs: FOUNDER_SAME_AS } : {}),
+  }
+}
+
+/**
+ * The page itself. Emitted by the layout for every route, carrying the
+ * dates from lib/dates.ts — the machine-readable half of the freshness
+ * signal — and the founder as author and reviewer.
+ */
+export function webPageSchema(input: {
+  url: string
+  name: string
+  description: string
+  dates: PageDates
+}): Json {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${input.url}#webpage`,
+    url: input.url,
+    name: input.name,
+    description: input.description,
+    inLanguage: LOCALE,
+    datePublished: input.dates.published,
+    dateModified: input.dates.modified,
+    isPartOf: { '@id': SITE_ID },
+    about: { '@id': ORG_ID },
+    publisher: { '@id': ORG_ID },
+    author: { '@id': FOUNDER_ID },
+    reviewedBy: { '@id': FOUNDER_ID },
+  }
+}
+
 export function websiteSchema(): Json {
   return {
     '@context': 'https://schema.org',
@@ -126,7 +178,7 @@ export function serviceNode(service: Service, trackLabel: string): Json {
     '@type': 'Service',
     name: service.name,
     description: service.blurb,
-    url: `${site.url}/services#${service.slug}`,
+    url: `${site.url}${serviceHref(service)}`,
     serviceType: trackLabel,
     provider: { '@id': ORG_ID },
     areaServed,
@@ -158,38 +210,22 @@ export function servicesSchema(): Json {
 /**
  * FAQPage for any page that renders a question list. The visible answers and
  * this markup must be the same strings — pass the list the page renders.
+ * Each question carries its own dates and an `@id` matching the visible
+ * anchor (`#faq-<slug>`), so a citation can point at one answer.
  * Defaults to the homepage FAQ from lib/services.ts.
  */
-export function faqSchema(items: readonly { q: string; a: string }[] = faqs): Json {
+export function faqSchema(items: readonly FaqItem[] = faqs, pageUrl?: string): Json {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: items.map((item) => ({
       '@type': 'Question',
+      ...(pageUrl ? { '@id': `${pageUrl}#faq-${item.slug}` } : {}),
       name: item.q,
+      datePublished: item.published,
+      dateModified: item.modified,
       acceptedAnswer: { '@type': 'Answer', text: item.a },
     })),
   }
 }
 
-/**
- * The location page's own node. It is a `WebPage` *about* the organization
- * rather than a second LocalBusiness — one business, one entity; a duplicate
- * LocalBusiness with the same NAP would split the signal it is meant to
- * concentrate.
- */
-export function locationPageSchema(input: { path: string; name: string; description: string }): Json {
-  const url = `${site.url}${input.path}`
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    '@id': `${url}#webpage`,
-    url,
-    name: input.name,
-    description: input.description,
-    inLanguage: LOCALE,
-    isPartOf: { '@id': SITE_ID },
-    about: { '@id': ORG_ID },
-    mainEntity: { '@id': ORG_ID },
-  }
-}

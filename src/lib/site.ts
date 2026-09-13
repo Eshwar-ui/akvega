@@ -80,6 +80,24 @@ export const SOCIAL_LINKS: readonly SocialLink[] = [
  */
 export const GOOGLE_BUSINESS_URL = ''
 
+/**
+ * The founder. Named on every page (components/ReviewedBy.astro) and as a
+ * Person node in the JSON-LD, because answer engines credit an individual
+ * only when the name sits next to the claim. The LinkedIn URL is empty until
+ * verified — an unverified identifier is worse than none.
+ */
+export const FOUNDER_NAME = 'Kalyan Kumar Bedugam'
+export const FOUNDER_TITLE = 'Founder'
+/** Confirmed by the founder, September 2026. Shown on the attribution line. */
+export const FOUNDER_CREDENTIALS = 'Google Ads and Meta Blueprint certified, three years in growth marketing and digital build'
+/** Named certifications for the Person node's `hasCredential`. */
+export const FOUNDER_CERTIFICATIONS = [
+  { name: 'Google Ads certification', issuer: 'Google' },
+  { name: 'Meta Blueprint certification', issuer: 'Meta' },
+]
+export const FOUNDER_LINKEDIN = ''
+export const FOUNDER_SAME_AS: string[] = [FOUNDER_LINKEDIN].filter(Boolean)
+
 export const SAME_AS: string[] = [
   ...SOCIAL_LINKS.map((link) => link.href),
   GOOGLE_BUSINESS_URL,
@@ -102,6 +120,8 @@ export const site = {
 
   /** Where the work happens. Replaces the old "remote-first, no office" line. */
   location: LOCATION_LINE,
+  /** Where the audit-first model is explained. */
+  diagnosticPath: '/paid-diagnostic',
   /** Short form for tight UI (footer address, map card title). */
   locationShort: `${LOCALITY}, ${REGION}, ${COUNTRY_NAME}`,
 

@@ -12,6 +12,34 @@ authority-matched aggressiveness.
 
 ---
 
+## 0. Status — 2026-09-14
+
+Implemented the same day the plan was written, on the `seo/phase-1-hyderabad` branch:
+
+- **Phase A, all nine items.** `src/lib/page-dates.json` + `dates.ts`; every page emits a `WebPage`
+  node with `datePublished`/`dateModified` and fails the build without one; FAQ items carry
+  `slug`/`published`/`modified` and render `#faq-<slug>` anchors; `ReviewedBy.astro`,
+  `KeyFacts.astro`, `EvidencePanel.astro`; `/facts.json` and `/llms.txt` generated at build;
+  `scripts/check-freshness.mjs` in the build; robots.txt allows AI crawlers explicitly;
+  sitemap `lastmod` per page.
+- **Phase B.** Ten single-topic service pages at `/services/<slug>` from
+  `src/lib/service-pages/*.ts`; the two claim pages `/paid-diagnostic` and
+  `/one-team-for-growth-and-build`; the Hyderabad page brought to spec (key facts, attribution,
+  nine FAQs with anchors).
+- **Phase C.** First evidence panels on `/services/websites`: Lighthouse 12.8.2 runs against the
+  live homepage on 2026-09-14, desktop and mobile, with the raw reports published under
+  `/evidence/`. The mobile result (68, LCP 7.4 s) is published rather than hidden and is the
+  next engineering fix.
+- **Phase D.** Homepage key-facts block under the hero; homepage FAQ expanded from 5 to 12;
+  attribution line on every page.
+- **Phase E.** `aeo-tracking.csv` with the five prompts × four engines, baseline not yet run.
+- **Inputs received.** Credentials (Google Ads and Meta Blueprint certified, three years),
+  diagnostic scope and 1–2 day turnaround, three growth packages (₹20k / ₹40k / ₹60k + GST,
+  custom to ₹1L), service-URL move approved. Still missing: the founder's verified LinkedIn URL
+  and the diagnostic's own fee.
+
+---
+
 ## 1. Where the site stands today
 
 Akvega is a **challenger**: new domain, no reviews, no backlinks, no case studies. The study is

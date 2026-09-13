@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "dev:api": "node --watch --env-file=functions/.env functions/dev-server.js",
-    "build": "astro check && astro build && node scripts/check-links.mjs",
+    "build": "astro check && astro build && node scripts/check-links.mjs && node scripts/check-freshness.mjs",
     "lint": "oxlint",
     "typecheck": "astro check",
     "preview": "astro preview",
@@ -15,7 +15,8 @@
     "deploy": "npm run build && firebase deploy --only hosting,functions:contact --project akvegadigital",
     "test:contact": "npm --prefix functions test",
     "deploy:preview": "npm run build && firebase hosting:channel:deploy preview --expires 7d --project akvegadigital",
-    "check:links": "node scripts/check-links.mjs"
+    "check:links": "node scripts/check-links.mjs",
+    "check:freshness": "node scripts/check-freshness.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.5",

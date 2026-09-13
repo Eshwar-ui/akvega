@@ -110,6 +110,20 @@ Rules that the code enforces or assumes:
   in its place. Set `PRICING_PUBLISHED = true` to index it, list it in the
   sitemap (remove it from the filter in `astro.config.mjs`) and link it from
   the footer. Never put an estimated price in that file.
+- Every page carries a date. `src/lib/page-dates.json` is the map; the layout
+  emits `dateModified` in a `WebPage` node and `ReviewedBy.astro` renders the
+  visible line. Pages generated from their own data (service pages) pass
+  `dates` to the layout instead. `scripts/check-freshness.mjs` warns at six
+  months and fails the build at ten. See `AEO.md`.
+- `/services/<slug>` pages come from `src/lib/service-pages/<slug>.ts`, one
+  file per service, joined to `lib/services.ts` by `slug`. Key facts are
+  capped at 20 words each by `KeyFacts.astro`; FAQs carry their own dates and
+  render `#faq-<slug>` anchors.
+- Evidence panels (`src/lib/evidence.ts`) need a claim, method, source,
+  date and limitations or the component throws. Raw reports live in
+  `public/evidence/`.
+- `/facts.json` and `/llms.txt` are generated at build from the same data
+  the pages use.
 - Search Console and Bing verification tags are emitted only when
   `PUBLIC_GOOGLE_SITE_VERIFICATION` / `PUBLIC_BING_SITE_VERIFICATION` are set
   in `.env`.
@@ -119,7 +133,10 @@ Rules that the code enforces or assumes:
 ```
 src/
   pages/        One .astro file per route. Astro routes from here.
-                digital-marketing-agency-hyderabad.astro is the location page.
+                services/[slug].astro renders the ten service pages;
+                paid-diagnostic.astro and one-team-for-growth-and-build.astro
+                are the claim pages; facts.json.ts and llms.txt.ts are
+                build-time endpoints.
   layouts/      Base.astro — the only place head metadata is written
   lib/          Content and data. site.ts (copy, nav, contact), services.ts
                 (the two tracks and every service), schema.ts (JSON-LD),

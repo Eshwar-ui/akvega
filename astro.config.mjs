@@ -4,6 +4,7 @@ import { defineConfig } from 'astro/config'
 import react from '@astrojs/react'
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
+import pageDates from './src/lib/page-dates.json' with { type: 'json' }
 
 /**
  * Static output. Every route is a marketing page whose content is known at
@@ -33,13 +34,22 @@ export default defineConfig({
       // which had to be edited by hand every time a route was added and had
       // already drifted once.
       changefreq: 'monthly',
+      // Per-page lastmod from the same map that feeds `dateModified` in each
+      // page's JSON-LD and the visible "Last updated" line, so the three
+      // freshness signals agree. Pages not in the map (service pages carry
+      // their own dates) fall back to the build date.
       lastmod: new Date(),
-      // Pages that are `noindex` in their own head stay out of the sitemap so
-      // the two signals agree:
-      //   /work    — an honest empty state until real case studies exist.
-      //   /pricing — until PRICING_PUBLISHED in src/lib/pricing.ts is true.
-      // Remove each entry here the day its page goes live.
-      filter: (page) => !/\/(work|pricing)(\.html)?$/.test(new URL(page).pathname),
+      serialize(item) {
+        const path = new URL(item.url).pathname.replace(/\.html$/, '').replace(/(.)\/$/, '$1') || '/'
+        /** @type {Record<string, {modified: string}>} */
+        const dates = pageDates
+        if (dates[path]) item.lastmod = dates[path].modified
+        return item
+      },
+      // /work is `noindex` in its own head (an honest empty state until real
+      // case studies exist) and stays out of the sitemap so the two signals
+      // agree. Drop this filter the day it has content.
+      filter: (page) => !/\/work(\.html)?$/.test(new URL(page).pathname),
     }),
   ],
   vite: {

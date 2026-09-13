@@ -3,7 +3,8 @@ import '@/index.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer.astro'
 import CustomCursor from '@/components/CustomCursor'
-import { organizationSchema, websiteSchema } from '@/lib/schema'
+import { founderSchema, organizationSchema, webPageSchema, websiteSchema } from '@/lib/schema'
+import { datesFor, normalisePath, type PageDates } from '@/lib/dates'
 import { COUNTRY, LOCALE, LOCALITY, REGION_CODE } from '@/lib/site'
 
 /**
@@ -27,6 +28,12 @@ interface Props {
    * Google. The page is also filtered from the sitemap in astro.config.mjs.
    */
   noindex?: boolean
+  /**
+   * Published / modified dates. Looked up in lib/page-dates.json by path
+   * unless the page passes its own (pages generated from their own data do).
+   * A page with neither fails the build: every page carries a date.
+   */
+  dates?: PageDates
 }
 
 const { title, description, ogImage = '/og.png', noindex = false } = Astro.props
@@ -54,17 +61,27 @@ const ogLocale = LOCALE.replace('-', '_')
 // pathname — so a naive canonical came out as https://akvega.com/index.html,
 // which is a URL Firebase's `cleanUrls` immediately redirects away from. A
 // canonical pointing at a redirect is a canonical Google discards.
-const canonicalPath = Astro.url.pathname
-  .replace(/index\.html$/, '')
-  .replace(/\.html$/, '')
-  .replace(/(.)\/$/, '$1')
+const canonicalPath = normalisePath(Astro.url.pathname)
 
-const canonical = new URL(canonicalPath || '/', Astro.site).href
+const canonical = new URL(canonicalPath, Astro.site).href
 const ogImageUrl = new URL(ogImage, Astro.site).href
 
-// Site-wide entity graph. Page-specific schema (BreadcrumbList, the service
-// ItemList) is added by the components and pages that own it.
-const graph = [organizationSchema(), websiteSchema()]
+const dates = Astro.props.dates ?? datesFor(canonicalPath)
+if (!dates) {
+  throw new Error(
+    `Base: no dates for ${canonicalPath} — add it to src/lib/page-dates.json or pass \`dates\`.`,
+  )
+}
+
+// Site-wide entity graph plus this page's own node. Page-specific schema
+// (BreadcrumbList, FAQPage, the service ItemList) is added by the components
+// and pages that own it.
+const graph = [
+  organizationSchema(),
+  founderSchema(),
+  websiteSchema(),
+  webPageSchema({ url: canonical, name: title, description, dates }),
+]
 ---
 
 <!doctype html>

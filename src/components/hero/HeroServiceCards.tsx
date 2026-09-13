@@ -28,7 +28,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Live',
     image: '/service-ui/campaign-control.webp',
     alt: 'Paid media workspace with a creative schedule, campaign budget and performance trends',
-    to: '/services#paid-search',
+    to: '/services/paid-search',
     position:
       'bottom-[32%] left-[-2rem] z-[1] w-[13rem] -rotate-[4deg] 2xl:bottom-[30%] 2xl:left-[1%] 2xl:w-[15rem]',
     depth: 0.72,
@@ -40,7 +40,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Tracking',
     image: '/service-ui/search-visibility.webp',
     alt: 'SEO and answer visibility workspace showing coverage, indexed pages and audit progress',
-    to: '/services#search',
+    to: '/services/search',
     position:
       'bottom-[10%] left-[2.5rem] z-[3] w-[12.5rem] rotate-[4deg] 2xl:bottom-[9%] 2xl:left-[5%] 2xl:w-[14.5rem]',
     depth: 0.58,
@@ -63,7 +63,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Ready',
     image: '/service-ui/web-engineering.webp',
     alt: 'Web engineering workspace with deployment pipeline, automated tests, performance telemetry and release health',
-    to: '/services#websites',
+    to: '/services/websites',
     position:
       'bottom-[32%] right-[-2rem] z-[1] w-[13rem] rotate-[4deg] 2xl:bottom-[30%] 2xl:right-[1%] 2xl:w-[15rem]',
     depth: 0.86,
@@ -74,7 +74,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Testing',
     image: '/service-ui/mobile-delivery.webp',
     alt: 'Mobile engineering workspace with device previews, build versions, automated tests and release readiness',
-    to: '/services#mobile',
+    to: '/services/mobile',
     position:
       'bottom-[10%] right-[2.5rem] z-[3] w-[12.5rem] -rotate-[4deg] 2xl:bottom-[9%] 2xl:right-[5%] 2xl:w-[14.5rem]',
     depth: 0.68,
@@ -85,7 +85,7 @@ const serviceCards: ServiceCard[] = [
     status: 'Healthy',
     image: '/service-ui/systems-automation.webp',
     alt: 'Systems automation workspace with API connections, event routing, scheduled jobs and pipeline health',
-    to: '/services#custom',
+    to: '/services/custom',
     position:
       'bottom-[-6%] right-[1rem] z-[4] w-[12rem] rotate-[6deg] 2xl:bottom-[-5%] 2xl:right-[7%] 2xl:w-[14rem]',
     depth: 0.96,
