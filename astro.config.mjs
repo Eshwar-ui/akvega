@@ -34,10 +34,12 @@ export default defineConfig({
       // already drifted once.
       changefreq: 'monthly',
       lastmod: new Date(),
-      // /work is an honest empty state until real case studies exist. It is
-      // `noindex` in its own head (see the page) and stays out of the sitemap
-      // so the two signals agree. Drop this filter the day it has content.
-      filter: (page) => !/\/work(\.html)?$/.test(new URL(page).pathname),
+      // Pages that are `noindex` in their own head stay out of the sitemap so
+      // the two signals agree:
+      //   /work    — an honest empty state until real case studies exist.
+      //   /pricing — until PRICING_PUBLISHED in src/lib/pricing.ts is true.
+      // Remove each entry here the day its page goes live.
+      filter: (page) => !/\/(work|pricing)(\.html)?$/.test(new URL(page).pathname),
     }),
   ],
   vite: {

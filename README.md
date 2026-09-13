@@ -105,6 +105,11 @@ Rules that the code enforces or assumes:
   Google can see. Self-declared ratings are a guideline violation.
 - `/work` is `noindex` and filtered from the sitemap while it is an empty
   state (`astro.config.mjs`). Remove both the day it has case studies.
+- `/pricing` reads `src/lib/pricing.ts`. Every `from` is `null` until the
+  real figure is confirmed, and the page shows "Quoted from the diagnostic"
+  in its place. Set `PRICING_PUBLISHED = true` to index it, list it in the
+  sitemap (remove it from the filter in `astro.config.mjs`) and link it from
+  the footer. Never put an estimated price in that file.
 - Search Console and Bing verification tags are emitted only when
   `PUBLIC_GOOGLE_SITE_VERIFICATION` / `PUBLIC_BING_SITE_VERIFICATION` are set
   in `.env`.

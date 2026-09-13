@@ -1,0 +1,329 @@
+---
+import Base from '@/layouts/Base.astro'
+import Breadcrumb from '@/components/Breadcrumb.astro'
+import { Icon } from '@/components/Icons'
+import {
+  PRICING_PUBLISHED,
+  alwaysIncluded,
+  buildTiers,
+  cadenceLabel,
+  diagnostic,
+  excluded,
+  formatFrom,
+  growthTiers,
+  pricingFaqs,
+  type PriceTier,
+} from '@/lib/pricing'
+import { faqSchema } from '@/lib/schema'
+import { serviceHref } from '@/lib/services'
+import { site } from '@/lib/site'
+import { revealDelayStyle } from '@/scripts/reveal'
+
+/**
+ * Pricing. Nobody else in the Hyderabad agency market publishes numbers, so
+ * this page is a differentiator on its own — but only if the numbers are
+ * real. Every figure comes from lib/pricing.ts; a tier whose `from` is null
+ * shows "Quoted from the diagnostic" instead of a guess, and while
+ * `PRICING_PUBLISHED` is false the whole page is noindex and unlinked.
+ *
+ * Layout: the diagnostic first, because it is the door; then Growth as
+ * monthly retainers and Build as project prices; then what is always
+ * included, what never is, and a FAQ that answers the question a buyer has
+ * before they email — "what does 'from' actually mean?"
+ */
+const TITLE = 'Pricing — starting prices for growth and build | Akvega'
+const DESCRIPTION =
+  'Starting prices for SEO, Google Ads, Meta Ads and social, and for websites, online stores, mobile apps and custom tools. A paid diagnostic first, then a fixed quote.'
+
+const FALLBACK_PRICE = 'Quoted from the diagnostic'
+
+const columns: { label: string; accent: 'signal' | 'vega'; lede: string; tiers: PriceTier[] }[] = [
+  {
+    label: 'Growth',
+    accent: 'signal',
+    lede: 'Monthly, with a scope you can hold us to. Ad spend is separate and stays in your own accounts.',
+    tiers: growthTiers,
+  },
+  {
+    label: 'Build',
+    accent: 'vega',
+    lede: 'Priced per project from the diagnostic, with the number fixed before the first line of code.',
+    tiers: buildTiers,
+  },
+]
+
+const diagnosticPrice = formatFrom(diagnostic.from)
+---
+
+<Base title={TITLE} description={DESCRIPTION} noindex={!PRICING_PUBLISHED}>
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema(pricingFaqs))} />
+
+  <div class="px-3 pt-3 sm:px-5 sm:pt-5">
+    <div
+      class="hero-field edge-light relative isolate overflow-hidden rounded-xl border border-hairline sm:rounded-2xl"
+    >
+      <div class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
+        <Breadcrumb current="Pricing" />
+        <p class="type-overline mt-7 text-ink-muted">Pricing</p>
+        <h1 class="type-page-title mt-3 max-w-[16ch] text-balance">What it costs, before you ask.</h1>
+        <p class="type-body mt-5 max-w-[54ch] text-ink-muted">
+          Starting prices for every service we run, and the one step that turns them into a fixed
+          quote. No discovery call whose only purpose is to find out your budget.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {/* The diagnostic. One card, on its own, because it is the door every
+      engagement walks through and the thing that makes every other price on
+      the page a real number for your scope. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-20 sm:px-8 sm:py-28">
+    <div
+      class="reveal edge-light-dark grid gap-10 overflow-hidden rounded-2xl bg-navy px-6 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:px-14"
+    >
+      <div>
+        <p class="type-overline text-blue-200">Step one, always</p>
+        <h2 class="type-section-title mt-4 text-balance text-white">{diagnostic.name}</h2>
+        <p class="type-body mt-5 max-w-[46ch] text-blue-200">{diagnostic.summary}</p>
+
+        <div class="mt-8 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          {
+            diagnosticPrice ? (
+              <>
+                <span class="text-[clamp(2.25rem,5vw,3.25rem)] font-semibold leading-none tracking-[-0.02em] text-white">
+                  {diagnosticPrice}
+                </span>
+                <span class="text-[15px] text-blue-200">{cadenceLabel(diagnostic.cadence)}, excl. GST</span>
+              </>
+            ) : (
+              <span class="text-[clamp(1.5rem,3vw,2rem)] font-semibold leading-tight tracking-[-0.02em] text-white">
+                Fixed fee, agreed before we start
+              </span>
+            )
+          }
+        </div>
+        {
+          diagnostic.durationDays ? (
+            <p class="mt-2 text-[14px] text-blue-200">
+              About {diagnostic.durationDays} working days from kickoff to handover.
+            </p>
+          ) : null
+        }
+
+        <a
+          href={site.primaryCta.to}
+          data-cta="pricing-diagnostic"
+          class="press mt-8 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-[15px] font-medium text-navy"
+        >
+          Book a diagnostic
+          <Icon name="arrowUpRight" className="size-4" />
+        </a>
+      </div>
+
+      <ul class="space-y-4 self-center border-t border-white/10 pt-8 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
+        {
+          diagnostic.includes.map((item, i) => (
+            <li style={revealDelayStyle(i + 1, 70)} class="reveal flex items-start gap-3 text-[16px] text-blue-100">
+              <Icon name="check" className="mt-1 size-4 shrink-0 text-energy" />
+              {item}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {/* The tiers. Growth then Build, in the order the site always uses. */}
+  {
+    columns.map((column, ci) => {
+      const accentText = column.accent === 'signal' ? 'text-signal' : 'text-vega'
+      return (
+        <section
+          data-reveal-root
+          data-shown="false"
+          class={`mx-auto max-w-site px-5 sm:px-8 ${ci === 0 ? 'pb-20 sm:pb-28' : 'pb-24 sm:pb-32'}`}
+        >
+          <div class="reveal flex flex-col gap-6 border-t border-ink/12 pt-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+            <div class="flex items-baseline gap-5">
+              <h2 class={`type-track-title ${accentText}`}>{column.label}</h2>
+              <span class="text-sm tabular-nums text-ink-muted">
+                {String(column.tiers.length).padStart(2, '0')}
+              </span>
+            </div>
+            <p class="type-body max-w-[46ch] text-ink-muted lg:text-right">{column.lede}</p>
+          </div>
+
+          <ul class="mt-4">
+            {column.tiers.map((tier, i) => {
+              const price = formatFrom(tier.from)
+              return (
+                <li
+                  id={`pricing-${tier.slug}`}
+                  style={revealDelayStyle(i + 1, 80)}
+                  class="reveal grid scroll-mt-28 gap-6 border-t border-hairline py-10 sm:py-12 lg:grid-cols-[1fr_1.4fr] lg:gap-16"
+                >
+                  <div>
+                    <h3 class="type-card-title">
+                      <a href={serviceHref(tier)} class="link-sweep">
+                        {tier.name}
+                      </a>
+                    </h3>
+                    <p class="type-body mt-3 max-w-[40ch] text-ink-muted">{tier.summary}</p>
+
+                    <div class="mt-6">
+                      {price ? (
+                        <p class="flex flex-wrap items-baseline gap-x-2">
+                          <span class="text-[13px] text-ink-muted">from</span>
+                          <span class="text-[clamp(1.75rem,3.5vw,2.5rem)] font-semibold leading-none tracking-[-0.02em] text-ink">
+                            {price}
+                          </span>
+                          <span class="text-[14px] text-ink-muted">{cadenceLabel(tier.cadence)}</span>
+                        </p>
+                      ) : (
+                        <p class="inline-flex items-center gap-2 rounded-full border border-hairline bg-paper px-4 py-2 text-[14px] font-medium text-ink">
+                          <Icon name="target" className={`size-4 ${accentText}`} />
+                          {FALLBACK_PRICE}
+                        </p>
+                      )}
+                      {tier.minimumTermMonths ? (
+                        <p class="mt-2 text-[13px] text-ink-muted">
+                          Minimum {tier.minimumTermMonths} months.
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <div class="grid gap-8 sm:grid-cols-2">
+                    <div>
+                      <p class="type-overline text-[11px] text-ink-muted">Included from the start</p>
+                      <ul class="mt-4 space-y-2.5">
+                        {tier.includes.map((item) => (
+                          <li class="flex items-start gap-2.5 text-[15px] leading-snug text-ink">
+                            <Icon name="check" className={`mt-0.5 size-4 shrink-0 ${accentText}`} />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <p class="type-overline text-[11px] text-ink-muted">What moves the number</p>
+                      <ul class="mt-4 space-y-2.5">
+                        {tier.scales.map((item) => (
+                          <li class="flex items-start gap-2.5 text-[15px] leading-snug text-ink-muted">
+                            <Icon name="trend" className="mt-0.5 size-4 shrink-0 text-ink-muted/60" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      )
+    })
+  }
+
+  {/* Always / never. The engagement model, stated once, next to the costs
+      the starting prices deliberately leave out. */}
+  <section data-reveal-root data-shown="false" class="px-3 sm:px-5">
+    <div class="mx-auto grid max-w-site gap-4 lg:grid-cols-[1.5fr_1fr]">
+      <div class="rounded-2xl border border-hairline bg-surface/60 p-6 sm:p-10">
+        <p class="reveal type-overline text-ink-muted">In every engagement</p>
+        <ul class="mt-6 grid gap-8 sm:grid-cols-2">
+          {
+            alwaysIncluded.map((item, i) => (
+              <li style={revealDelayStyle(i + 1, 70)} class="reveal">
+                <h3 class="text-[17px] font-medium leading-snug text-ink">{item.title}</h3>
+                <p class="type-body mt-2 text-ink-muted">{item.body}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="rounded-2xl border border-hairline bg-paper p-6 sm:p-10">
+        <p class="reveal type-overline text-ink-muted">Not in the starting price</p>
+        <ul class="mt-6 space-y-4">
+          {
+            excluded.map((item, i) => (
+              <li style={revealDelayStyle(i + 1, 70)} class="reveal flex items-start gap-3 text-[15px] leading-snug text-ink">
+                <span aria-hidden="true" class="mt-2 size-1.5 shrink-0 rounded-full bg-ink/30"></span>
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {/* FAQ. Rendered from `pricingFaqs`, the same array the FAQPage JSON-LD in
+      the head serialises. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-24 sm:px-8 sm:py-32">
+    <div class="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
+      <h2 class="reveal type-section-title max-w-[12ch] lg:sticky lg:top-28 lg:self-start">
+        Questions about the numbers.
+      </h2>
+
+      <div>
+        {
+          pricingFaqs.map((item, i) => (
+            <details
+              name="pricing-faq"
+              style={revealDelayStyle(i, 60)}
+              class="reveal group border-b border-hairline first:border-t"
+            >
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-8 py-7 text-left sm:py-8 [&::-webkit-details-marker]:hidden">
+                <span class="flex items-baseline gap-4 sm:gap-5">
+                  <span class="type-overline shrink-0 tabular-nums text-[11px] text-ink-muted/45 sm:text-xs">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span class="text-xl font-medium leading-[1.25] transition-colors duration-300 ease-out-expo group-hover:text-signal sm:text-2xl">
+                    {item.q}
+                  </span>
+                </span>
+                <span class="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full border border-hairline text-ink-muted transition-transform duration-300 ease-out-expo group-open:rotate-45">
+                  <Icon name="plus" className="size-4" />
+                </span>
+              </summary>
+              <p class="type-body max-w-[62ch] pb-8 pl-9 text-ink-muted sm:pl-12">{item.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="px-3 pb-6 sm:px-5 sm:pb-8">
+    <div
+      data-reveal-root
+      data-shown="false"
+      class="edge-light-dark mx-auto max-w-site overflow-hidden rounded-xl bg-navy px-5 py-16 text-center sm:rounded-2xl sm:px-8 sm:py-24"
+    >
+      <h2 class="reveal type-section-title mx-auto max-w-[18ch] text-balance text-white">
+        Send the problem. We’ll send the number.
+      </h2>
+      <p style={revealDelayStyle(1)} class="reveal type-lede mx-auto mt-5 max-w-[46ch] text-blue-200">
+        A diagnostic turns every “from” on this page into one fixed quote for your scope.
+      </p>
+      <div style={revealDelayStyle(2)} class="reveal mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+        <a
+          href={site.primaryCta.to}
+          data-cta="pricing-start-project"
+          class="press type-ui rounded-full bg-white px-7 py-3.5 text-navy"
+        >
+          {site.primaryCta.label}
+        </a>
+        <a
+          href={`mailto:${site.email}`}
+          class="press type-ui rounded-full border border-white/20 px-7 py-3.5 text-white hover:border-white/50"
+        >
+          {site.email}
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
