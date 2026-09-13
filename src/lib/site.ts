@@ -72,13 +72,19 @@ export const SOCIAL_LINKS: readonly SocialLink[] = [
 ]
 
 /**
- * TODO: replace with the canonical Google Maps place URL once copied from the
- * Business Profile — the full https://www.google.com/maps/place/... form, NOT
- * the share.google short link, which is a redirect and not a stable entity
- * identifier. Left empty it is filtered out of `sameAs` below and the contact
- * page renders no map link.
+ * The Google Business Profile is listed as "Akvega Digital" (matching the
+ * Instagram handle, not the site/LinkedIn "Akvega") at:
+ *   Old Gayatri Nagar, Srinivasa Gayatri Nagar, Jillalguda,
+ *   Hyderabad, Telangana 500097, India
+ * Found 2026-09-14 via a live ChatGPT answer that surfaced the profile's map
+ * card with a "Website" button confirmed to point at akvega.com — verifying
+ * this is the real, owner-managed listing. The URL below is the canonical
+ * google.com/maps/place/... form (feature id embedded, not a share.google
+ * redirect), confirmed by re-finding the same listing directly in Google
+ * Maps with "Manage your Business Profile" showing for this account.
  */
-export const GOOGLE_BUSINESS_URL = ''
+export const GOOGLE_BUSINESS_URL =
+  'https://www.google.com/maps/place/Akvega+Digital/@17.3357486,78.5307395,917m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3bcba31f5a243529:0xe046e0be6ee38f9a!8m2!3d17.3357486!4d78.5307395!16s%2Fg%2F11nvwl9jgk'
 
 /**
  * The founder. Named on every page (components/ReviewedBy.astro) and as a

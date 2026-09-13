@@ -1,21 +1,21 @@
 date,engine,prompt,mentioned,linked,accurate,evidence_quoted,cited_url,notes
-2026-09-14,chatgpt,"What is Akvega?",,,,,,baseline not yet run
-2026-09-14,claude,"What is Akvega?",,,,,,baseline not yet run
-2026-09-14,gemini,"What is Akvega?",,,,,,baseline not yet run
-2026-09-14,perplexity,"What is Akvega?",,,,,,baseline not yet run
-2026-09-14,chatgpt,"Best digital marketing agency in Hyderabad that also builds apps",,,,,,baseline not yet run
-2026-09-14,claude,"Best digital marketing agency in Hyderabad that also builds apps",,,,,,baseline not yet run
-2026-09-14,gemini,"Best digital marketing agency in Hyderabad that also builds apps",,,,,,baseline not yet run
-2026-09-14,perplexity,"Best digital marketing agency in Hyderabad that also builds apps",,,,,,baseline not yet run
-2026-09-14,chatgpt,"How much does SEO cost in Hyderabad?",,,,,,baseline not yet run
-2026-09-14,claude,"How much does SEO cost in Hyderabad?",,,,,,baseline not yet run
-2026-09-14,gemini,"How much does SEO cost in Hyderabad?",,,,,,baseline not yet run
-2026-09-14,perplexity,"How much does SEO cost in Hyderabad?",,,,,,baseline not yet run
-2026-09-14,chatgpt,"Why should the same agency run ads and build the landing page?",,,,,,baseline not yet run
-2026-09-14,claude,"Why should the same agency run ads and build the landing page?",,,,,,baseline not yet run
-2026-09-14,gemini,"Why should the same agency run ads and build the landing page?",,,,,,baseline not yet run
-2026-09-14,perplexity,"Why should the same agency run ads and build the landing page?",,,,,,baseline not yet run
-2026-09-14,chatgpt,"What is a paid marketing diagnostic and what does Akvega's include?",,,,,,baseline not yet run
-2026-09-14,claude,"What is a paid marketing diagnostic and what does Akvega's include?",,,,,,baseline not yet run
-2026-09-14,gemini,"What is a paid marketing diagnostic and what does Akvega's include?",,,,,,baseline not yet run
-2026-09-14,perplexity,"What is a paid marketing diagnostic and what does Akvega's include?",,,,,,baseline not yet run
+2026-09-14,perplexity,"What is Akvega?",yes,yes,yes,yes,akvega.com,"Secondary answer after Perplexity first guessed the cancer drug ""Akeega""; correctly identifies Akvega as the growth+build agency and quotes the homepage meta description verbatim."
+2026-09-14,perplexity,"Best digital marketing agency in Hyderabad that also builds apps",no,no,,,,"Listed DigitalZap, Digital Shout, Devopod, Analogue IT Solutions, Dizi Solutions, Keyep, Bristle Tech. Akvega absent from a 7-agency table."
+2026-09-14,perplexity,"How much does SEO cost in Hyderabad?",no,no,,,,"Cited yoganand/thege market-rate sources only. Confirms Akvega's ₹20k-60k packages sit inside the quoted market range."
+2026-09-14,perplexity,"Why should the same agency run ads and build the landing page?",no,no,,,,"Generic answer echoing Akvega's own 'one team' argument almost exactly, but does not cite akvega.com or the new /one-team-for-growth-and-build page."
+2026-09-14,perplexity,"What is a paid marketing diagnostic and what does Akvega's include?",yes,yes,yes,yes,akvega.com,"Strong result: dedicated section 'What Akvega's paid diagnostic includes', citing per-channel framing (Google Ads/SEO/Branding/Custom tools) drawn from the new service pages."
+2026-09-14,chatgpt,"What is Akvega?",yes,yes,partial,no,"Google Business Profile listing (""Akvega Digital""), akvega.com","IMPORTANT FINDING: surfaced a live Google Maps/GBP card for ""Akvega Digital"" at Old Gayatri Nagar, Srinivasa Gayatri Nagar, Jillalguda, Hyderabad, Telangana 500097. Website button correctly links to akvega.com, confirming this is the real GBP. But ChatGPT said ""there is very little independently verifiable information about its services... cannot describe with confidence"" -- NAP data propagated, service/content info did not."
+2026-09-14,chatgpt,"Best digital marketing agency in Hyderabad that also builds apps",no,no,,,,"Shortlisted Vrinda Techapps, mTouch Labs, Analogue IT Solutions, Geekschip, Digital Mojo, Lahari Technologies. Akvega absent."
+2026-09-14,chatgpt,"How much does SEO cost in Hyderabad?",no,no,,,,"Cited Geekschip, Digital i360, ShootOrder as example agencies (with a local map/review carousel). Akvega absent from both the pricing sources and the agency examples."
+2026-09-14,chatgpt,"Why should the same agency run ads and build the landing page?",no,no,,,,"Purely generic answer from model knowledge, no web search performed, no citations at all."
+2026-09-14,chatgpt,"What is a paid marketing diagnostic and what does Akvega's include?",yes,no,n/a,no,,"Explicitly said: ""I couldn't find a reliable public page specifically documenting an Akvega-branded 'Paid Marketing Diagnostic'... so I don't want to invent an Akvega-specific package."" Recognizes ""Akvega in Hyderabad"" as a real entity but has not yet indexed /paid-diagnostic. Honest non-hallucination, not an error -- expect this to resolve on next crawl."
+2026-09-14,claude,"What is Akvega?",yes,no,partial,no,,"NOT A VALID COLD-DISCOVERABILITY TEST: answered entirely from this account's saved memory (recalled company-incorporation.md), not a live web check -- this is the founder's own Claude account with prior Akvega chats and a project. Content itself was reasonably accurate but pre-dates the new pages (pricing, service pages, diagnostic) so it is stale."
+2026-09-14,claude,"Best digital marketing agency in Hyderabad that also builds apps",not run,,,,,"Claude.ai's session broke mid-test and redirected into an unrelated Google account's onboarding flow. Stopped immediately without entering any credentials or account details. Remaining 4 Claude.ai prompts not run this session -- retry once the browser's Claude.ai login is confirmed stable."
+2026-09-14,claude,"How much does SEO cost in Hyderabad?",not run,,,,,"See note above -- session interrupted before this prompt could run."
+2026-09-14,claude,"Why should the same agency run ads and build the landing page?",not run,,,,,"See note above -- session interrupted before this prompt could run."
+2026-09-14,claude,"What is a paid marketing diagnostic and what does Akvega's include?",not run,,,,,"See note above -- session interrupted before this prompt could run."
+2026-09-14,gemini,"What is Akvega?",yes,yes,yes,yes,akvega.com +2,"Excellent result, listed as the primary/first meaning of ""Akvega"": accurately paraphrases ""growth marketing and digital build"" under one team and the ""no lock-in"" ownership model (clients own code, ad accounts, analytics from day one)."
+2026-09-14,gemini,"Best digital marketing agency in Hyderabad that also builds apps",no,no,,,,"Ran a multi-step research pass and shortlisted WebbingPro Technologies, DigitalGYB Technologies, I Prism Technologies, Maven Group, Devopod. Akvega absent from a 5-agency list."
+2026-09-14,gemini,"How much does SEO cost in Hyderabad?",no,no,,,,"Cited BeTopSEO, Vansh Bohra, Vignesh Growth, Geekonomy for pricing tiers. Confirms Akvega's packages sit inside the quoted Standard/Growth SEO band (₹25k-75k)."
+2026-09-14,gemini,"Why should the same agency run ads and build the landing page?",no,no,,,,"Purely generic answer, no citations/sources shown at all -- no web grounding used for this query despite it being Akvega's core positioning topic."
+2026-09-14,gemini,"What is a paid marketing diagnostic and what does Akvega's include?",yes,yes,yes,yes,akvega.com +1 (per-service pages cited individually as ""Akvega""),"BEST RESULT OF THE WHOLE BASELINE: accurately explains Akvega requires a paid diagnostic before every engagement (""avoid proposing a solution until they actually know the answer""), then correctly breaks down what's included per service -- Google Ads, Meta Ads, SEO/AEO/GEO, Websites, Mobile Apps, Branding -- each cited to its own new service page. Closes with the accurate no-lock-in / client-ownership line."
