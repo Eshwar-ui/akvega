@@ -28,8 +28,10 @@ Implemented the same day the plan was written, on the `seo/phase-1-hyderabad` br
   nine FAQs with anchors).
 - **Phase C.** First evidence panels on `/services/websites`: Lighthouse 12.8.2 runs against the
   live homepage on 2026-09-14, desktop and mobile, with the raw reports published under
-  `/evidence/`. The mobile result (68, LCP 7.4 s) is published rather than hidden and is the
-  next engineering fix.
+  `/evidence/`. The first mobile result (68, LCP 7.4 s) exposed the hero heading being hidden
+  until JavaScript arrived; after moving the hero entrance to CSS and deferring the font
+  stylesheet, the live site measures 99 on mobile (LCP 2.0 s) and 100 on desktop (LCP 0.5 s).
+  Both before and after reports are published.
 - **Phase D.** Homepage key-facts block under the hero; homepage FAQ expanded from 5 to 12;
   attribution line on every page.
 - **Phase E.** `aeo-tracking.csv` with the five prompts × four engines, baseline not yet run.
