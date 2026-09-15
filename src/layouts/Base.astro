@@ -120,8 +120,21 @@ const graph = [
     <meta name="geo.region" content={`${COUNTRY}-${REGION_CODE}`} />
     <meta name="geo.placename" content={LOCALITY} />
 
-    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-    <link rel="apple-touch-icon" href="/logo.svg" />
+    <!--
+      Google renders the SERP favicon inside a circular mask, so the mark is
+      inset into icon.svg rather than filling the square: logo.svg is 481x286,
+      and a wide mark spanning the full width loses its ends to the crop.
+      favicon.ico stays because Google still probes /favicon.ico, and the
+      Apple icon must be a PNG — iOS ignores an SVG here and screenshots the
+      page instead.
+    -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
