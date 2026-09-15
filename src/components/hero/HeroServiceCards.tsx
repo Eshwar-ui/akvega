@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Icon } from '@/components/Icons'
 
 /**
@@ -168,6 +169,140 @@ export function HeroServiceCardsDesktop() {
   )
 }
 
+/** Long enough to read a card title before the next one arrives. */
+const AUTO_SCROLL_MS = 3200
+
+/**
+ * Advances the carousel on its own, and gives up the moment the visitor wants
+ * it to.
+ *
+ * An indefinitely moving element carries obligations, so all of this is the
+ * feature rather than trimming around it:
+ *
+ * - `prefers-reduced-motion: reduce` means it never starts at all, and stops
+ *   for good if the preference is switched on while the page is open.
+ * - Any real interaction — touch, wheel, a key, or focus landing on a card —
+ *   stops it permanently. Moving content out from under someone who has taken
+ *   hold of it is the single worst thing a carousel can do, and a keyboard user
+ *   tabbing through the cards is doing exactly that.
+ * - Hover pauses and resumes, for the pointer that is reading rather than
+ *   scrolling.
+ * - Off-screen or on a hidden tab, it pauses. This is also what keeps it off
+ *   above xl for free: the list is `display: none` there, so it never
+ *   intersects and the timer never runs.
+ *
+ * Position is re-derived from `scrollLeft` on every tick rather than tracked in
+ * a counter, so a half-finished scroll or a snap landing somewhere unexpected
+ * self-corrects instead of accumulating drift.
+ *
+ * It reverses at the ends rather than rewinding. With six cards a wrap-around
+ * would sweep the full width backwards, which reads as a glitch; stepping back
+ * one card at a time reads as browsing.
+ */
+function useAutoScroll(count: number) {
+  const ref = useRef<HTMLUListElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let timer: number | undefined
+    let stopped = reduced.matches
+    let step = 1
+
+    const pad = () => Number.parseFloat(getComputedStyle(el).scrollPaddingLeft) || 0
+
+    /** Which card currently sits at the snap line. */
+    const currentIndex = () => {
+      const origin = el.getBoundingClientRect().left + pad()
+      let best = 0
+      let bestDistance = Number.POSITIVE_INFINITY
+
+      for (const [index, child] of [...el.children].entries()) {
+        const distance = Math.abs(child.getBoundingClientRect().left - origin)
+        if (distance < bestDistance) {
+          bestDistance = distance
+          best = index
+        }
+      }
+
+      return best
+    }
+
+    const scrollToIndex = (index: number) => {
+      const item = el.children[index] as HTMLElement | undefined
+      if (!item) return
+
+      const delta = item.getBoundingClientRect().left - el.getBoundingClientRect().left
+      el.scrollTo({ left: el.scrollLeft + delta - pad(), behavior: 'smooth' })
+    }
+
+    const tick = () => {
+      // Measured, not counted: the last card cannot always reach the snap line,
+      // so asking the scroll position where it is beats assuming.
+      const maxScroll = el.scrollWidth - el.clientWidth
+      if (step > 0 && el.scrollLeft >= maxScroll - 4) step = -1
+      else if (step < 0 && el.scrollLeft <= 4) step = 1
+
+      scrollToIndex(Math.min(Math.max(currentIndex() + step, 0), count - 1))
+    }
+
+    const pause = () => {
+      if (timer !== undefined) {
+        window.clearInterval(timer)
+        timer = undefined
+      }
+    }
+
+    const play = () => {
+      if (stopped || timer !== undefined) return
+      timer = window.setInterval(tick, AUTO_SCROLL_MS)
+    }
+
+    /** Permanent: the visitor is driving now. */
+    const stop = () => {
+      stopped = true
+      pause()
+    }
+
+    const onPreferenceChange = () => {
+      if (reduced.matches) stop()
+    }
+
+    const onVisibility = () => (document.hidden ? pause() : play())
+
+    for (const type of ['pointerdown', 'touchstart', 'wheel', 'keydown', 'focusin']) {
+      el.addEventListener(type, stop, { passive: true })
+    }
+    el.addEventListener('pointerenter', pause)
+    el.addEventListener('pointerleave', play)
+    document.addEventListener('visibilitychange', onVisibility)
+    reduced.addEventListener('change', onPreferenceChange)
+
+    // Only runs while the carousel is actually on screen.
+    const observer = new IntersectionObserver(
+      ([entry]) => (entry?.isIntersecting ? play() : pause()),
+      { threshold: 0.25 },
+    )
+    observer.observe(el)
+
+    return () => {
+      pause()
+      observer.disconnect()
+      for (const type of ['pointerdown', 'touchstart', 'wheel', 'keydown', 'focusin']) {
+        el.removeEventListener(type, stop)
+      }
+      el.removeEventListener('pointerenter', pause)
+      el.removeEventListener('pointerleave', play)
+      document.removeEventListener('visibilitychange', onVisibility)
+      reduced.removeEventListener('change', onPreferenceChange)
+    }
+  }, [count])
+
+  return ref
+}
+
 /**
  * Below xl this was a 2-up grid, which stacked six cards into three rows and
  * pushed the hero's actual content — headline, CTAs — off a phone screen. As a
@@ -186,8 +321,11 @@ export function HeroServiceCardsDesktop() {
  * viewport edge.
  */
 export function HeroServiceCardsMobile() {
+  const ref = useAutoScroll(serviceCards.length)
+
   return (
     <ul
+      ref={ref}
       aria-label="A look inside our service workspaces"
       className="mt-[clamp(1.75rem,5vh,3rem)] -mx-6 flex w-[calc(100%+3rem)] snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain scroll-px-6 px-6 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] xl:hidden [&::-webkit-scrollbar]:hidden"
     >
