@@ -61,6 +61,8 @@ test('rejects malformed input, oversized requests, wrong methods and foreign ori
     [request(valid, { is: () => false }), 415],
     [request(valid, { rawBody: { length: 16385 } }), 413],
     [request(valid, { get: () => 'https://other.example.com' }), 403],
+    // A lookalike outside the project's own hosting domain.
+    [request(valid, { get: () => 'https://akvegadigital--pr-1-abc.web.app.evil.com' }), 403],
   ]
   for (const [req, code] of cases) {
     const res = response()
@@ -68,6 +70,18 @@ test('rejects malformed input, oversized requests, wrong methods and foreign ori
     assert.equal(res.code, code)
     assert.notEqual(res.body.ok, true)
   }
+})
+
+test('accepts a Firebase Hosting preview channel origin so pull request previews are testable', async () => {
+  let sent = false
+  const handler = createContactHandler({ getConfig: () => config, fetchEmail: async () => {
+    sent = true
+    return { ok: true, json: async () => ({ data: [{ id: 'inquiry-id' }, { id: 'reply-id' }] }) }
+  } })
+  const res = response()
+  await handler(request(valid, { get: () => 'https://akvegadigital--pr-12-a1b2c3d4.web.app' }), res)
+  assert.equal(res.code, 200)
+  assert.equal(sent, true)
 })
 
 test('honeypot submissions do not send email', async () => {

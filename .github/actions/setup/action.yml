@@ -1,0 +1,28 @@
+name: Set up Node and install dependencies
+description: >
+  Node from .nvmrc plus a clean install of both package trees. The root tree
+  builds the site; functions/ is a separate tree with its own lockfile, and the
+  `predeploy` hooks in firebase.json run its tests, so both are always needed.
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v5
+      with:
+        # .nvmrc is the single source of truth. Note it says 24 while
+        # functions/package.json pins engines.node to 22 — that is not a
+        # mismatch to fix: 22 is the deployed Cloud Functions runtime, 24 is
+        # what the build and the test runner use, exactly as they do locally.
+        node-version-file: .nvmrc
+        cache: npm
+        cache-dependency-path: |
+          package-lock.json
+          functions/package-lock.json
+
+    - name: Install site dependencies
+      run: npm ci
+      shell: bash
+
+    - name: Install function dependencies
+      run: npm --prefix functions ci
+      shell: bash

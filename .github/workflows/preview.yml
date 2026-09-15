@@ -1,0 +1,130 @@
+# A real, hosted copy of every pull request on a Firebase Hosting preview
+# channel. Reviewing rendered HTML matters more here than in most projects:
+# the meta tags, canonicals and structured data that this site's SEO depends on
+# are invisible in a diff and invisible in `npm run dev` output.
+name: Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  FIREBASE_PROJECT: akvegadigital
+  FIREBASE_TOOLS_VERSION: 15.26.0
+  CHANNEL: pr-${{ github.event.pull_request.number }}
+
+jobs:
+  deploy:
+    name: Deploy preview channel
+    # Secrets are not exposed to pull requests from forks, so a fork run would
+    # fail at authentication rather than do anything useful. Skip it instead.
+    if: >
+      github.event.action != 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+
+      - name: Install Firebase CLI
+        run: npm install --global firebase-tools@${{ env.FIREBASE_TOOLS_VERSION }}
+
+      - name: Authenticate to Firebase
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          umask 077
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/service-account.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/service-account.json" >> "$GITHUB_ENV"
+
+      # Hosting only — no `--only functions`. A preview channel shares the one
+      # deployed contact function through the /api/contact rewrite, so a PR can
+      # never ship a half-deployed backend to production.
+      - name: Deploy to preview channel
+        id: preview
+        run: |
+          firebase hosting:channel:deploy "$CHANNEL" \
+            --project "$FIREBASE_PROJECT" \
+            --expires 7d \
+            --non-interactive \
+            --json > "$RUNNER_TEMP/channel.json"
+          node -e '
+            const result = require(process.env.RUNNER_TEMP + "/channel.json");
+            const target = Object.values(result.result ?? {})[0] ?? {};
+            const url = target.url;
+            if (!url) { console.error("No preview URL in the CLI output."); process.exit(1); }
+            require("node:fs").appendFileSync(process.env.GITHUB_OUTPUT, `url=${url}\nexpires=${target.expireTime ?? ""}\n`);
+          '
+
+      - name: Comment the preview URL
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          URL: ${{ steps.preview.outputs.url }}
+          EXPIRES: ${{ steps.preview.outputs.expires }}
+        run: |
+          cat > "$RUNNER_TEMP/comment.md" <<EOF
+          ### Preview deployed
+
+          | | |
+          |---|---|
+          | **URL** | $URL |
+          | **Commit** | \`${GITHUB_SHA:0:7}\` |
+          | **Expires** | ${EXPIRES:-in 7 days} |
+
+          Hosting only. \`/api/contact\` on this channel calls the **live**
+          contact function, so a test submission sends real email to the
+          production inbox.
+          EOF
+          # Edit the existing comment so a long PR does not accumulate one per
+          # push; fall back to a new comment on older gh versions.
+          gh pr comment "$PR" --body-file "$RUNNER_TEMP/comment.md" --edit-last \
+            || gh pr comment "$PR" --body-file "$RUNNER_TEMP/comment.md"
+
+      - name: Remove credentials
+        if: always()
+        run: rm -f "$RUNNER_TEMP/service-account.json"
+
+  cleanup:
+    name: Delete preview channel
+    # Channels expire on their own after 7d; this just reclaims them at merge
+    # so the channel list stays readable.
+    if: >
+      github.event.action == 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Firebase CLI
+        run: npm install --global firebase-tools@${{ env.FIREBASE_TOOLS_VERSION }}
+
+      - name: Delete the channel
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          umask 077
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/service-account.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/service-account.json"
+          # A channel that already expired is not an error worth failing on.
+          firebase hosting:channel:delete "$CHANNEL" \
+            --project "$FIREBASE_PROJECT" \
+            --force \
+            --non-interactive || echo "Channel $CHANNEL was already gone."
+          rm -f "$RUNNER_TEMP/service-account.json"

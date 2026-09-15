@@ -1,0 +1,34 @@
+# Grouped and monthly on purpose. This is a five-route marketing site, not a
+# service with a security surface worth a daily PR each; ungrouped weekly
+# updates here produce noise that gets ignored, which is worse than none.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    groups:
+      # Astro, React and Tailwind majors change build output and are reviewed
+      # as one deliberate upgrade, not merged on sight.
+      production:
+        dependency-type: production
+        update-types: [minor, patch]
+      development:
+        dependency-type: development
+
+  - package-ecosystem: npm
+    directory: /functions
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 2
+
+  # Pinned action majors still need to move, or the pipeline silently ages onto
+  # a deprecated runner.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']

@@ -1,0 +1,53 @@
+# Gate on every pull request, and again on main after merge. Nothing here
+# touches Firebase or needs a credential, so it runs for forks too.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# A new push to the same branch makes the previous run's answer irrelevant.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, build, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+
+      - name: Lint
+        run: npm run lint
+
+      # `npm run build` is `astro check && astro build`, so this covers the
+      # typecheck as well — a separate `npm run typecheck` step would just run
+      # the same checker twice. The build must not be routed around with a bare
+      # `astro build`: failing on a type error is the point.
+      - name: Build
+        run: npm run build
+        env:
+          # Public Firebase identifiers, hence repository *variables* rather
+          # than secrets. Unset here is not fatal: src/lib/firebase.ts is
+          # guarded and simply ships without Performance Monitoring. The deploy
+          # workflow is where their absence is treated as an error.
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+
+      # Asserts what the compiler cannot: every sitemap URL is a real file with
+      # a self-referential canonical and its own title.
+      - name: Check build output
+        run: npm run check:build
+
+      - name: Contact function tests
+        run: npm run test:contact
