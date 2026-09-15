@@ -8,15 +8,6 @@ export const custom: ServicePage = {
   h1: 'What are custom tools from Akvega, and when do you need one?',
   overview:
     'Akvega’s custom tools are the internal dashboards, API integrations, automations and data pipelines that off-the-shelf software will not bend to the process you actually run. Built in short visible cycles on Node.js, PostgreSQL and React, wired into the systems you already use, documented and handed over in your own accounts, so a department of manual effort quietly disappears.',
-  keyFacts: [
-    'Akvega builds internal tools, API integrations, automation and data pipelines for problems packaged software does not solve.',
-    'An Akvega custom tool is built around the process a business already runs, not the reverse.',
-    'Akvega builds custom tools on Node.js, PostgreSQL, Prisma and React, deployed with Docker and GitHub Actions.',
-    'Every Akvega custom tool ships in short visible cycles, with working software at the end of each.',
-    'Every Akvega custom tools engagement starts with a paid diagnostic returned within 1 to 2 working days.',
-    'Akvega clients own the repositories, infrastructure accounts and data of every custom tool from day one.',
-    'Akvega documents every custom tool so another engineer can maintain it without Akvega.',
-  ],
   included: [
     {
       title: 'Discovery and data model',

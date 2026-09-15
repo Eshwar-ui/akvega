@@ -86,23 +86,6 @@ export const SOCIAL_LINKS: readonly SocialLink[] = [
 export const GOOGLE_BUSINESS_URL =
   'https://www.google.com/maps/place/Akvega+Digital/@17.3357486,78.5307395,917m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3bcba31f5a243529:0xe046e0be6ee38f9a!8m2!3d17.3357486!4d78.5307395!16s%2Fg%2F11nvwl9jgk'
 
-/**
- * The founder. Named on every page (components/ReviewedBy.astro) and as a
- * Person node in the JSON-LD, because answer engines credit an individual
- * only when the name sits next to the claim. The LinkedIn URL is empty until
- * verified — an unverified identifier is worse than none.
- */
-export const FOUNDER_NAME = 'Kalyan Kumar Bedugam'
-export const FOUNDER_TITLE = 'Founder'
-/** Confirmed by the founder, September 2026. Shown on the attribution line. */
-export const FOUNDER_CREDENTIALS = 'Google Ads and Meta Blueprint certified, three years in growth marketing and digital build'
-/** Named certifications for the Person node's `hasCredential`. */
-export const FOUNDER_CERTIFICATIONS = [
-  { name: 'Google Ads certification', issuer: 'Google' },
-  { name: 'Meta Blueprint certification', issuer: 'Meta' },
-]
-export const FOUNDER_LINKEDIN = ''
-export const FOUNDER_SAME_AS: string[] = [FOUNDER_LINKEDIN].filter(Boolean)
 
 export const SAME_AS: string[] = [
   ...SOCIAL_LINKS.map((link) => link.href),

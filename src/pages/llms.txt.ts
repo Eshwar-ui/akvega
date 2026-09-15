@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro'
 import { datesFor } from '@/lib/dates'
 import { PRICING_PUBLISHED } from '@/lib/pricing'
 import { serviceHref, tracks } from '@/lib/services'
-import { FOUNDER_NAME, LOCATION_LINE, PHONE_DISPLAY, SITE_URL, site } from '@/lib/site'
+import { LOCATION_LINE, PHONE_DISPLAY, SITE_URL, site } from '@/lib/site'
 
 /**
  * /llms.txt — a plain-text index of the site for language models.
@@ -24,7 +24,7 @@ export const GET: APIRoute = () => {
   const lines: string[] = [
     `# ${site.name}`,
     '',
-    `> ${site.name} is a Hyderabad, India growth marketing and digital build team. SEO, Google Ads, Meta Ads and social media run alongside websites, online stores, mobile apps and custom tools, shipped by the same people. Founded by ${FOUNDER_NAME}.`,
+    `> ${site.name} is a Hyderabad, India growth marketing and digital build team. SEO, Google Ads, Meta Ads and social media run alongside websites, online stores, mobile apps and custom tools, shipped by the same people.`,
     '',
     LOCATION_LINE,
     `Phone ${PHONE_DISPLAY}. Email ${site.email}.`,

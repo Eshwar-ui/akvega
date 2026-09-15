@@ -6,7 +6,7 @@ import TechStack from '@/components/TechStack'
 import { serviceCount, serviceHref, tracks } from '@/lib/services'
 import { revealDelayStyle } from '@/scripts/reveal'
 import { servicesSchema } from '@/lib/schema'
-import ReviewedBy from '@/components/ReviewedBy.astro'
+import LastUpdated from '@/components/LastUpdated.astro'
 
 /**
  * The definitive services reference — everything lib/services.ts knows, with a
@@ -57,7 +57,7 @@ const serviceIcons: Record<string, IconName> = {
           {serviceCount} services across two tracks. Hire one, or hire both — most clients end
           up wanting both. Each service has its own page.
         </p>
-        <ReviewedBy class="mt-6" />
+        <LastUpdated class="mt-6" />
       </div>
     </div>
   </div>

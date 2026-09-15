@@ -8,15 +8,6 @@ export const design: ServicePage = {
   h1: 'What does product design with Akvega actually involve?',
   overview:
     'Akvega’s product design covers research, flows, interface systems and clickable prototypes for web and mobile products. The work happens in Figma and is handed over as components and tokens rather than a folder of screenshots, because the engineers who build it sit on the same team. Design is tested against real data, real devices and the people who use it.',
-  keyFacts: [
-    'Akvega’s product design service covers user research, wireframes and flows, interface systems and prototypes.',
-    'Akvega hands design over as Figma components and tokens, not a folder of screenshots.',
-    'An Akvega prototype is clickable and tested with real users before engineering starts.',
-    'Akvega designers and engineers work on one team, so designs survive contact with the build.',
-    'Every Akvega product design engagement starts with a paid diagnostic returned within 1 to 2 working days.',
-    'Akvega clients own their Figma files and design system from the first day.',
-    'Akvega designs interfaces in English, Telugu and Hindi where the product’s users need them.',
-  ],
   included: [
     {
       title: 'User research',

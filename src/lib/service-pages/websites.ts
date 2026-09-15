@@ -8,15 +8,6 @@ export const websites: ServicePage = {
   h1: 'What does a website from Akvega actually include?',
   overview:
     'An Akvega website is a marketing site designed to your identity and built static-first on Astro or Next.js with TypeScript, so it loads fast, ranks and is easy to edit through a headless CMS. Analytics, schema and search setup ship with the site, and the team that builds it is the team that runs the campaigns pointing at it.',
-  keyFacts: [
-    'Akvega designs and builds marketing websites to a client’s identity rather than from a template.',
-    'An Akvega website is built static-first on Astro or Next.js with TypeScript and Tailwind.',
-    'Every Akvega website ships with analytics, schema markup and search setup on launch day.',
-    'Akvega websites are built with Core Web Vitals in the green as a requirement, not an afterthought.',
-    'Akvega clients own the repository, hosting and CMS accounts for their website from day one.',
-    'Every Akvega website engagement starts with a paid diagnostic returned within 1 to 2 working days.',
-    'Akvega websites are quoted per project from the diagnostic, not sold at a list price.',
-  ],
   included: [
     {
       title: 'Design system, then the pages',

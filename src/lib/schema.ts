@@ -2,10 +2,6 @@ import { allServices, faqs, serviceHref, tracks, type FaqItem, type Service } fr
 import type { PageDates } from '@/lib/dates'
 import {
   COUNTRY,
-  FOUNDER_CERTIFICATIONS,
-  FOUNDER_NAME,
-  FOUNDER_SAME_AS,
-  FOUNDER_TITLE,
   LEGAL_NAME,
   LOCALE,
   LOCALITY,
@@ -26,8 +22,6 @@ import {
  * - No `aggregateRating`. Self-declared ratings without a review source are a
  *   structured-data guideline violation and can draw a manual action. Add it
  *   only once real reviews exist on a platform Google can see.
- * - No `sameAs` on the founder until `FOUNDER_LINKEDIN` in lib/site.ts is a
- *   verified URL. An unverified identifier is worse than none.
  *
  * The Organization is typed as both `Organization` and `ProfessionalService`
  * now that Hyderabad is the confirmed base: the LocalBusiness family needs a
@@ -38,7 +32,6 @@ type Json = Record<string, unknown>
 export const ORG_ID = `${site.url}/#organization`
 export const SITE_ID = `${site.url}/#website`
 export const LOGO_ID = `${site.url}/#logo`
-export const FOUNDER_ID = `${site.url}/#founder`
 
 const ORG_DESCRIPTION =
   'Hyderabad growth marketing and software engineering team — SEO, Google Ads, Meta Ads and social alongside websites, mobile apps and custom systems, shipped by the same people.'
@@ -77,7 +70,6 @@ export function organizationSchema(): Json {
     image: { '@id': LOGO_ID },
     address: postalAddress,
     areaServed,
-    founder: { '@id': FOUNDER_ID },
     knowsAbout: [
       'Search engine optimisation',
       'Answer engine optimisation',
@@ -103,29 +95,6 @@ export function organizationSchema(): Json {
   }
 }
 
-/**
- * The founder as a first-class node, referenced by the Organization
- * (`founder`) and by every WebPage (`author`, `reviewedBy`). One node, one
- * `@id`, so the attribution on twenty pages resolves to one person.
- */
-export function founderSchema(): Json {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    '@id': FOUNDER_ID,
-    name: FOUNDER_NAME,
-    jobTitle: FOUNDER_TITLE,
-    worksFor: { '@id': ORG_ID },
-    hasCredential: FOUNDER_CERTIFICATIONS.map((credential) => ({
-      '@type': 'EducationalOccupationalCredential',
-      name: credential.name,
-      credentialCategory: 'certification',
-      recognizedBy: { '@type': 'Organization', name: credential.issuer },
-    })),
-    knowsAbout: ['Google Ads', 'Meta Ads', 'Search engine optimisation', 'Web and mobile development'],
-    ...(FOUNDER_SAME_AS.length ? { sameAs: FOUNDER_SAME_AS } : {}),
-  }
-}
 
 /**
  * The page itself. Emitted by the layout for every route, carrying the
@@ -151,8 +120,7 @@ export function webPageSchema(input: {
     isPartOf: { '@id': SITE_ID },
     about: { '@id': ORG_ID },
     publisher: { '@id': ORG_ID },
-    author: { '@id': FOUNDER_ID },
-    reviewedBy: { '@id': FOUNDER_ID },
+    author: { '@id': ORG_ID },
   }
 }
 

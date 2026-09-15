@@ -8,14 +8,6 @@ export const branding: ServicePage = {
   h1: 'What does a branding engagement with Akvega actually include?',
   overview:
     'Akvega’s branding work builds an identity system: strategy, visual identity, naming and voice, and the guidelines that hold them together. The system is designed to stay coherent across every campaign, website and product surface. Because one team runs the campaigns and ships the sites, the identity is tested in use, not presented on a slide.',
-  keyFacts: [
-    'Akvega builds identity systems: brand strategy, visual identity, brand guidelines, and naming and voice.',
-    'An Akvega brand identity is designed to stay coherent across campaigns, websites and product surfaces.',
-    'Every Akvega branding engagement starts with a paid diagnostic returned within 1 to 2 working days.',
-    'Akvega branding work is scoped and quoted from the diagnostic, not sold at a list price.',
-    'Akvega clients own the logo files, source designs and guidelines from the day they are delivered.',
-    'Akvega develops brand voice in English, Telugu and Hindi for brands that sell in all three.',
-  ],
   included: [
     {
       title: 'Brand strategy',

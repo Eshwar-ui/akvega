@@ -3,7 +3,7 @@ import '@/index.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer.astro'
 import CustomCursor from '@/components/CustomCursor'
-import { founderSchema, organizationSchema, webPageSchema, websiteSchema } from '@/lib/schema'
+import { organizationSchema, webPageSchema, websiteSchema } from '@/lib/schema'
 import { datesFor, normalisePath, type PageDates } from '@/lib/dates'
 import { COUNTRY, LOCALE, LOCALITY, REGION_CODE } from '@/lib/site'
 
@@ -78,7 +78,6 @@ if (!dates) {
 // and pages that own it.
 const graph = [
   organizationSchema(),
-  founderSchema(),
   websiteSchema(),
   webPageSchema({ url: canonical, name: title, description, dates }),
 ]

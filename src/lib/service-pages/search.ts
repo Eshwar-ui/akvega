@@ -8,14 +8,6 @@ export const search: ServicePage = {
   h1: 'What do SEO, AEO and GEO services from Akvega actually include?',
   overview:
     'Akvega’s search programme covers three surfaces at once: Google’s results, the AI answers that now sit above them, and the generative engines people ask directly. Technical fixes, content architecture, schema and entity work run as one plan rather than three retainers, and the fixes are shipped by the same team that finds them.',
-  keyFacts: [
-    'Akvega runs SEO, answer-engine optimisation and generative-engine optimisation as one programme.',
-    'Answer-engine optimisation (AEO) makes a page citable by AI assistants such as ChatGPT and Gemini.',
-    'Generative-engine optimisation (GEO) structures content so AI search engines quote it directly.',
-    'Akvega ships technical SEO fixes itself instead of handing a list to another vendor.',
-    'Every Akvega search engagement starts with a paid audit returned within 1 to 2 working days.',
-    'Akvega plans keyword and answer coverage in English, Telugu and Hindi where the audience needs it.',
-  ],
   included: [
     {
       title: 'Technical audit, then the fixes',

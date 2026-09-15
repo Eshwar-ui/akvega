@@ -8,15 +8,6 @@ export const mobile: ServicePage = {
   h1: 'What does mobile app development with Akvega include?',
   overview:
     'Akvega builds iOS and Android apps from design through store release and the releases after it. Cross-platform in Flutter or Expo where one codebase saves money, native Swift or Kotlin where it does not. The backend, push notifications, analytics and store listings ship with the app, and the team that builds it is the team that drives traffic to it.',
-  keyFacts: [
-    'Akvega builds iOS and Android apps from design through App Store and Play Store release.',
-    'An Akvega mobile app is built in Flutter or Expo when one codebase serves both platforms well.',
-    'Akvega builds native Swift or Kotlin apps when a product needs platform features cross-platform frameworks handle poorly.',
-    'Every Akvega mobile app ships with its backend, authentication, push notifications and analytics, not after them.',
-    'Every Akvega mobile engagement starts with a paid diagnostic returned within 1 to 2 working days.',
-    'Akvega clients own the app’s repositories, store accounts and data from the first day.',
-    'Akvega’s mobile apps are built by the same team that runs the marketing to drive installs.',
-  ],
   included: [
     {
       title: 'Product design and prototype',

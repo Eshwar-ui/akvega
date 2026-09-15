@@ -2,8 +2,7 @@
 import Base from '@/layouts/Base.astro'
 import Breadcrumb from '@/components/Breadcrumb.astro'
 import { Icon } from '@/components/Icons'
-import KeyFacts from '@/components/KeyFacts.astro'
-import ReviewedBy from '@/components/ReviewedBy.astro'
+import LastUpdated from '@/components/LastUpdated.astro'
 import {
   GROWTH_CEILING,
   PRICING_PUBLISHED,
@@ -46,14 +45,6 @@ const FALLBACK_PRICE = 'Quoted from the diagnostic'
 const cheapest = packages[0]
 const dearest = packages[packages.length - 1]
 
-const keyFacts = [
-  `Akvega digital marketing packages start at ${formatInr(cheapest.monthly)} a month plus 18% GST.`,
-  `Akvega's three packages cost ${formatInr(cheapest.monthly)}, ${formatInr(packages[1].monthly)} and ${formatInr(dearest.monthly)} a month, excluding GST.`,
-  `Custom growth marketing scopes at Akvega run up to ${formatInr(GROWTH_CEILING)} a month.`,
-  'Ad spend is paid by the client directly to Google, Meta, LinkedIn or YouTube, never through Akvega.',
-  'Every Akvega engagement starts with a paid diagnostic returned within 1 to 2 working days.',
-  'Websites, online stores, mobile apps and custom tools are quoted from the diagnostic.',
-]
 ---
 
 <Base title={TITLE} description={DESCRIPTION} noindex={!PRICING_PUBLISHED}>
@@ -74,13 +65,12 @@ const keyFacts = [
           month plus GST, custom scopes to {formatInr(GROWTH_CEILING)}, and build work quoted from a paid
           diagnostic. No discovery call whose only purpose is to find out your budget.
         </p>
-        <ReviewedBy class="mt-6" />
+        <LastUpdated class="mt-6" />
       </div>
     </div>
   </div>
 
   <div class="mx-auto max-w-site px-5 pt-16 sm:px-8 sm:pt-20">
-    <KeyFacts facts={keyFacts} class="max-w-[64ch]" />
   </div>
 
   {/* The diagnostic. One card, on its own, because it is the door every

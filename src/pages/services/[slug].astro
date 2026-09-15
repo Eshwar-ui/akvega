@@ -3,8 +3,7 @@ import Base from '@/layouts/Base.astro'
 import Breadcrumb from '@/components/Breadcrumb.astro'
 import EvidencePanel from '@/components/EvidencePanel.astro'
 import { Icon } from '@/components/Icons'
-import KeyFacts from '@/components/KeyFacts.astro'
-import ReviewedBy from '@/components/ReviewedBy.astro'
+import LastUpdated from '@/components/LastUpdated.astro'
 import { datesFor } from '@/lib/dates'
 import { evidenceFor } from '@/lib/evidence'
 import { faqSchema, serviceNode } from '@/lib/schema'
@@ -65,7 +64,7 @@ if (!dates) throw new Error(`No dates for ${serviceHref(page)} in src/lib/page-d
         <p class={`type-overline mt-7 ${accentText}`}>{track.label} · {service.name}</p>
         <h1 class="type-page-title mt-3 max-w-[22ch] text-balance">{page.h1}</h1>
         <p class="type-body mt-5 max-w-[60ch] text-ink-muted">{page.overview}</p>
-        <ReviewedBy dates={dates} class="mt-6" />
+        <LastUpdated dates={dates} class="mt-6" />
 
         <div class="mt-8 flex flex-wrap gap-3">
           <a
@@ -88,7 +87,6 @@ if (!dates) throw new Error(`No dates for ${serviceHref(page)} in src/lib/page-d
   </div>
 
   <div class="mx-auto max-w-site px-5 pt-16 sm:px-8 sm:pt-20">
-    <KeyFacts facts={page.keyFacts} class="max-w-[64ch]" />
   </div>
 
   {/* What is included. */}

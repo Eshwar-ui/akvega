@@ -8,15 +8,6 @@ export const social: ServicePage = {
   h1: 'What does social media management from Akvega actually include?',
   overview:
     'Akvega’s social media management is always-on rather than campaign by campaign: a content calendar planned ahead, posts and Reels produced to a standard, comments and messages answered, and a monthly report on what the channel produced. One voice runs across Instagram, Facebook, LinkedIn and YouTube, so the account compounds instead of resetting every quarter.',
-  keyFacts: [
-    'Akvega runs social media management as always-on content, calendar and community management.',
-    'Social media management covers planning, producing and publishing posts, then answering the comments and messages they draw.',
-    'Akvega holds one brand voice across Instagram, Facebook, LinkedIn and YouTube.',
-    'Every Akvega social media engagement starts with a paid diagnostic returned within 1 to 2 working days.',
-    'Akvega publishes from social accounts the client owns, never from accounts held by Akvega.',
-    'Akvega writes and produces social content in English, Telugu and Hindi for Hyderabad audiences.',
-    'Akvega reports social media results as enquiries and sales, not only followers and likes.',
-  ],
   included: [
     {
       title: 'Content calendar',

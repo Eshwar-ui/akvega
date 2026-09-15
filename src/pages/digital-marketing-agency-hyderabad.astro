@@ -2,8 +2,7 @@
 import Base from '@/layouts/Base.astro'
 import Breadcrumb from '@/components/Breadcrumb.astro'
 import { Icon, type IconName } from '@/components/Icons'
-import KeyFacts from '@/components/KeyFacts.astro'
-import ReviewedBy from '@/components/ReviewedBy.astro'
+import LastUpdated from '@/components/LastUpdated.astro'
 import { faqSchema } from '@/lib/schema'
 import { serviceHref, tracks, type FaqItem } from '@/lib/services'
 import { LOCATION_LINE, SERVICE_AREA, SITE_URL, site } from '@/lib/site'
@@ -64,15 +63,6 @@ const localMechanics: { title: string; body: string; icon: IconName }[] = [
     body: 'UPI first, cash-on-delivery as an option, GST-compliant invoicing, pincode-level delivery rules and a checkout that survives a dropped connection. A storefront built for a Western checkout flow leaks orders at every one of those steps.',
     icon: 'bag',
   },
-]
-
-const keyFacts = [
-  'Akvega is a digital marketing agency based in Hyderabad, Telangana, India.',
-  'Akvega runs SEO, Google Ads, Meta Ads and social media for Hyderabad businesses.',
-  'The same Akvega team builds the websites, online stores and mobile apps those campaigns point to.',
-  'Every Akvega engagement starts with a paid diagnostic whose findings the client keeps.',
-  'Akvega serves Hyderabad and Secunderabad in person, and wider India and the US remotely.',
-  'Akvega works in English, Telugu and Hindi.',
 ]
 
 const localFaqs: FaqItem[] = [
@@ -167,7 +157,7 @@ const areaNames = SERVICE_AREA.map((area) => area.name)
           shipped by the people who bought the click.
         </p>
         <p class="type-body mt-4 max-w-[56ch] text-ink-muted">{LOCATION_LINE}</p>
-        <ReviewedBy class="mt-6" />
+        <LastUpdated class="mt-6" />
 
         <div class="mt-8 flex flex-wrap gap-3">
           <a
@@ -191,7 +181,6 @@ const areaNames = SERVICE_AREA.map((area) => area.name)
   </div>
 
   <div class="mx-auto max-w-site px-5 pt-16 sm:px-8 sm:pt-20">
-    <KeyFacts facts={keyFacts} class="max-w-[64ch]" />
   </div>
 
   {/* Why local is a different game. This is the section that makes the page

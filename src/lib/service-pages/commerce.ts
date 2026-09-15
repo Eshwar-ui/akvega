@@ -8,15 +8,6 @@ export const commerce: ServicePage = {
   h1: 'What does an online store from Akvega actually include?',
   overview:
     'An Akvega online store is a storefront on web and mobile, built on Shopify or a custom Next.js storefront and wired into catalogue, payments and fulfilment. Payments are UPI-first with cash on delivery as an option, invoicing is GST-ready, and the checkout is built to survive your biggest sales day and a dropped connection.',
-  keyFacts: [
-    'Akvega builds online stores on Shopify or a custom Next.js storefront, chosen per project.',
-    'An Akvega online store takes UPI first, with cards and cash on delivery as options.',
-    'Every Akvega store ships with GST-ready invoicing and pincode-level delivery rules.',
-    'Akvega wires each store into catalogue, inventory and fulfilment so stock and orders stay in sync.',
-    'Akvega tracks conversions through to the completed order, in the client’s own analytics accounts.',
-    'Every Akvega online store engagement starts with a paid diagnostic returned within 1 to 2 working days.',
-    'Akvega clients own the store, payment and hosting accounts from the day they are created.',
-  ],
   included: [
     {
       title: 'Store design and catalogue structure',

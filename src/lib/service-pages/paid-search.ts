@@ -8,15 +8,6 @@ export const paidSearch: ServicePage = {
   h1: 'What does Google Ads management from Akvega actually include?',
   overview:
     'Akvega runs Google Ads campaigns built around profit per click rather than impressions. The work covers the account structure, the keywords and the intent behind them, the landing page each click arrives on and the conversion tracking that proves what happened next. Because growth and build are one team, the landing page ships with the campaign.',
-  keyFacts: [
-    'Akvega builds Google Ads campaigns around profit per click, not impressions or clicks.',
-    'Google Ads places ads on Google Search, Shopping, YouTube and the Display Network.',
-    'Akvega ships the landing page with the campaign because growth and build are one team.',
-    'Every Akvega Google Ads engagement starts with a paid diagnostic returned within 1 to 2 working days.',
-    'Akvega sets up every Google Ads account in the client’s name from day one.',
-    'Akvega’s founder, Kalyan Kumar Bedugam, is Google Ads certified.',
-    'Akvega writes Google Ads copy and landing pages in English, Telugu and Hindi where buyers search that way.',
-  ],
   included: [
     {
       title: 'Account restructure',
@@ -145,7 +136,7 @@ export const paidSearch: ServicePage = {
     {
       slug: 'is-akvega-google-ads-certified',
       q: 'Is Akvega actually certified to run Google Ads?',
-      a: 'Yes. Akvega’s founder, Kalyan Kumar Bedugam, holds the Google Ads certification and the Meta Blueprint certification, and he reviews every campaign structure before it goes live. The certification is a floor, not the pitch; the monthly report is where the work is judged.',
+      a: 'Yes. Akvega holds the Google Ads certification and the Meta Blueprint certification, and every campaign structure is reviewed before it goes live. The certification is a floor, not the pitch; the monthly report is where the work is judged.',
       published: '2026-09-14',
       modified: '2026-09-14',
     },

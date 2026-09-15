@@ -2,8 +2,7 @@
 import Base from '@/layouts/Base.astro'
 import Breadcrumb from '@/components/Breadcrumb.astro'
 import { Icon, type IconName } from '@/components/Icons'
-import KeyFacts from '@/components/KeyFacts.astro'
-import ReviewedBy from '@/components/ReviewedBy.astro'
+import LastUpdated from '@/components/LastUpdated.astro'
 import { faqSchema } from '@/lib/schema'
 import { serviceHref, tracks, type FaqItem } from '@/lib/services'
 import { SITE_URL, site } from '@/lib/site'
@@ -21,15 +20,6 @@ const TITLE = 'One Team for Growth Marketing and Digital Build | Akvega'
 const DESCRIPTION =
   'Why the team running your Google and Meta ads should also build the page they land on — Akvega runs growth marketing and digital build as one team.'
 const PAGE_URL = `${SITE_URL}${PATH}`
-
-const keyFacts = [
-  'Akvega runs growth marketing and digital build as one team, not two vendors.',
-  'The handover between a marketing agency and a development shop is where campaigns lose money.',
-  'At Akvega, the team buying the traffic is the team shipping the page it lands on.',
-  'Akvega ships landing pages, tracking fixes and checkout changes in the same week the campaign needs them.',
-  'Clients can hire Akvega for growth only, for build only, or for both.',
-  'Akvega sets up ad accounts, analytics and repositories in the client’s name from day one.',
-]
 
 const handoverTax: { title: string; body: string; icon: IconName }[] = [
   {
@@ -146,13 +136,12 @@ const faqs: FaqItem[] = [
           owns the handover between them, and the handover is where the money goes. Akvega holds both
           ends.
         </p>
-        <ReviewedBy class="mt-6" />
+        <LastUpdated class="mt-6" />
       </div>
     </div>
   </div>
 
   <div class="mx-auto max-w-site px-5 pt-16 sm:px-8 sm:pt-20">
-    <KeyFacts facts={keyFacts} class="max-w-[64ch]" />
   </div>
 
   {/* The handover tax. */}

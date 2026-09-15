@@ -8,15 +8,6 @@ export const paidSocial: ServicePage = {
   h1: 'What does Meta Ads management from Akvega actually include?',
   overview:
     'Meta Ads reach people on Facebook and Instagram before they search for you. Akvega runs creative testing and media buying as one job, so the ad that proves itself gets more budget the same week. Audience strategy, full-funnel campaigns and attribution through to the enquiry are inside the engagement, with landing pages shipped by the same team.',
-  keyFacts: [
-    'Meta Ads run on Facebook and Instagram, reaching buyers before they search for a product.',
-    'Akvega runs Meta creative testing and media buying together, so winning ads get budget the same week.',
-    'Akvega builds Meta campaigns across the full funnel, from first view to enquiry or purchase.',
-    'Every Akvega Meta Ads engagement starts with a paid diagnostic returned within 1 to 2 working days.',
-    'Akvega creates every Meta Business account and ad account in the client’s name from day one.',
-    'Akvega’s founder, Kalyan Kumar Bedugam, is Meta Blueprint certified.',
-    'Akvega produces Meta ad creative in English, Telugu and Hindi for Hyderabad audiences.',
-  ],
   included: [
     {
       title: 'Creative testing',
@@ -149,7 +140,7 @@ export const paidSocial: ServicePage = {
     {
       slug: 'is-akvega-meta-blueprint-certified',
       q: 'Is Akvega actually certified to run Meta Ads?',
-      a: 'Yes. Akvega’s founder, Kalyan Kumar Bedugam, holds the Meta Blueprint certification and the Google Ads certification, and he reviews every campaign structure before it goes live. The certification is a floor, not the pitch; the monthly report is where the work is judged.',
+      a: 'Yes. Akvega holds the Meta Blueprint certification and the Google Ads certification, and every campaign structure is reviewed before it goes live. The certification is a floor, not the pitch; the monthly report is where the work is judged.',
       published: '2026-09-14',
       modified: '2026-09-14',
     },

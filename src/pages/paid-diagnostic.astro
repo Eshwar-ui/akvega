@@ -2,8 +2,7 @@
 import Base from '@/layouts/Base.astro'
 import Breadcrumb from '@/components/Breadcrumb.astro'
 import { Icon, type IconName } from '@/components/Icons'
-import KeyFacts from '@/components/KeyFacts.astro'
-import ReviewedBy from '@/components/ReviewedBy.astro'
+import LastUpdated from '@/components/LastUpdated.astro'
 import { diagnostic } from '@/lib/pricing'
 import { faqSchema } from '@/lib/schema'
 import type { FaqItem } from '@/lib/services'
@@ -25,15 +24,6 @@ const TITLE = 'The Paid Diagnostic — How Engagements Start | Akvega'
 const DESCRIPTION =
   'Akvega’s paid diagnostic audits your Google Business Profile, website, design and social accounts within 1 to 2 working days, priced to fix. Yours to keep.'
 const PAGE_URL = `${SITE_URL}${PATH}`
-
-const keyFacts = [
-  'Every Akvega engagement starts with a paid diagnostic, before any retainer or project is agreed.',
-  'The Akvega diagnostic audits the Google Business Profile, website, design, Instagram and other social accounts.',
-  `Akvega returns the diagnostic within ${diagnostic.duration} of kickoff.`,
-  'Every finding in the Akvega diagnostic comes with the cost to fix it.',
-  'The client keeps the Akvega diagnostic whether or not they continue with Akvega.',
-  'The diagnostic fee is fixed and agreed before the audit starts.',
-]
 
 const audited: { title: string; body: string; icon: IconName }[] = [
   {
@@ -164,7 +154,7 @@ const faqs: FaqItem[] = [
   {
     slug: 'who-does-the-audit',
     q: 'Who actually performs the audit?',
-    a: 'The founder, Kalyan Kumar Bedugam, who is Google Ads and Meta Blueprint certified, with the engineering side of the team for the website review. The people who write the audit are the people who would do the work.',
+    a: 'The growth side of the team, Google Ads and Meta Blueprint certified, with the engineering side for the website review. The people who write the audit are the people who would do the work.',
     published: '2026-09-14',
     modified: '2026-09-14',
   },
@@ -189,7 +179,7 @@ const faqs: FaqItem[] = [
           returns it within {diagnostic.duration}, with the cost to fix each item. It is the first piece
           of work, not a sales call, and it is yours whether or not you continue.
         </p>
-        <ReviewedBy class="mt-6" />
+        <LastUpdated class="mt-6" />
 
         <div class="mt-8 flex flex-wrap gap-3">
           <a
@@ -212,7 +202,6 @@ const faqs: FaqItem[] = [
   </div>
 
   <div class="mx-auto max-w-site px-5 pt-16 sm:px-8 sm:pt-20">
-    <KeyFacts facts={keyFacts} class="max-w-[64ch]" />
   </div>
 
   {/* What is audited. */}

@@ -1,12 +1,9 @@
 ---
 import { datesFor, type PageDates } from '@/lib/dates'
-import { FOUNDER_CREDENTIALS, FOUNDER_NAME, FOUNDER_TITLE, site } from '@/lib/site'
 
 /**
- * The attribution line. One clean sentence — name, role, organisation, date —
- * because answer engines credit an individual only when the individual is
- * named in the same breath as the claim; otherwise the organisation absorbs
- * the credit and the person is invisible (the "institution shadow" finding).
+ * The freshness line. Answer engines drop pages that stop changing, so every
+ * page states when it was last revised in words as well as in JSON-LD.
  *
  * The date is the same value the layout emits as `dateModified`, so the
  * human-readable and machine-readable freshness signals agree.
@@ -20,7 +17,7 @@ interface Props {
 const { dates = datesFor(Astro.url.pathname), class: className = '' } = Astro.props
 
 if (!dates) {
-  throw new Error(`ReviewedBy: no dates for ${Astro.url.pathname} — add it to src/lib/page-dates.json`)
+  throw new Error(`LastUpdated: no dates for ${Astro.url.pathname} — add it to src/lib/page-dates.json`)
 }
 
 const modified = new Date(`${dates.modified}T00:00:00Z`)
@@ -34,9 +31,6 @@ const humanDate = modified.toLocaleDateString('en-IN', {
 
 <div class={`meta text-[13px] leading-relaxed text-ink-muted ${className}`}>
   <p>
-    Reviewed by <span class="font-medium text-ink">{FOUNDER_NAME}</span>, {FOUNDER_TITLE}, {site.name} — {FOUNDER_CREDENTIALS}.
-  </p>
-  <p class="mt-0.5">
     Last updated <time datetime={dates.modified}>{humanDate}</time>
   </p>
 </div>

@@ -10,7 +10,6 @@ import type { FaqItem } from '@/lib/services'
  * lib/page-dates.json under `/services/<slug>`, with every other page.
  *
  * Rules, enforced by the route and by review:
- * - `keyFacts`: 5–7 sentences, each ≤ 20 words, each complete on its own.
  *   Start with the subject ("Akvega…", "Google Ads…"), never with a pronoun.
  * - `faqs`: 10–15 questions a buyer actually asks, answers 30–50 words with
  *   the answer in the first sentence.
@@ -29,7 +28,6 @@ export type ServicePage = {
   h1: string
   /** 40–60 words: what it is, what it covers, why it matters. */
   overview: string
-  keyFacts: string[]
   /** What the engagement includes, 4–6 items. */
   included: { title: string; body: string }[]
   /** How it runs, 3–4 steps in order. */

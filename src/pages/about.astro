@@ -2,7 +2,7 @@
 import Base from '@/layouts/Base.astro'
 import Breadcrumb from '@/components/Breadcrumb.astro'
 import { Icon, type IconName } from '@/components/Icons'
-import ReviewedBy from '@/components/ReviewedBy.astro'
+import LastUpdated from '@/components/LastUpdated.astro'
 import { process } from '@/lib/services'
 import { revealDelayStyle } from '@/scripts/reveal'
 
@@ -83,7 +83,7 @@ const fit: { title: string; body: string; icon: IconName }[] = [
           trend, but because the handoff between two vendors is where most of the work actually
           breaks.
         </p>
-        <ReviewedBy class="mt-6" />
+        <LastUpdated class="mt-6" />
       </div>
     </div>
   </div>

@@ -13,8 +13,6 @@ import {
 import { allServices, serviceHref, tracks } from '@/lib/services'
 import {
   COUNTRY_NAME,
-  FOUNDER_NAME,
-  FOUNDER_TITLE,
   LEGAL_NAME,
   LOCALITY,
   PHONE_DISPLAY,
@@ -50,7 +48,6 @@ export const GET: APIRoute = () => {
       as_of: AS_OF,
     },
     { id: 'legal_name', value: LEGAL_NAME, source: `${SITE_URL}/`, as_of: AS_OF },
-    { id: 'founder', value: `${FOUNDER_NAME}, ${FOUNDER_TITLE}`, source: `${SITE_URL}/about`, as_of: AS_OF },
     {
       id: 'location',
       value: `${LOCALITY}, ${REGION}, ${COUNTRY_NAME}`,
