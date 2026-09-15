@@ -32,7 +32,7 @@ jobs:
       FIREBASE_TOOLS_VERSION: 15.26.0
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       # Fail in seconds rather than after a full build, and name the exact
