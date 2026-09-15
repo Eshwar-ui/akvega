@@ -195,7 +195,7 @@ const graph = [
         Skip to content
       </a>
 
-      <Header client:load pathname={Astro.url.pathname} />
+      <Header client:load pathname={canonicalPath} />
 
       <main id="main" class="w-full max-w-full flex-1 overflow-x-hidden">
         <slot />

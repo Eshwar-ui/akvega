@@ -14,6 +14,13 @@ import { site } from '@/lib/site'
  * the header no longer needs to re-baseline anything on navigation — each page
  * load starts fresh with the header shown.
  */
+/**
+ * `pathname` must be the canonical path (`/`, `/pricing`) — the layout passes it
+ * through normalisePath. `build.format: 'file'` reports `/index.html` here
+ * otherwise, which silently defeats both the `=== '/'` checks below: the
+ * homepage never counts as over-hero, so the header sits elevated on top of the
+ * hero, and the Home link never reads as active.
+ */
 export default function Header({ pathname }: { pathname: string }) {
   const [open, setOpen] = useState(false)
   const [elevated, setElevated] = useState(pathname !== '/')
