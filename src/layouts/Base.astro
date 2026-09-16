@@ -34,9 +34,30 @@ interface Props {
    * A page with neither fails the build: every page carries a date.
    */
   dates?: PageDates
+  /**
+   * What the share image shows. Without it a screen reader announces the
+   * filename, and a card with no alt is the one image on a shared link.
+   */
+  ogImageAlt?: string
+  /**
+   * `article` for a dated post, `website` for everything else. Drives the
+   * `article:*` timestamps below, which is what a feed reader, a link
+   * unfurler and several AI crawlers read in preference to the JSON-LD.
+   */
+  ogType?: 'website' | 'article'
+  /** Section name for `article:section`. The cluster label, on a post. */
+  articleSection?: string
 }
 
-const { title, description, ogImage = '/og.png', noindex = false } = Astro.props
+const {
+  title,
+  description,
+  ogImage = '/og.png',
+  noindex = false,
+  ogImageAlt = 'Akvega — growth marketing and digital build, one team.',
+  ogType = 'website',
+  articleSection,
+} = Astro.props
 
 // Search Console / Bing Webmaster ownership tokens. Optional: set in .env as
 // PUBLIC_GOOGLE_SITE_VERIFICATION / PUBLIC_BING_SITE_VERIFICATION and the tag
@@ -160,7 +181,7 @@ const graph = [
       />
     </noscript>
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content="Akvega" />
     <meta property="og:locale" content={ogLocale} />
     <meta property="og:url" content={canonical} />
@@ -169,11 +190,27 @@ const graph = [
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
+
+    {/* Dated posts only. The timestamps repeat what the BlogPosting JSON-LD
+        says, because the crawlers that read one frequently do not read the
+        other, and freshness is the signal least worth losing to that. */}
+    {
+      ogType === 'article' && (
+        <>
+          <meta property="article:published_time" content={dates.published} />
+          <meta property="article:modified_time" content={dates.modified} />
+          <meta property="article:publisher" content="https://www.linkedin.com/company/akvega/" />
+          {articleSection && <meta property="article:section" content={articleSection} />}
+        </>
+      )
+    }
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     {graph.map((node) => (
       <script type="application/ld+json" is:inline set:html={JSON.stringify(node)} />

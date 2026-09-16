@@ -2,6 +2,7 @@ import { allServices, faqs, serviceHref, tracks, type FaqItem, type Service } fr
 import type { PageDates } from '@/lib/dates'
 import {
   COUNTRY,
+  FOUNDER,
   LEGAL_NAME,
   LOCALE,
   LOCALITY,
@@ -29,6 +30,7 @@ import {
  */
 type Json = Record<string, unknown>
 
+export const PERSON_ID = `${site.url}/#founder`
 export const ORG_ID = `${site.url}/#organization`
 export const SITE_ID = `${site.url}/#website`
 export const LOGO_ID = `${site.url}/#logo`
@@ -121,6 +123,103 @@ export function webPageSchema(input: {
     about: { '@id': ORG_ID },
     publisher: { '@id': ORG_ID },
     author: { '@id': ORG_ID },
+  }
+}
+
+/**
+ * The founder as a `Person`, for `author` and `reviewedBy` on dated content.
+ *
+ * `sameAs` is omitted entirely while lib/site.ts has no verified profile URL,
+ * rather than emitted empty. The node is still worth shipping without it: a
+ * named human with a role and a stated credential is what expertise is
+ * weighed on, and "Akvega" as author is not a person at all. Add the URL in
+ * site.ts and it appears here with no other change.
+ */
+export function personSchema(): Json {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': PERSON_ID,
+    name: FOUNDER.name,
+    jobTitle: FOUNDER.jobTitle,
+    description: FOUNDER.credentials,
+    worksFor: { '@id': ORG_ID },
+    url: `${site.url}/about`,
+    ...(FOUNDER.sameAs.length > 0 ? { sameAs: [...FOUNDER.sameAs] } : {}),
+  }
+}
+
+export const BLOG_ID = `${site.url}/insights#blog`
+
+/**
+ * The insights index as a `Blog`, and each post as a `BlogPosting` that is
+ * `isPartOf` it. Two reasons this is not just another `WebPage`:
+ *
+ * - `BlogPosting` carries `headline`, `datePublished` and `dateModified` in
+ *   the shape Google's article handling and most AI crawlers already parse,
+ *   so a post's freshness is legible without inference.
+ * - It draws the line between the evergreen service pages and the dated
+ *   commentary. A model deciding what Akvega *is* should reach for the
+ *   service pages; one answering a question a post covers should reach for
+ *   the post.
+ *
+ * `author` and `reviewedBy` are the founder `Person`, not the Organization.
+ * That node still has no `sameAs` — the verified LinkedIn URL is outstanding
+ * (AEO.md §9, item 1) — which weakens it but does not make it worthless: a
+ * named human with a role and a credential is the thing expertise is weighed
+ * on. Adding the URL to `FOUNDER` in lib/site.ts is the single highest-value
+ * change still available here.
+ */
+export function blogSchema(): Json {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    '@id': BLOG_ID,
+    url: `${site.url}/insights`,
+    name: `${site.name} insights`,
+    description:
+      'What things cost, how to buy an agency, how answer engines pick what to cite, and what building for an Indian buyer actually requires.',
+    inLanguage: LOCALE,
+    publisher: { '@id': ORG_ID },
+    isPartOf: { '@id': SITE_ID },
+  }
+}
+
+export function blogPostingSchema(input: {
+  url: string
+  headline: string
+  description: string
+  dates: PageDates
+  /** The key-facts block, so the quotable sentences are in the markup too. */
+  keyFacts?: readonly string[]
+  /** The cluster label, which is what this post is about. */
+  section?: string
+  /** Absolute URL of the post's own social card. */
+  image?: string
+  /** Body length. A cheap, checkable signal of depth. */
+  wordCount?: number
+}): Json {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    '@id': `${input.url}#blogposting`,
+    url: input.url,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `${input.url}#webpage` },
+    headline: input.headline,
+    description: input.description,
+    inLanguage: LOCALE,
+    datePublished: input.dates.published,
+    dateModified: input.dates.modified,
+    ...(input.section ? { articleSection: input.section } : {}),
+    ...(input.keyFacts?.length ? { abstract: input.keyFacts.join(' ') } : {}),
+    ...(input.image ? { image: [input.image] } : {}),
+    ...(input.wordCount ? { wordCount: input.wordCount } : {}),
+    isPartOf: { '@id': BLOG_ID },
+    publisher: { '@id': ORG_ID },
+    // A named human, not the organisation. This is the one node on the site
+    // where that distinction is worth anything.
+    author: { '@id': PERSON_ID },
+    reviewedBy: { '@id': PERSON_ID },
   }
 }
 

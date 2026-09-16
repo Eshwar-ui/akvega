@@ -1,0 +1,180 @@
+---
+import Base from '@/layouts/Base.astro'
+import Breadcrumb from '@/components/Breadcrumb.astro'
+import LastUpdated from '@/components/LastUpdated.astro'
+import { datesFor } from '@/lib/dates'
+import { clusters, INSIGHTS_PATH } from '@/lib/insight-clusters'
+import { allInsights, hrefOf } from '@/lib/insights'
+import { blogSchema } from '@/lib/schema'
+import { site } from '@/lib/site'
+import { revealDelayStyle } from '@/scripts/reveal'
+
+/**
+ * The insights index — a hub, not a feed.
+ *
+ * Posts are grouped by the cluster they belong to rather than listed by date,
+ * because the clusters are the architecture (CONTENT.md §2) and a reverse
+ * chronological wall says nothing about what this site is for. A cluster with
+ * nothing in it is omitted rather than shown empty: the calendar starts with
+ * one post and an empty box on a live page is just an admission.
+ *
+ * `modified` is derived from the newest post rather than kept by hand in
+ * page-dates.json, so the index cannot claim to be older than its contents —
+ * the one page on the site where a hand-maintained date would drift on every
+ * publish.
+ */
+const posts = await allInsights()
+
+const published = datesFor(INSIGHTS_PATH)
+if (!published) throw new Error(`No dates for ${INSIGHTS_PATH} in src/lib/page-dates.json`)
+
+const newest = posts.reduce((latest, post) => (post.data.modified > latest ? post.data.modified : latest), published.modified)
+const dates = { published: published.published, modified: newest }
+
+const populated = clusters
+  .map((cluster) => ({ cluster, posts: posts.filter((post) => post.data.cluster === cluster.id) }))
+  .filter((group) => group.posts.length > 0)
+
+const title = 'Insights — what things cost and how to buy them | Akvega'
+const description =
+  'Single-topic posts on what digital marketing and software actually cost, how to buy an agency, and how answer engines decide what to cite.'
+---
+
+<Base title={title} description={description} dates={dates}>
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(blogSchema())} />
+  </Fragment>
+
+  <div class="px-3 pt-3 sm:px-5 sm:pt-5">
+    <div
+      class="hero-field edge-light relative isolate overflow-hidden rounded-xl border border-hairline sm:rounded-2xl"
+    >
+      <div class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
+        <Breadcrumb current="Insights" />
+        <p class="type-overline mt-7 text-signal">Insights</p>
+        <h1 class="type-page-title mt-3 max-w-[20ch] text-balance">
+          What things cost, and how to buy them.
+        </h1>
+        <p class="type-body mt-5 max-w-[60ch] text-ink-muted">
+          Four subjects, no more. Every post answers one question, carries a date, and states where its
+          numbers came from. Nothing here is written to fill a calendar.
+        </p>
+        <LastUpdated dates={dates} class="mt-6" />
+      </div>
+    </div>
+  </div>
+
+  {
+    populated.length ? (
+      populated.map((group) => {
+        const accent = group.cluster.accent === 'signal' ? 'text-signal' : 'text-vega'
+        return (
+          <section
+            data-reveal-root
+            data-shown="false"
+            class="mx-auto max-w-site px-5 py-14 sm:px-8 sm:py-16"
+          >
+            <div class="grid gap-10 lg:grid-cols-[300px_1fr] lg:gap-16">
+              <div class="lg:sticky lg:top-28 lg:self-start">
+                <p class={`reveal type-overline ${accent}`}>{group.cluster.code}</p>
+                <h2 class="reveal type-section-title mt-3 max-w-[14ch] text-balance">
+                  {group.cluster.label}
+                </h2>
+                <p class="reveal type-body mt-4 max-w-[38ch] text-[15px] text-ink-muted">
+                  {group.cluster.summary}
+                </p>
+                <a
+                  href={group.cluster.hub.href}
+                  class="link-sweep mt-5 inline-block text-[14px] text-blue-700"
+                >
+                  {group.cluster.hub.label}
+                </a>
+              </div>
+
+              <ul>
+                {group.posts.map((post, i) => (
+                  <li
+                    style={revealDelayStyle(i, 70)}
+                    class="reveal border-t border-hairline py-7 last:border-b sm:py-9"
+                  >
+                    <a href={hrefOf(post)} class="group block">
+                      <h3 class="type-card-title max-w-[32ch] text-balance transition-colors duration-300 ease-out-expo group-hover:text-signal">
+                        {post.data.h1}
+                      </h3>
+                      <p class="type-body mt-3 max-w-[62ch] text-ink-muted">{post.data.description}</p>
+                      <p class="meta mt-3 text-[12px] text-ink-muted">
+                        Published <time datetime={post.data.published}>{post.data.published}</time>
+                        {post.data.modified !== post.data.published ? (
+                          <>
+                            {' · updated '}
+                            <time datetime={post.data.modified}>{post.data.modified}</time>
+                          </>
+                        ) : null}
+                      </p>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )
+      })
+    ) : null
+  }
+
+  {/* The architecture, stated. Also the four internal links that matter most. */}
+  <section data-reveal-root data-shown="false" class="px-3 sm:px-5">
+    <div
+      class="edge-light-dark mx-auto max-w-site overflow-hidden rounded-xl bg-navy px-5 py-20 sm:rounded-2xl sm:px-12 sm:py-24 lg:px-16"
+    >
+      <p class="reveal type-overline text-blue-200">What we write about</p>
+      <h2 class="reveal type-section-title mt-5 max-w-[18ch] text-balance text-white">
+        Four subjects, each with a page behind it.
+      </h2>
+      <ol class="mt-14 grid gap-10 sm:grid-cols-2 lg:gap-12">
+        {
+          clusters.map((cluster, i) => (
+            <li style={revealDelayStyle(i + 1, 80)} class="reveal border-t border-white/15 pt-6">
+              <span class="text-sm tabular-nums text-blue-300/70">{cluster.code}</span>
+              <h3 class="mt-2 text-lg font-medium text-white">{cluster.label}</h3>
+              <p class="mt-2 text-[15px] leading-relaxed text-blue-200">{cluster.summary}</p>
+              <a
+                href={cluster.hub.href}
+                class="link-sweep mt-4 inline-block text-[14px] text-blue-200 hover:text-white"
+              >
+                {cluster.hub.label}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-20 sm:px-8 sm:py-28">
+    <div class="edge-light-dark rounded-2xl bg-navy p-6 sm:p-10">
+      <h2 class="reveal type-section-title max-w-[20ch] text-balance text-white">
+        Rather have this applied to your own site?
+      </h2>
+      <p style={revealDelayStyle(1)} class="reveal type-body mt-5 max-w-[46ch] text-blue-200">
+        The diagnostic audits your profile, website, design and social accounts, and prices every fix.
+        Yours to keep whether or not you continue.
+      </p>
+      <div style={revealDelayStyle(2)} class="reveal mt-8 flex flex-col gap-3 sm:flex-row">
+        <a
+          href={site.primaryCta.to}
+          data-cta="insights-close"
+          class="press type-ui rounded-full bg-white px-7 py-3.5 text-center text-navy"
+        >
+          Book a diagnostic
+        </a>
+        <a
+          href={site.diagnosticPath}
+          class="press type-ui rounded-full border border-white/20 px-7 py-3.5 text-center text-white hover:border-white/50"
+        >
+          How the diagnostic works
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

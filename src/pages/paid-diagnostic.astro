@@ -3,7 +3,9 @@ import Base from '@/layouts/Base.astro'
 import Breadcrumb from '@/components/Breadcrumb.astro'
 import { Icon, type IconName } from '@/components/Icons'
 import LastUpdated from '@/components/LastUpdated.astro'
+import RelatedReading from '@/components/RelatedReading.astro'
 import { diagnostic } from '@/lib/pricing'
+import { hubClusters } from '@/lib/insight-clusters'
 import { faqSchema } from '@/lib/schema'
 import type { FaqItem } from '@/lib/services'
 import { SITE_URL, site } from '@/lib/site'
@@ -313,4 +315,8 @@ const faqs: FaqItem[] = [
       </div>
     </div>
   </section>
+  {/* The return half of the hub-and-spoke: posts link up here, this links
+      back down. Renders nothing while the cluster is empty. */}
+  <RelatedReading clusters={hubClusters('/paid-diagnostic')} standalone />
+
 </Base>

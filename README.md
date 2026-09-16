@@ -127,6 +127,27 @@ Rules that the code enforces or assumes:
 - Evidence panels (`src/lib/evidence.ts`) need a claim, method, source,
   date and limitations or the component throws. Raw reports live in
   `public/evidence/`.
+- Posts live in `src/content/insights/*.md` and are typed by
+  `src/content.config.ts`. Every post declares a `cluster` from
+  `src/lib/insight-clusters.ts`, and that cluster's `hub` is an existing page
+  the post links up to — a post outside the four clusters does not get
+  written. See `CONTENT.md`.
+- A post carries its own `published`/`modified` in frontmatter, not in
+  `page-dates.json`. Three readers depend on that: the route passes them to
+  the layout, `astro.config.mjs` reads the frontmatter directly for sitemap
+  `lastmod` (it cannot import `astro:content`), and `check-freshness.mjs`
+  reads the rendered `WebPage` node. Change the frontmatter and all three
+  follow.
+- `draft: true` is how a post is held back, not a future `published` date.
+  The site is statically built with no scheduled rebuild, so a date-gated
+  post would stay invisible until someone happened to deploy.
+- `RelatedReading.astro` is the return half of each cluster: hubs link back
+  down to their posts. Which pages show it is `HUB_CLUSTERS` in
+  `lib/insight-clusters.ts`; a page not listed, or a cluster with no posts
+  yet, renders nothing at all rather than an empty box.
+- `KeyFacts.astro` throws on a fact over 20 words or one opening with a
+  pronoun. Both failures make the line unquotable, which is the only thing
+  the block is for.
 - `/facts.json` and `/llms.txt` are generated at build from the same data
   the pages use.
 - Search Console and Bing verification tags are emitted only when

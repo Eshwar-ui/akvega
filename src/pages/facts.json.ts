@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro'
 import { allPageDates } from '@/lib/dates'
+import { clusterFor } from '@/lib/insight-clusters'
+import { allInsights, hrefOf } from '@/lib/insights'
 import {
   GROWTH_CEILING,
   GST_RATE,
@@ -39,7 +41,7 @@ export const prerender = true
 
 const AS_OF = '2026-09-14'
 
-export const GET: APIRoute = () => {
+export const GET: APIRoute = async () => {
   const facts = [
     {
       id: 'what',
@@ -138,6 +140,22 @@ export const GET: APIRoute = () => {
       modified: dates.modified,
     }))
 
+  /**
+   * Posts, with their key facts inline. An agent reading this endpoint gets
+   * the extractable sentences without fetching and parsing each page — the
+   * same statements the page renders, from the same frontmatter.
+   */
+  const insights = (await allInsights()).map((post) => ({
+    id: post.id,
+    url: `${SITE_URL}${hrefOf(post)}`,
+    title: post.data.h1,
+    cluster: clusterFor(post.data.cluster).label,
+    summary: post.data.description,
+    keyFacts: post.data.keyFacts,
+    published: post.data.published,
+    modified: post.data.modified,
+  }))
+
   const body = {
     page: `${SITE_URL}/facts.json`,
     version: AS_OF,
@@ -150,6 +168,7 @@ export const GET: APIRoute = () => {
     facts,
     services: { count: allServices.length, items: services },
     pricing,
+    insights: { count: insights.length, items: insights },
     pages,
   }
 

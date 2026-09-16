@@ -1,0 +1,394 @@
+---
+import { render } from 'astro:content'
+import Base from '@/layouts/Base.astro'
+import Breadcrumb from '@/components/Breadcrumb.astro'
+import EvidencePanel from '@/components/EvidencePanel.astro'
+import { Icon } from '@/components/Icons'
+import KeyFacts from '@/components/KeyFacts.astro'
+import LastUpdated from '@/components/LastUpdated.astro'
+import ReviewedBy from '@/components/ReviewedBy.astro'
+import RelatedReading from '@/components/RelatedReading.astro'
+import { evidenceFor } from '@/lib/evidence'
+import { clusterFor } from '@/lib/insight-clusters'
+import { allInsights, datesOf, hrefOf, type Insight } from '@/lib/insights'
+import { blogPostingSchema, faqSchema, personSchema } from '@/lib/schema'
+import { SITE_URL, site } from '@/lib/site'
+import { revealDelayStyle } from '@/scripts/reveal'
+
+/**
+ * One post per file in src/content/insights.
+ *
+ * Deliberately the same skeleton as /services/<slug>: question as the H1, a
+ * dated overview, the key-facts block, the prose, evidence where a real
+ * measurement exists, an anchored FAQ, then the links up to the cluster hub.
+ * A post is a single-concept page that happens to be dated — the structure
+ * being identical is the point, not an accident of reuse.
+ *
+ * Dates come from the post's own frontmatter rather than page-dates.json,
+ * the same way service pages carry their own, and are passed to the layout so
+ * the visible line, the WebPage `dateModified` and the sitemap `lastmod` are
+ * one value. astro.config.mjs reads the same frontmatter for the sitemap.
+ */
+export async function getStaticPaths() {
+  const posts = await allInsights()
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }))
+}
+
+interface Props {
+  post: Insight
+}
+
+const { post } = Astro.props
+const { Content } = await render(post)
+
+const dates = datesOf(post)
+const cluster = clusterFor(post.data.cluster)
+const accentText = cluster.accent === 'signal' ? 'text-signal' : 'text-vega'
+const evidence = post.data.evidenceKey ? evidenceFor(post.data.evidenceKey) : []
+const pageUrl = `${SITE_URL}${hrefOf(post)}`
+
+// Each post gets its own social card, rendered by scripts/og-image.mjs from
+// this same frontmatter. Generated with `npm run og` and committed under
+// public/, so it exists before the page that references it is built.
+const ogImage = `/og/insights/${post.id}.png`
+const ogImageAlt = `${post.data.h1} — Akvega`
+
+// Body length, counted off the Markdown rather than asserted. Feeds
+// `wordCount` on the BlogPosting node.
+const wordCount = post.body?.trim().split(/\s+/).length ?? 0
+---
+
+<Base
+  title={post.data.title}
+  description={post.data.description}
+  dates={dates}
+  ogImage={ogImage}
+  ogImageAlt={ogImageAlt}
+  ogType="article"
+  articleSection={cluster.label}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(personSchema())} />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(
+        blogPostingSchema({
+          url: pageUrl,
+          headline: post.data.h1,
+          description: post.data.description,
+          dates,
+          keyFacts: post.data.keyFacts,
+          section: cluster.label,
+          image: `${SITE_URL}${ogImage}`,
+          wordCount,
+        }),
+      )}
+    />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema(post.data.faqs, pageUrl))} />
+  </Fragment>
+
+  <div class="px-3 pt-3 sm:px-5 sm:pt-5">
+    <div
+      class="hero-field edge-light relative isolate overflow-hidden rounded-xl border border-hairline sm:rounded-2xl"
+    >
+      <div class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
+        <Breadcrumb parent={{ label: 'Insights', href: '/insights' }} current={cluster.label} />
+        <p class={`type-overline mt-7 ${accentText}`}>{cluster.label}</p>
+        <h1 class="type-page-title mt-3 max-w-[24ch] text-balance">{post.data.h1}</h1>
+        <p class="type-body mt-5 max-w-[60ch] text-ink-muted">{post.data.overview}</p>
+        {/* The attribution line already carries the review date, so a second
+            line repeating it on publication day is noise. It reappears the
+            moment the post is actually revised, which is when the distinction
+            between written and updated starts meaning something. */}
+        <ReviewedBy dates={dates} class="mt-6" />
+        {dates.modified !== dates.published && <LastUpdated dates={dates} class="mt-1" />}
+      </div>
+    </div>
+  </div>
+
+  {/* The quotable block, directly under the hero. */}
+  <section class="mx-auto max-w-site px-5 pt-14 sm:px-8 sm:pt-20">
+    <KeyFacts facts={post.data.keyFacts} class="max-w-[68ch]" />
+  </section>
+
+  {/* The prose. One column, measured for reading, not for layout. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-14 sm:px-8 sm:py-20">
+    <div class="post-body max-w-[68ch]">
+      <Content />
+    </div>
+  </section>
+
+  {
+    evidence.length ? (
+      <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 pb-4 sm:px-8">
+        <div class="grid gap-6 lg:grid-cols-2">
+          {evidence.map((panel, i) => (
+            <div style={revealDelayStyle(i, 80)} class="reveal">
+              <EvidencePanel {...panel} />
+            </div>
+          ))}
+        </div>
+      </section>
+    ) : null
+  }
+
+  {/* FAQ. The same array the FAQPage JSON-LD in the head serialises. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
+    <div class="grid gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
+      <h2 class="reveal type-section-title max-w-[12ch] lg:sticky lg:top-28 lg:self-start">Questions.</h2>
+
+      <div>
+        {
+          post.data.faqs.map((item, i) => (
+            <details
+              id={`faq-${item.slug}`}
+              name={`faq-${post.id}`}
+              style={revealDelayStyle(i, 50)}
+              class="reveal group scroll-mt-28 border-b border-hairline first:border-t"
+            >
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-8 py-7 text-left sm:py-8 [&::-webkit-details-marker]:hidden">
+                <span class="flex items-baseline gap-4 sm:gap-5">
+                  <span class="type-overline shrink-0 tabular-nums text-[11px] text-ink-muted/45 sm:text-xs">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span class="text-xl font-medium leading-[1.25] transition-colors duration-300 ease-out-expo group-hover:text-signal sm:text-2xl">
+                    {item.q}
+                  </span>
+                </span>
+                <span class="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full border border-hairline text-ink-muted transition-transform duration-300 ease-out-expo group-open:rotate-45">
+                  <Icon name="plus" className="size-4" />
+                </span>
+              </summary>
+              <p class="type-body max-w-[62ch] pb-8 pl-9 text-ink-muted sm:pl-12">{item.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* Up to the hub, across to the cluster, and the close. */}
+  <section data-reveal-root data-shown="false" class="mx-auto max-w-site px-5 pb-24 sm:px-8 sm:pb-32">
+    <div class="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
+      <div class="flex flex-col gap-4">
+        <div class="rounded-2xl border border-hairline bg-surface/60 p-6 sm:p-8">
+          <p class="reveal type-overline text-ink-muted">The full picture</p>
+          <a href={cluster.hub.href} class="link-sweep mt-4 inline-block text-[17px] font-medium text-ink">
+            {cluster.hub.label}
+          </a>
+          <p class="type-body mt-1 text-[15px] text-ink-muted">{cluster.summary}</p>
+          {
+            post.data.related.length ? (
+              <ul class="mt-5 space-y-2 border-t border-hairline pt-5">
+                {post.data.related.map((item) => (
+                  <li>
+                    <a href={item.href} class="link-sweep text-[15px] text-blue-700">
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : null
+          }
+        </div>
+
+        <RelatedReading clusters={[cluster.id]} exclude={post.id} heading="More in this cluster" />
+      </div>
+
+      <div class="edge-light-dark rounded-2xl bg-navy p-6 sm:p-10">
+        <h2 class="reveal type-section-title max-w-[18ch] text-balance text-white">
+          Start with the audit, not the retainer.
+        </h2>
+        <p style={revealDelayStyle(1)} class="reveal type-body mt-5 max-w-[46ch] text-blue-200">
+          A paid diagnostic returns within 1 to 2 working days with every finding priced. Yours to keep
+          whether or not you continue.
+        </p>
+        <div style={revealDelayStyle(2)} class="reveal mt-8 flex flex-col gap-3 sm:flex-row">
+          <a
+            href={site.primaryCta.to}
+            data-cta={`insight-${post.id}-close`}
+            class="press type-ui rounded-full bg-white px-7 py-3.5 text-center text-navy"
+          >
+            Book a diagnostic
+          </a>
+          <a
+            href={cluster.hub.href}
+            class="press type-ui rounded-full border border-white/20 px-7 py-3.5 text-center text-white hover:border-white/50"
+          >
+            {cluster.hub.label}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /**
+   * Markdown comes out of `<Content />` as plain elements with no classes, so
+   * the type scale is applied here by selector. `:global()` because Astro's
+   * scoping only reaches elements written in this template, not ones a
+   * component renders at runtime.
+   *
+   * Sizes match the type-* utilities in index.css rather than redefining a
+   * second scale — a post should read like the rest of the site, not like a
+   * blog bolted onto it.
+   */
+  .post-body :global(h2) {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-block: 3rem 1rem;
+    text-wrap: balance;
+  }
+
+  .post-body :global(h3) {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-block: 2.25rem 0.75rem;
+  }
+
+  .post-body :global(p),
+  .post-body :global(li) {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--color-ink-muted);
+  }
+
+  .post-body :global(p) {
+    margin-block: 1rem;
+  }
+
+  .post-body :global(ul),
+  .post-body :global(ol) {
+    margin-block: 1.25rem;
+    padding-inline-start: 1.5rem;
+  }
+
+  .post-body :global(ul) {
+    list-style: disc;
+  }
+  .post-body :global(ol) {
+    list-style: decimal;
+  }
+  .post-body :global(li) {
+    margin-block: 0.5rem;
+    padding-inline-start: 0.35rem;
+  }
+  .post-body :global(li)::marker {
+    color: var(--color-signal);
+  }
+
+  .post-body :global(strong) {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .post-body :global(a) {
+    color: var(--color-blue-700);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+
+  .post-body :global(blockquote) {
+    margin-block: 1.75rem;
+    padding-inline-start: 1.25rem;
+    border-inline-start: 2px solid var(--color-signal);
+    font-size: 1.125rem;
+    line-height: 1.55;
+    color: var(--color-ink);
+  }
+
+  /* Tables carry the price breakdowns, so they have to survive a phone. */
+  .post-body :global(.table-wrap) {
+    overflow-x: auto;
+    margin-block: 1.75rem;
+  }
+
+  /*
+   * A table that scrolls needs to say so. The four-column pricing table is
+   * 438px wide inside a 331px column on a 390px phone, and without this the
+   * last column — the total, the number the reader came for — simply looks
+   * cropped. The fade is painted by the wrapper's own background so it sits
+   * over the table edge without a second element, and it is only applied when
+   * the script has measured an actual overflow.
+   */
+  .post-body :global(.table-wrap[data-scrollable='true']) {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), transparent);
+  }
+
+  .post-body :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+
+  .post-body :global(th),
+  .post-body :global(td) {
+    text-align: start;
+    padding: 0.75rem 1rem 0.75rem 0;
+    border-block-end: 1px solid var(--color-hairline);
+    vertical-align: top;
+  }
+
+  .post-body :global(th) {
+    font-weight: 600;
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+
+  .post-body :global(td) {
+    color: var(--color-ink-muted);
+  }
+
+  .post-body :global(hr) {
+    margin-block: 2.5rem;
+    border: 0;
+    border-block-start: 1px solid var(--color-hairline);
+  }
+</style>
+
+<script>
+  /**
+   * Markdown tables overflow on a phone and there is no way to wrap them from
+   * inside the Markdown. Wrapping them here keeps the horizontal scroll inside
+   * the table instead of on the page — `overflow-x-hidden` on <main> would
+   * otherwise clip the right-hand columns off entirely.
+   */
+  const wraps: HTMLElement[] = []
+
+  for (const table of document.querySelectorAll<HTMLTableElement>('.post-body table')) {
+    if (table.parentElement?.classList.contains('table-wrap')) continue
+    const wrap = document.createElement('div')
+    wrap.className = 'table-wrap'
+    table.replaceWith(wrap)
+    wrap.append(table)
+    wraps.push(wrap)
+  }
+
+  /**
+   * Flag only the tables that actually have more to the right, so the edge
+   * fade is a real signal rather than decoration. Cleared once the reader
+   * reaches the end, otherwise the last column stays half-faded after they
+   * have already scrolled to it.
+   */
+  const measure = (wrap: HTMLElement) => {
+    const remaining = wrap.scrollWidth - wrap.clientWidth - wrap.scrollLeft
+    wrap.dataset.scrollable = String(remaining > 1)
+  }
+
+  for (const wrap of wraps) {
+    measure(wrap)
+    wrap.addEventListener('scroll', () => measure(wrap), { passive: true })
+  }
+
+  if (wraps.length) {
+    // A table that fits in portrait can overflow in landscape, and back again.
+    window.addEventListener('resize', () => wraps.forEach((w) => measure(w)), { passive: true })
+  }
+</script>

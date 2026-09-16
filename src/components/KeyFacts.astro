@@ -1,0 +1,57 @@
+---
+/**
+ * The key-facts block: 3–8 declarative sentences directly under the H1.
+ *
+ * This is the part a model quotes. The constraint that makes it work is that
+ * each line has to stand alone — no "it", no "this", no dependence on the
+ * sentence before it — and stay short enough to be lifted whole. Twenty words
+ * is the cap, enforced here rather than left to review, because the failure
+ * mode is gradual: a fact grows a clause, then a second, and stops being
+ * extractable without anyone noticing.
+ *
+ * Human prose continues below the block. This is not a summary of the page,
+ * it is the set of statements the page is prepared to be quoted on.
+ */
+interface Props {
+  facts: readonly string[]
+  /** Heading for screen readers and for the visible label. */
+  label?: string
+  class?: string
+}
+
+const { facts, label = 'Key facts', class: className = '' } = Astro.props
+
+const MAX_WORDS = 20
+
+if (!facts.length) {
+  throw new Error('KeyFacts: rendered with no facts — omit the component instead.')
+}
+
+facts.forEach((fact) => {
+  const words = fact.trim().split(/\s+/).length
+  if (words > MAX_WORDS) {
+    throw new Error(
+      `KeyFacts: "${fact.slice(0, 60)}…" is ${words} words, over the ${MAX_WORDS}-word cap. Split it.`,
+    )
+  }
+  if (/^(it|this|that|they|these|those|we)\b/i.test(fact.trim())) {
+    throw new Error(
+      `KeyFacts: "${fact.slice(0, 60)}…" opens with a pronoun. Start with the subject so the line survives being quoted alone.`,
+    )
+  }
+})
+---
+
+<aside class={`rounded-2xl border border-hairline bg-surface/60 p-6 sm:p-8 ${className}`}>
+  <p class="type-overline text-ink-muted">{label}</p>
+  <ul class="mt-5 space-y-3">
+    {
+      facts.map((fact) => (
+        <li class="grid grid-cols-[0.5rem_1fr] items-baseline gap-4 text-[15px] leading-relaxed text-ink sm:text-[17px]">
+          <span aria-hidden="true" class="size-1.5 rounded-full bg-signal" />
+          <span>{fact}</span>
+        </li>
+      ))
+    }
+  </ul>
+</aside>

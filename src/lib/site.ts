@@ -50,6 +50,27 @@ export const SERVICE_AREA = [
 export const LOCATION_LINE =
   'Based in Hyderabad, India. We work remote-first with clients across Hyderabad, wider India, and the US.'
 
+/**
+ * The named human behind the content.
+ *
+ * AEO.md §3 principle 3: a named human on every page, in the order
+ * name → credentials → organisation. An agency site with no author is a site
+ * with nothing to weigh for expertise, and "Akvega" is not a person.
+ *
+ * `sameAs` stays empty until a profile URL is verified. An unverifiable
+ * profile in `sameAs` is a negative entity signal rather than a neutral one —
+ * the same reason Dribbble was removed from SOCIAL_LINKS rather than stubbed.
+ * The `Person` node ships without it; add the LinkedIn URL here the day it is
+ * confirmed and every post inherits it.
+ */
+export const FOUNDER = {
+  name: 'Kalyan Kumar Bedugam',
+  jobTitle: 'Founder',
+  /** True and specific, confirmed September 2026. Never rounded up. */
+  credentials: 'Google Ads and Meta Blueprint certified',
+  sameAs: [] as readonly string[],
+} as const
+
 export type SocialLink = {
   label: string
   href: string

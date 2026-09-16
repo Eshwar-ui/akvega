@@ -34,6 +34,7 @@ const columns = [
       ...site.nav.map((item) => ({ label: item.label, href: item.to })),
       // Unlinked until the numbers in lib/pricing.ts are real.
       ...(PRICING_PUBLISHED ? [{ label: 'Pricing', href: '/pricing' }] : []),
+      { label: 'Insights', href: '/insights' },
       { label: 'The diagnostic', href: site.diagnosticPath },
       { label: 'One team', href: '/one-team-for-growth-and-build' },
       { label: 'Hyderabad', href: '/digital-marketing-agency-hyderabad' },

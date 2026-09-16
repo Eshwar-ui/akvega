@@ -4,8 +4,10 @@ import Breadcrumb from '@/components/Breadcrumb.astro'
 import EvidencePanel from '@/components/EvidencePanel.astro'
 import { Icon } from '@/components/Icons'
 import LastUpdated from '@/components/LastUpdated.astro'
+import RelatedReading from '@/components/RelatedReading.astro'
 import { datesFor } from '@/lib/dates'
 import { evidenceFor } from '@/lib/evidence'
+import { hubClusters } from '@/lib/insight-clusters'
 import { faqSchema, serviceNode } from '@/lib/schema'
 import { servicePages, type ServicePage } from '@/lib/service-pages'
 import { allServices, serviceHref, tracks } from '@/lib/services'
@@ -247,4 +249,9 @@ if (!dates) throw new Error(`No dates for ${serviceHref(page)} in src/lib/page-d
       </div>
     </div>
   </section>
+  {/* Related reading, for the three service pages that are cluster hubs.
+      hubClusters() returns nothing for the other seven, so the block is
+      absent rather than empty. */}
+  <RelatedReading clusters={hubClusters(serviceHref(page))} standalone />
+
 </Base>

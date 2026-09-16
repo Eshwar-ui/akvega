@@ -1,0 +1,81 @@
+---
+import { INSIGHTS_PATH, type ClusterId } from '@/lib/insight-clusters'
+import { clusterOf, hrefOf, relatedInsights } from '@/lib/insights'
+
+/**
+ * The hub half of the hub-and-spoke (CONTENT.md §2, D1).
+ *
+ * Posts link up to their cluster's hub, and the hub links back down through
+ * this component. Without the return link the cluster is one-directional:
+ * the post inherits some of the hub's authority and the hub gets nothing,
+ * which is the usual reason a company blog sits in its own corner of the site
+ * quietly outranking nothing.
+ *
+ * Renders nothing when the cluster is empty. The calendar starts with one
+ * post and most hubs stay empty for weeks, so "no posts yet" has to be a
+ * silent no-op rather than an empty box on a live page.
+ */
+interface Props {
+  /** Which cluster(s) this hub owns. */
+  clusters: readonly ClusterId[]
+  /** A post excludes itself. */
+  exclude?: string
+  limit?: number
+  heading?: string
+  /**
+   * Wrap the block in its own page section. Hub pages want this; a post that
+   * places the block inside an existing grid does not — and an empty cluster
+   * must leave no wrapper behind either, which is why the flag lives here
+   * rather than in a `<section>` around the call site.
+   */
+  standalone?: boolean
+  class?: string
+}
+
+const {
+  clusters,
+  exclude,
+  limit = 3,
+  heading = 'Related reading',
+  standalone = false,
+  class: className = '',
+} = Astro.props
+
+const posts = await relatedInsights({ clusters, exclude, limit })
+
+const Wrapper = standalone ? 'section' : Fragment
+const wrapperProps = standalone
+  ? { class: 'mx-auto max-w-site px-5 pb-20 sm:px-8 sm:pb-24' }
+  : {}
+---
+
+{
+  posts.length ? (
+    <Wrapper {...wrapperProps}>
+    <aside class={`rounded-2xl border border-hairline bg-surface/60 p-6 sm:p-8 ${className}`}>
+      <p class="type-overline text-ink-muted">{heading}</p>
+      <ul class="mt-5 space-y-5">
+        {posts.map((post) => {
+          const cluster = clusterOf(post)
+          const accent = cluster.accent === 'signal' ? 'text-signal' : 'text-vega'
+          return (
+            <li>
+              <p class={`type-overline text-[11px] ${accent}`}>{cluster.label}</p>
+              <a href={hrefOf(post)} class="link-sweep mt-1 inline-block text-[17px] font-medium text-ink">
+                {post.data.h1}
+              </a>
+              <p class="type-body mt-1 text-[15px] text-ink-muted">{post.data.description}</p>
+              <p class="meta mt-1 text-[12px] text-ink-muted">
+                Updated <time datetime={post.data.modified}>{post.data.modified}</time>
+              </p>
+            </li>
+          )
+        })}
+      </ul>
+      <a href={INSIGHTS_PATH} class="link-sweep mt-6 inline-block text-[14px] text-blue-700">
+        All insights
+      </a>
+    </aside>
+    </Wrapper>
+  ) : null
+}

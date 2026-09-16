@@ -36,3 +36,6 @@ firebase-debug.log*
 .env
 .env.*
 !.env.example
+
+# Local visual checks (scripts/screenshot.mjs)
+.screenshots/

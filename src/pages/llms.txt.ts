@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro'
 import { datesFor } from '@/lib/dates'
+import { clusters } from '@/lib/insight-clusters'
+import { allInsights, hrefOf } from '@/lib/insights'
 import { PRICING_PUBLISHED } from '@/lib/pricing'
 import { serviceHref, tracks } from '@/lib/services'
 import { LOCATION_LINE, PHONE_DISPLAY, SITE_URL, site } from '@/lib/site'
@@ -14,7 +16,7 @@ import { LOCATION_LINE, PHONE_DISPLAY, SITE_URL, site } from '@/lib/site'
  */
 export const prerender = true
 
-export const GET: APIRoute = () => {
+export const GET: APIRoute = async () => {
   const line = (label: string, path: string, note: string) => {
     const dates = datesFor(path)
     const stamp = dates ? ` (updated ${dates.modified})` : ''
@@ -41,6 +43,7 @@ export const GET: APIRoute = () => {
     ...(PRICING_PUBLISHED
       ? [line('Pricing', '/pricing', 'Starting prices for every service, INR, excluding GST and ad spend.')]
       : []),
+    line('Insights', '/insights', 'Single-topic posts on what things cost, how to buy an agency, AI search, and building for Indian buyers.'),
     line('Contact', '/contact', 'Phone, email, location and the inquiry form.'),
     '',
   ]
@@ -51,6 +54,24 @@ export const GET: APIRoute = () => {
       lines.push(line(service.name, serviceHref(service), service.blurb))
     }
     lines.push('')
+  }
+
+  // Insights, grouped by cluster. A post carries its own dates in frontmatter
+  // rather than in page-dates.json, so the stamp is read off the entry.
+  const posts = await allInsights()
+  if (posts.length) {
+    lines.push('## Insights', '')
+    for (const cluster of clusters) {
+      const inCluster = posts.filter((post) => post.data.cluster === cluster.id)
+      if (!inCluster.length) continue
+      lines.push(`### ${cluster.label}`, '')
+      for (const post of inCluster) {
+        lines.push(
+          `- [${post.data.h1}](${SITE_URL}${hrefOf(post)}): ${post.data.description} (updated ${post.data.modified})`,
+        )
+      }
+      lines.push('')
+    }
   }
 
   lines.push(
