@@ -317,7 +317,8 @@ const wordCount = post.body?.trim().split(/\s+/).length ?? 0
    * over the table edge without a second element, and it is only applied when
    * the script has measured an actual overflow.
    */
-  .post-body :global(.table-wrap[data-scrollable='true']) {
+  .post-body :global(.table-wrap[data-scrollable='true']),
+  .post-body :global(.chart-scroll[data-scrollable='true']) {
     -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), transparent);
     mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), transparent);
   }
@@ -346,6 +347,41 @@ const wordCount = post.body?.trim().split(/\s+/).length ?? 0
     color: var(--color-ink-muted);
   }
 
+  /*
+   * Charts are authored as inline SVG in the Markdown (see
+   * scripts/chart-outlay.mjs) so they inherit Inter and the ink tokens from
+   * the page instead of falling back to whatever sans an <img> would get.
+   */
+  .post-body :global(figure.chart) {
+    margin-block: 2.5rem;
+  }
+
+  /*
+   * The chart keeps its authored size and scrolls rather than shrinking to
+   * fit. Scaled down to a 331px phone column its 13px labels render at about
+   * 7px, which is not a chart any more. Same scroll-and-fade the wide tables
+   * on this page already use, so the page has one behaviour for wide data.
+   */
+  .post-body :global(.chart-scroll) {
+    overflow-x: auto;
+  }
+
+  .post-body :global(figure.chart svg) {
+    display: block;
+    width: 100%;
+    min-width: 560px;
+    height: auto;
+  }
+
+  .post-body :global(figure.chart figcaption) {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-hairline);
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+  }
+
   .post-body :global(hr) {
     margin-block: 2.5rem;
     border: 0;
@@ -360,7 +396,9 @@ const wordCount = post.body?.trim().split(/\s+/).length ?? 0
    * the table instead of on the page — `overflow-x-hidden` on <main> would
    * otherwise clip the right-hand columns off entirely.
    */
-  const wraps: HTMLElement[] = []
+  const wraps: HTMLElement[] = [
+    ...document.querySelectorAll<HTMLElement>('.post-body .chart-scroll'),
+  ]
 
   for (const table of document.querySelectorAll<HTMLTableElement>('.post-body table')) {
     if (table.parentElement?.classList.contains('table-wrap')) continue

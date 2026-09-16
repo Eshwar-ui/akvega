@@ -139,6 +139,81 @@ it is never marked up — which also means we have nothing to gain from telling 
 | Search & Social Growth | ₹47,200 | ₹20,000 – ₹50,000 | ₹67,200 – ₹97,200 |
 | Market Leader | ₹70,800 | ₹50,000 – ₹1,00,000 | ₹1,20,800 – ₹1,70,800 |
 
+<!-- chart:outlay -->
+<figure class="chart">
+  <div class="chart-scroll">
+  <svg viewBox="0 0 616 314" role="img" aria-labelledby="outlay-title outlay-desc" width="100%">
+    <title id="outlay-title">Total monthly outlay by Akvega package</title>
+    <desc id="outlay-desc">Local Visibility: fee including GST ₹23,600, total ₹28,600 to ₹38,600 a month. Search & Social Growth: fee including GST ₹47,200, total ₹67,200 to ₹97,200 a month. Market Leader: fee including GST ₹70,800, total ₹1,20,800 to ₹1,70,800 a month.</desc>
+    <g>
+      <rect x="0" y="0" width="12" height="12" rx="2" fill="#3039e8" />
+      <text x="18" y="10" fill="#536078" font-size="13">Fee, including GST</text>
+      <rect x="150" y="0" width="12" height="12" rx="2" fill="#08c8ee" />
+      <text x="168" y="10" fill="#536078" font-size="13">Ad budget, paid by you (minimum, then range)</text>
+    </g>
+    <line x1="0.0" y1="36" x2="0.0" y2="280" stroke="#d9edfe" stroke-width="1" />
+    <line x1="154.0" y1="36" x2="154.0" y2="280" stroke="#d9edfe" stroke-width="1" />
+    <line x1="308.0" y1="36" x2="308.0" y2="280" stroke="#d9edfe" stroke-width="1" />
+    <line x1="462.0" y1="36" x2="462.0" y2="280" stroke="#d9edfe" stroke-width="1" />
+    <line x1="616.0" y1="36" x2="616.0" y2="280" stroke="#d9edfe" stroke-width="1" />
+    <g>
+      <text x="0" y="58" fill="#051127" font-size="14" font-weight="500">Local Visibility</text>
+      <text x="616" y="58" fill="#536078" font-size="13" text-anchor="end" style="font-variant-numeric: tabular-nums">₹28,600 – ₹38,600</text>
+      <path d="M0 70h71.7v22h-71.7z" fill="#3039e8">
+        <title>Local Visibility — fee including GST: ₹23,600</title>
+      </path>
+      <path d="M73.7 70h10.4a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-10.4z" fill="#08c8ee">
+        <title>Local Visibility — minimum ad budget: ₹5,000</title>
+      </path>
+      <line x1="94.1" y1="81" x2="113.9" y2="81" stroke="#08c8ee" stroke-width="2" stroke-linecap="round" />
+      <circle cx="118.9" cy="81" r="4.5" fill="#08c8ee" stroke="#ffffff" stroke-width="2">
+        <title>Local Visibility — maximum monthly outlay: ₹38,600</title>
+      </circle>
+    </g>
+    <g>
+      <text x="0" y="136" fill="#051127" font-size="14" font-weight="500">Search & Social Growth</text>
+      <text x="616" y="136" fill="#536078" font-size="13" text-anchor="end" style="font-variant-numeric: tabular-nums">₹67,200 – ₹97,200</text>
+      <path d="M0 148h144.4v22h-144.4z" fill="#3039e8">
+        <title>Search & Social Growth — fee including GST: ₹47,200</title>
+      </path>
+      <path d="M146.4 148h56.6a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-56.6z" fill="#08c8ee">
+        <title>Search & Social Growth — minimum ad budget: ₹20,000</title>
+      </path>
+      <line x1="213.0" y1="159" x2="294.4" y2="159" stroke="#08c8ee" stroke-width="2" stroke-linecap="round" />
+      <circle cx="299.4" cy="159" r="4.5" fill="#08c8ee" stroke="#ffffff" stroke-width="2">
+        <title>Search & Social Growth — maximum monthly outlay: ₹97,200</title>
+      </circle>
+    </g>
+    <g>
+      <text x="0" y="214" fill="#051127" font-size="14" font-weight="500">Market Leader</text>
+      <text x="616" y="214" fill="#536078" font-size="13" text-anchor="end" style="font-variant-numeric: tabular-nums">₹1,20,800 – ₹1,70,800</text>
+      <path d="M0 226h217.1v22h-217.1z" fill="#3039e8">
+        <title>Market Leader — fee including GST: ₹70,800</title>
+      </path>
+      <path d="M219.1 226h149.0a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-149z" fill="#08c8ee">
+        <title>Market Leader — minimum ad budget: ₹50,000</title>
+      </path>
+      <line x1="378.1" y1="237" x2="521.1" y2="237" stroke="#08c8ee" stroke-width="2" stroke-linecap="round" />
+      <circle cx="526.1" cy="237" r="4.5" fill="#08c8ee" stroke="#ffffff" stroke-width="2">
+        <title>Market Leader — maximum monthly outlay: ₹1,70,800</title>
+      </circle>
+    </g>
+    <line x1="0" y1="280" x2="616.0" y2="280" stroke="#d9edfe" stroke-width="1" />
+    <text x="0.0" y="300" fill="#536078" font-size="12" text-anchor="start" style="font-variant-numeric: tabular-nums">₹0</text>
+    <text x="154.0" y="300" fill="#536078" font-size="12" text-anchor="middle" style="font-variant-numeric: tabular-nums">₹50k</text>
+    <text x="308.0" y="300" fill="#536078" font-size="12" text-anchor="middle" style="font-variant-numeric: tabular-nums">₹100k</text>
+    <text x="462.0" y="300" fill="#536078" font-size="12" text-anchor="middle" style="font-variant-numeric: tabular-nums">₹150k</text>
+    <text x="616.0" y="300" fill="#536078" font-size="12" text-anchor="end" style="font-variant-numeric: tabular-nums">₹200k</text>
+  </svg>
+  </div>
+  <figcaption>
+    What actually leaves your account each month. The solid block is the Akvega fee including
+    18% GST; the rest is ad budget you pay directly to Google or Meta. Generated from the same
+    figures as the <a href="/pricing">pricing page</a>.
+  </figcaption>
+</figure>
+<!-- /chart:outlay -->
+
 Those ad budget floors are not arbitrary. Below roughly ₹5,000 a month a campaign never gathers
 enough conversion data to optimise against, and you end up paying a management fee to run something
 that cannot learn.
