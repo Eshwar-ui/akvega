@@ -2,7 +2,6 @@ import { allServices, faqs, serviceHref, tracks, type FaqItem, type Service } fr
 import type { PageDates } from '@/lib/dates'
 import {
   COUNTRY,
-  FOUNDER,
   LEGAL_NAME,
   LOCALE,
   LOCALITY,
@@ -30,7 +29,6 @@ import {
  */
 type Json = Record<string, unknown>
 
-export const PERSON_ID = `${site.url}/#founder`
 export const ORG_ID = `${site.url}/#organization`
 export const SITE_ID = `${site.url}/#website`
 export const LOGO_ID = `${site.url}/#logo`
@@ -126,29 +124,6 @@ export function webPageSchema(input: {
   }
 }
 
-/**
- * The founder as a `Person`, for `author` and `reviewedBy` on dated content.
- *
- * `sameAs` is omitted entirely while lib/site.ts has no verified profile URL,
- * rather than emitted empty. The node is still worth shipping without it: a
- * named human with a role and a stated credential is what expertise is
- * weighed on, and "Akvega" as author is not a person at all. Add the URL in
- * site.ts and it appears here with no other change.
- */
-export function personSchema(): Json {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    '@id': PERSON_ID,
-    name: FOUNDER.name,
-    jobTitle: FOUNDER.jobTitle,
-    description: FOUNDER.credentials,
-    worksFor: { '@id': ORG_ID },
-    url: `${site.url}/about`,
-    ...(FOUNDER.sameAs.length > 0 ? { sameAs: [...FOUNDER.sameAs] } : {}),
-  }
-}
-
 export const BLOG_ID = `${site.url}/insights#blog`
 
 /**
@@ -163,12 +138,11 @@ export const BLOG_ID = `${site.url}/insights#blog`
  *   service pages; one answering a question a post covers should reach for
  *   the post.
  *
- * `author` and `reviewedBy` are the founder `Person`, not the Organization.
- * That node still has no `sameAs` — the verified LinkedIn URL is outstanding
- * (AEO.md §9, item 1) — which weakens it but does not make it worthless: a
- * named human with a role and a credential is the thing expertise is weighed
- * on. Adding the URL to `FOUNDER` in lib/site.ts is the single highest-value
- * change still available here.
+ * `author` is the Organization. No `Person` node and no named byline appears
+ * anywhere on this site, by decision — see the note in AEO.md §3. Named
+ * authorship is the usual way an agency site carries expertise, so if that
+ * decision is ever revisited, this and the `reviewedBy` beside it are where
+ * it changes.
  */
 export function blogSchema(): Json {
   return {
@@ -216,10 +190,7 @@ export function blogPostingSchema(input: {
     ...(input.wordCount ? { wordCount: input.wordCount } : {}),
     isPartOf: { '@id': BLOG_ID },
     publisher: { '@id': ORG_ID },
-    // A named human, not the organisation. This is the one node on the site
-    // where that distinction is worth anything.
-    author: { '@id': PERSON_ID },
-    reviewedBy: { '@id': PERSON_ID },
+    author: { '@id': ORG_ID },
   }
 }
 

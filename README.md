@@ -148,6 +148,19 @@ Rules that the code enforces or assumes:
 - `KeyFacts.astro` throws on a fact over 20 words or one opening with a
   pronoun. Both failures make the line unquotable, which is the only thing
   the block is for.
+- No page names a human. `author` on every node is the Organization, by
+  decision (2026-09-16) — see CONTENT.md §7. The team's Google Ads and Meta
+  Blueprint certifications are company claims and stay.
+- Post assets are generated, not drawn, and committed under `public/`:
+  `npm run og` renders each social card, `npm run hero` writes each hero
+  panel as a ~2KB SVG, and `npm run charts` rebuilds the outlay chart in the
+  Markdown from `lib/pricing.ts`. Re-run the last one after any price change;
+  a chart is otherwise a second place a price can go stale.
+- `npm run shots` screenshots every route at 1440px and 390px against a
+  running `astro preview`, and exits non-zero on horizontal overflow. It
+  refuses to run if the port is serving a different site — `astro preview`
+  takes the next free port when 4321 is busy, and the failure is otherwise
+  silent. Pass `PREVIEW_URL` to point it anywhere, including production.
 - `/facts.json` and `/llms.txt` are generated at build from the same data
   the pages use.
 - Search Console and Bing verification tags are emitted only when

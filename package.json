@@ -20,7 +20,8 @@
     "check:freshness": "node scripts/check-freshness.mjs",
     "shots": "node scripts/screenshot.mjs",
     "og": "node scripts/og-image.mjs",
-    "charts": "node scripts/chart-outlay.mjs"
+    "charts": "node scripts/chart-outlay.mjs",
+    "hero": "node scripts/hero-image.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.5",

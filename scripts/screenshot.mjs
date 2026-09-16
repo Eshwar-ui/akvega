@@ -74,6 +74,25 @@ for (const viewport of VIEWPORTS) {
       continue
     }
 
+    // Confirm this is actually Akvega before believing a single pixel of it.
+    // `astro preview` takes the next free port when 4321 is busy, so another
+    // project's dev server on the default port will answer happily and every
+    // screenshot and overflow check silently describes someone else's site.
+    // That has happened; it is not theoretical.
+    const isThisSite = await page.evaluate(
+      () => document.querySelector('meta[property="og:site_name"]')?.getAttribute('content') === 'Akvega',
+    )
+    if (!isThisSite) {
+      const title = await page.title()
+      console.error(
+        `✗ ${BASE} is serving a different site ("${title}").\n` +
+          '  `astro preview` falls back to another port when 4321 is taken.\n' +
+          '  Run `npx astro preview status` and pass the real one:\n' +
+          '    PREVIEW_URL=http://localhost:4322 npm run shots',
+      )
+      process.exit(2)
+    }
+
     await page.evaluate(async () => {
       const step = window.innerHeight * 0.8
       for (let y = 0; y < document.body.scrollHeight; y += step) {

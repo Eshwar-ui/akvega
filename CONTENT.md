@@ -287,10 +287,16 @@ Two decisions taken during the build, neither of them in the original plan:
   hand-kept date in `page-dates.json`. It is the one page on the site whose date would otherwise
   need bumping on every single publish, and therefore the one most certain to drift.
 
-**Blocker carried over from AEO.md §9, item 1:** the founder's verified LinkedIn URL is still
-missing, so the `Person` node still has no `sameAs`. That was tolerable when it only affected
-page-level `reviewedBy`. On a blog it is the `author` of every post, and an unverifiable author
-is the weakest E-E-A-T signal a content programme can ship with. **Get this before C3.**
+**Decision, 2026-09-16: no named author.** A named byline and `Person` node shipped with the
+first post and were removed the same day at the client's instruction. Nothing on the site names
+a human; `author` on every `BlogPosting` is the Organization.
+
+This closes AEO.md §9 item 1 (the founder's LinkedIn URL) as no longer needed, and it drops
+AEO.md §3 principle 3 ("a named human on every page"). Recorded rather than argued: named
+authorship is the conventional way a services site carries expertise, so the cost is that
+these posts compete on evidence and specificity alone. That is a workable position given the
+evidence rule in §0 — it is simply a narrower one. `ReviewedBy.astro` and `personSchema()` are
+gone; reinstating them is a small change if the decision is ever revisited.
 
 ---
 

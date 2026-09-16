@@ -1,4 +1,5 @@
 ---
+import { existsSync } from 'node:fs'
 import { render } from 'astro:content'
 import Base from '@/layouts/Base.astro'
 import Breadcrumb from '@/components/Breadcrumb.astro'
@@ -6,12 +7,11 @@ import EvidencePanel from '@/components/EvidencePanel.astro'
 import { Icon } from '@/components/Icons'
 import KeyFacts from '@/components/KeyFacts.astro'
 import LastUpdated from '@/components/LastUpdated.astro'
-import ReviewedBy from '@/components/ReviewedBy.astro'
 import RelatedReading from '@/components/RelatedReading.astro'
 import { evidenceFor } from '@/lib/evidence'
 import { clusterFor } from '@/lib/insight-clusters'
 import { allInsights, datesOf, hrefOf, type Insight } from '@/lib/insights'
-import { blogPostingSchema, faqSchema, personSchema } from '@/lib/schema'
+import { blogPostingSchema, faqSchema } from '@/lib/schema'
 import { SITE_URL, site } from '@/lib/site'
 import { revealDelayStyle } from '@/scripts/reveal'
 
@@ -53,6 +53,12 @@ const pageUrl = `${SITE_URL}${hrefOf(post)}`
 const ogImage = `/og/insights/${post.id}.png`
 const ogImageAlt = `${post.data.h1} — Akvega`
 
+// The hero panel, rendered by scripts/hero-image.mjs. Checked rather than
+// assumed: a post added without running `npm run hero` should lose the
+// decoration, not ship a broken image into the first thing on the page.
+const heroPath = `/hero/insights/${post.id}.svg`
+const heroImage = existsSync(new URL(`../../../public${heroPath}`, import.meta.url)) ? heroPath : null
+
 // Body length, counted off the Markdown rather than asserted. Feeds
 // `wordCount` on the BlogPosting node.
 const wordCount = post.body?.trim().split(/\s+/).length ?? 0
@@ -68,7 +74,6 @@ const wordCount = post.body?.trim().split(/\s+/).length ?? 0
   articleSection={cluster.label}
 >
   <Fragment slot="head">
-    <script type="application/ld+json" is:inline set:html={JSON.stringify(personSchema())} />
     <script
       type="application/ld+json"
       is:inline
@@ -93,16 +98,34 @@ const wordCount = post.body?.trim().split(/\s+/).length ?? 0
       class="hero-field edge-light relative isolate overflow-hidden rounded-xl border border-hairline sm:rounded-2xl"
     >
       <div class="mx-auto max-w-site px-5 py-16 sm:px-8 sm:py-24">
-        <Breadcrumb parent={{ label: 'Insights', href: '/insights' }} current={cluster.label} />
-        <p class={`type-overline mt-7 ${accentText}`}>{cluster.label}</p>
-        <h1 class="type-page-title mt-3 max-w-[24ch] text-balance">{post.data.h1}</h1>
-        <p class="type-body mt-5 max-w-[60ch] text-ink-muted">{post.data.overview}</p>
-        {/* The attribution line already carries the review date, so a second
-            line repeating it on publication day is noise. It reappears the
-            moment the post is actually revised, which is when the distinction
-            between written and updated starts meaning something. */}
-        <ReviewedBy dates={dates} class="mt-6" />
-        {dates.modified !== dates.published && <LastUpdated dates={dates} class="mt-1" />}
+        <div class="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+          <div>
+            <Breadcrumb parent={{ label: 'Insights', href: '/insights' }} current={cluster.label} />
+            <p class={`type-overline mt-7 ${accentText}`}>{cluster.label}</p>
+            <h1 class="type-page-title mt-3 max-w-[20ch] text-balance">{post.data.h1}</h1>
+            <p class="type-body mt-5 max-w-[54ch] text-ink-muted">{post.data.overview}</p>
+            <LastUpdated dates={dates} class="mt-6" />
+          </div>
+
+          {/* Decorative, so `alt=""` rather than a description a screen reader
+              would have to sit through. Dimensions are on the tag: the hero is
+              above the fold, and a late-arriving image that reflows the H1 is
+              exactly the layout shift this site measures itself on. It comes
+              after the text in source order, so it stacks below the heading on
+              a phone and never becomes the first thing painted. */}
+          {
+            heroImage && (
+              <img
+                src={heroImage}
+                alt=""
+                width="1200"
+                height="900"
+                decoding="async"
+                class="w-full rounded-xl shadow-[0_24px_60px_-28px_rgba(5,17,39,0.5)] sm:rounded-2xl"
+              />
+            )
+          }
+        </div>
       </div>
     </div>
   </div>
